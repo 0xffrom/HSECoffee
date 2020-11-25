@@ -1,0 +1,30 @@
+package com.goga133.hsecoffee.service
+
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMailMessage
+import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.stereotype.Service
+import javax.mail.internet.MimeMessage
+import kotlin.random.Random
+
+
+@Service
+class EmailSenderService(
+        private val javaMailSender: JavaMailSender,
+        @Value("\${spring.mail.properties.registration.text}") private val text: String,
+        @Value("\${spring.mail.properties.registration.subject}") private val subject: String,
+) {
+
+    fun sendCode(receiver: String, code : Int) {
+        val message = SimpleMailMessage()
+
+        message.setSubject(subject)
+        message.setText(text.replace("{code}", code.toString()))
+        message.setFrom("info@hsecoffee.ru")
+        message.setTo(receiver)
+
+        javaMailSender.send(message)
+    }
+}
