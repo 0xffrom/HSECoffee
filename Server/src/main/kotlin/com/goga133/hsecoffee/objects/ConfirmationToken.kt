@@ -4,9 +4,6 @@ import java.util.*
 import javax.persistence.*
 import kotlin.random.Random
 
-private const val MIN_CODE = 100000
-private const val MAX_CODE = 1000000
-
 @Entity
 data class ConfirmationToken(
         @Id
@@ -24,11 +21,15 @@ data class ConfirmationToken(
         @JoinColumn(nullable = false, name = "user_id")
         val user: User? = null) {
 
+    companion object {
+        private const val MIN_CODE = 100000
+        private const val MAX_CODE = 1000000
+    }
+
     constructor(user: User) : this(
             user = user,
             createdDate = Date(),
             code = Random.nextInt(MIN_CODE, MAX_CODE)) {
         //
     }
-
 }
