@@ -4,7 +4,6 @@ import java.util.*
 import javax.persistence.*
 import kotlin.random.Random
 
-
 @Entity
 data class ConfirmationToken(
         @Id

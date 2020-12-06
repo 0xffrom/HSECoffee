@@ -2,13 +2,16 @@ package com.goga133.hsecoffee.repository
 
 import com.goga133.hsecoffee.objects.ConfirmationToken
 import com.goga133.hsecoffee.objects.User
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 
+@EnableJpaRepositories
+@Repository("confirmationCode")
+interface ConfirmationCodeRepository : CrudRepository<ConfirmationToken, Long> {
+    fun removeConfirmationTokenByUser(user : User)
 
-interface ConfirmationCodeRepository : CrudRepository<ConfirmationToken, Int> {
-    fun findByUserEmail(email: String): ConfirmationToken
+    fun existsByUser(user : User) : Boolean
 
-    fun existsByUserEmail(email: String) : Boolean
-
-    fun removeConfirmationTokenByUser(user: User)
+    fun findByUser(user: User) : ConfirmationToken
 }
