@@ -11,7 +11,7 @@ internal class JwtServiceTest {
 
     @Test
     fun createJwt() {
-        val mockUser = User("test@test", true)
+        val mockUser = User("test@test")
         val key = JwtService(mockSecretKey).createAccessToken(mockUser)
 
         assertEquals(key.split(".")[0], "eyJhbGciOiJIUzI1NiJ9")

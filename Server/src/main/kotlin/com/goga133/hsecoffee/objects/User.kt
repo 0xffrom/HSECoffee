@@ -17,11 +17,9 @@ data class User(
         @Enumerated(EnumType.STRING)
         val sex : Sex? = null,
         @Temporal(TemporalType.TIMESTAMP)
-        val createdDate: Date = Date(),
-        @Column(name = "is_enabled")
-        var isEnabled: Boolean = false) {
+        val createdDate: Date = Date()) {
 
-     constructor(email: String?, isEnabled: Boolean) : this(email = email) {
-        this.isEnabled = isEnabled
+     constructor(email: String?) : this(email = email, firstName = null, lastName = null) {
+
     }
 }

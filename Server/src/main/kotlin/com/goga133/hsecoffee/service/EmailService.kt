@@ -7,6 +7,7 @@ import com.goga133.hsecoffee.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.ResponseEntity
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service
 import java.net.http.HttpResponse
 import java.time.Instant
 import java.util.*
+import kotlin.time.milliseconds
 
 @Service
 class EmailService(
@@ -24,12 +26,11 @@ class EmailService(
     @Value("\${hsecoffee.code.lifetime.ms}") val lifeTime: Int
 ) {
 
-    @Qualifier("userRepository")
-    @Autowired
-    private val userRepository: UserRepository? = null
-
     @Autowired
     private val confirmationCodeRepository: ConfirmationCodeRepository? = null
+
+    @Autowired
+    private val userService: UserService? = null
 
     private fun sendCode(receiver: String, code: Int) {
         val message = SimpleMailMessage()
@@ -43,9 +44,9 @@ class EmailService(
     }
 
     fun isValid(receiver: String, code: Int): Boolean {
-        val userByCode = confirmationCodeRepository?.findByCode(code)?.user ?: return false
+        val userByCode = confirmationCodeRepository?.findByCode(code) ?: return false
 
-        if (userByCode.email == receiver && Date().time.minus(userByCode.createdDate.time) < lifeTime)
+        if (userByCode.user?.email == receiver && Instant.now().minusMillis(userByCode.createdDate.time).toEpochMilli() < lifeTime)
             return true
 
         return false
@@ -53,11 +54,10 @@ class EmailService(
 
     fun trySendCode(receiver: String): Boolean {
         try {
-            var user = userRepository?.findByEmailEquals(email = receiver)
+            var user = userService?.getUserByEmail(receiver);
 
             if (user == null) {
-                user = User(receiver, false)
-                userRepository?.save(user)
+                user = userService?.createUserByEmail(receiver) ?: return false
             }
 
             // Если код существует:
@@ -68,9 +68,12 @@ class EmailService(
                 val delta = (Date.from(confirmation?.createdDate?.time?.let { Instant.now().minusMillis(it) }))
 
                 if (delta.time > lifeTime) {
-                    confirmationCodeRepository.removeConfirmationTokenByUser(user)
-                    confirmationCodeRepository.save(ConfirmationCode(user))
+                    confirmationCodeRepository.apply {
+                        removeConfirmationTokenByUser(user)
+                        save(ConfirmationCode(user))
+                    }
                 }
+
             } else {
                 confirmationCodeRepository?.save(ConfirmationCode(user))
             }
