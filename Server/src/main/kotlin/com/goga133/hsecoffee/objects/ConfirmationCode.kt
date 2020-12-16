@@ -5,11 +5,11 @@ import javax.persistence.*
 import kotlin.random.Random
 
 @Entity
-data class ConfirmationToken(
+data class ConfirmationCode(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        @Column(name = "code_id")
-        val codeId: Long = 0,
+        @Column(name = "id")
+        val id: Long = 0,
 
         @Column(name = "code")
         val code: Int = Random.nextInt(MIN_CODE, MAX_CODE),
