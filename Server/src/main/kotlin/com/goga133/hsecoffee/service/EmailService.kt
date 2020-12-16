@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.*
 
@@ -45,6 +46,7 @@ class EmailService(
         return false
     }
 
+    @Transactional
     fun trySendCode(receiver: String): Boolean {
         try {
             var user = userService?.getUserByEmail(receiver);
