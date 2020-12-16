@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "spring.mail.sender.email",
+      "type": "java.lang.String",
+      "description": "Почта отправителя."
+    },
+    {
+      "name": "spring.mail.sender.password",
+      "type": "java.lang.String",
+      "description": "Пароль от почты-отправителя."
+    },
+    {
+      "name": "hsecoffee.code.lifetime.ms",
+      "type": "java.lang.Integer",
+      "description": "Количество в милисекундах жизни кода, отправленного на почту пользователю."
+    },
+    {
+      "name": "spring.security.oauth2.resourceserver.jwt.EncodedSecretKey",
+      "type": "java.lang.String",
+      "description": "Description for spring.security.oauth2.resourceserver.jwt.EncodedSecretKey."
+    }
+  ]
+}
