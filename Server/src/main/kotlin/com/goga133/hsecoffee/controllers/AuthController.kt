@@ -1,14 +1,11 @@
 package com.goga133.hsecoffee.controllers
 
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.ser.std.JsonValueSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.service.EmailService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.RefreshTokenService
 import com.goga133.hsecoffee.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.json.JsonParser
 import org.springframework.boot.json.JsonParserFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

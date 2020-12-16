@@ -1,21 +1,14 @@
 package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.objects.ConfirmationCode
-import com.goga133.hsecoffee.objects.User
 import com.goga133.hsecoffee.repository.ConfirmationCodeRepository
-import com.goga133.hsecoffee.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Lazy
-import org.springframework.http.ResponseEntity
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
-import java.net.http.HttpResponse
 import java.time.Instant
 import java.util.*
-import kotlin.time.milliseconds
 
 @Service
 class EmailService(
