@@ -4,6 +4,7 @@ import com.goga133.hsecoffee.objects.ConfirmationCode
 import com.goga133.hsecoffee.repository.ConfirmationCodeRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
@@ -12,12 +13,13 @@ import java.time.Instant
 import java.util.*
 
 @Service
+@PropertySource("mail.properties")
 class EmailService(
     private val javaMailSender: JavaMailSender,
-    @Value("\${spring.mail.properties.registration.text}") private val text: String,
-    @Value("\${spring.mail.properties.registration.subject}") private val subject: String,
-    @Value("\${spring.mail.properties.registration.from}") private val from: String,
-    @Value("\${hsecoffee.code.lifetime.ms}") val lifeTime: Int
+    @Value("\${mail.text}") private val text: String,
+    @Value("\${mail.subject}") private val subject: String,
+    @Value("\${mail.from}") private val from: String,
+    @Value("\${mail.lifetime.ms}") val lifeTime: Int
 ) {
 
     @Autowired

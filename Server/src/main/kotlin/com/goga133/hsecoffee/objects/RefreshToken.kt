@@ -31,5 +31,9 @@ data class RefreshToken(
         fingerprint = fingerprint
     )
 
-    constructor() : this(user = User(), fingerprint = "")
+    constructor(email: String?) : this(user = User(email), fingerprint = "")
+
+    constructor() : this(User(null), "") {
+
+    }
 }

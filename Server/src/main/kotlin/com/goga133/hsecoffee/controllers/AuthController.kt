@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @Controller
-class AuthController() {
+class AuthController {
 
     @Autowired
     private val emailService: EmailService? = null

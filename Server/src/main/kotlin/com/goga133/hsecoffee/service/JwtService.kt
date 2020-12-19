@@ -7,21 +7,24 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 
 @Service
+@PropertySource("jwt.properties")
 class JwtService(
-    @Value("spring.security.oauth2.resourceserver.jwt.EncodedSecretKey256") val secretKey256: String
+    @Value("\${jwt.key}") val secretKey: String,
+    @Value("\${jwt.access.min}") val minutes : Long
 ) {
     fun createAccessToken(user: User): String {
         return Jwts.builder()
-            .signWith(Keys.hmacShaKeyFor(secretKey256.toByteArray()), SignatureAlgorithm.HS256)
+            .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()), SignatureAlgorithm.HS512)
             .setSubject(user.email)
             .setIssuer("HSE Coffee")
-            .setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(60))))
+            .setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(minutes))))
             .setIssuedAt(Date.from(Instant.now()))
             .compact()
 
@@ -30,7 +33,7 @@ class JwtService(
 
     fun validateAccessToken(token: String): Jws<Claims> {
         return Jwts.parserBuilder()
-            .setSigningKey(Keys.hmacShaKeyFor(secretKey256.toByteArray()))
+            .setSigningKey(Keys.hmacShaKeyFor(secretKey.toByteArray()))
             .build()
             .parseClaimsJws(token)
     }

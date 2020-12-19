@@ -32,7 +32,7 @@ class RefreshTokenService {
         if (refreshToken.uuid == token &&
             refreshToken.expiresDate.after(Date()) &&
             refreshToken.fingerprint == fingerprint){
-            return true;
+            return true
         }
 
         return false
