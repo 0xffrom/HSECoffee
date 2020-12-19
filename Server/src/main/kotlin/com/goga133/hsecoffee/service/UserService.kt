@@ -38,4 +38,7 @@ class UserService {
         return null;
     }
 
+    fun save(user : User){
+        userRepository?.save(user)
+    }
 }
