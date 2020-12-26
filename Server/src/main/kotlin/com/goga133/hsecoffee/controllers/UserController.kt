@@ -38,7 +38,7 @@ class UserController {
             return ResponseEntity.badRequest().body("Неверный формат")
         }
 
-        val email: String;
+        val email: String
 
         try {
             val claim = jwtService?.validateAccessToken(token)
@@ -106,7 +106,7 @@ class UserController {
             return ResponseEntity.badRequest().body("Неверный формат")
         }
 
-        val email: String;
+        val email: String
 
         try {
             val claim = jwtService?.validateAccessToken(token)
@@ -122,7 +122,7 @@ class UserController {
         }
 
         val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-            .body("Server error");
+            .body("Server error")
 
 
         return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(user))
