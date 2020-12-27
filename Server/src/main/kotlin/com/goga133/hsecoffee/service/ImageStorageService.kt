@@ -15,16 +15,25 @@ import java.nio.file.Paths
 import java.util.stream.Stream
 
 @Service
-@PropertySource("image.properties")
-class ImageStorageService(@Value("\${image.maxSize.bytes}") val maxSize: Long) : ImageStorageRepository {
+class ImageStorageService : ImageStorageRepository {
     private val rootLocation: Path = Paths.get("uploads")
 
     override fun correctFile(file: MultipartFile) : Boolean{
-       if(file.isEmpty || file.size > maxSize){
+       if(file.isEmpty){
            return false
        }
 
+        val contentType: String = file.contentType ?: return false
+
+        if (!isSupportedContentType(contentType)) {
+           return false
+        }
+
         return true
+    }
+
+    private fun isSupportedContentType(contentType: String): Boolean {
+        return contentType == "image/png" || contentType == "image/jpg" || contentType == "image/jpeg"
     }
 
     override fun store(file: MultipartFile, fileName : String) {
