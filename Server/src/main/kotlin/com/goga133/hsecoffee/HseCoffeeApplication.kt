@@ -8,14 +8,11 @@ import org.springframework.stereotype.Service
 
 @SpringBootApplication
 class HseCoffeeApplication {
-
-    @Autowired
-    private val imageStorageService : ImageStorageService? = null
-
     companion object{
         @JvmStatic
         fun main(args: Array<String>) {
             runApplication<HseCoffeeApplication>(*args)
+            ImageStorageService().init()
         }
 
     }

@@ -2,6 +2,8 @@ package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.repository.ImageStorageRepository
 import org.junit.platform.commons.logging.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -13,11 +15,22 @@ import java.nio.file.Paths
 import java.util.stream.Stream
 
 @Service
-class ImageStorageService : ImageStorageRepository {
+@PropertySource("image.properties")
+class ImageStorageService(@Value("\${image.maxSize.bytes}") val maxSize: Long) : ImageStorageRepository {
     private val rootLocation: Path = Paths.get("uploads")
 
-    override fun store(file: MultipartFile) {
-        Files.copy(file.inputStream, this.rootLocation.resolve(file.originalFilename!!))
+    override fun correctFile(file: MultipartFile) : Boolean{
+       if(file.isEmpty || file.size > maxSize){
+           return false
+       }
+
+        return true
+    }
+
+    override fun store(file: MultipartFile, fileName : String) {
+        Files.deleteIfExists(this.rootLocation.resolve(fileName))
+
+        Files.copy(file.inputStream, this.rootLocation.resolve(fileName))
     }
 
     override fun loadFile(filename: String): Resource {
@@ -36,7 +49,9 @@ class ImageStorageService : ImageStorageRepository {
     }
 
     override fun init() {
-        Files.createDirectory(rootLocation)
+        if(!Files.exists(rootLocation)){
+            Files.createDirectory(rootLocation)
+        }
     }
 
     override fun loadFiles(): Stream<Path> {
