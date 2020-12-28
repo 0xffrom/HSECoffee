@@ -29,28 +29,13 @@ class AuthController {
     @Autowired
     private val refreshTokenService: RefreshTokenService? = null
 
-    /**
-     * Body Example: { "email": "email_value", "code": <integer>, "fingerprint": "fingerprint value"}
-     *
-     */
     @RequestMapping(value = ["/api/confirm"], method = [RequestMethod.POST])
     @ResponseStatus(HttpStatus.OK)
-    fun confirm(
-        @RequestBody body: String
+    fun confirmCode(
+        @RequestParam email: String,
+        @RequestParam code: Int,
+        @RequestParam fingerPrint: String
     ): ResponseEntity<String> {
-        val json = JsonParserFactory.getJsonParser().parseMap(body)
-
-        val email: String
-        val code: Int
-        val fingerPrint: String
-        try {
-            email = json["email"] as String
-            code = json["code"] as Int
-            fingerPrint = json["fingerprint"] as String
-        } catch (e: ClassCastException) {
-            return ResponseEntity.badRequest().body("Неверный формат")
-        }
-
         if (emailService?.isValid(email, code) == true) {
             val user =
                 userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity.badRequest().body("Server Error")
@@ -61,27 +46,13 @@ class AuthController {
         return ResponseEntity.badRequest().body("Incorrect code or email.")
     }
 
-
-    /**
-     * Body Example: { "email": "email_value", "refreshToken": "refresh token value",
-     *                 "fingerprint": "fingerprint value"}
-     *
-     */
     @RequestMapping(value = ["/api/refresh"], method = [RequestMethod.POST])
     @ResponseStatus(HttpStatus.OK)
-    fun refresh(@RequestBody body: String): ResponseEntity<String> {
-        val json = JsonParserFactory.getJsonParser().parseMap(body)
-
-        val email: String
-        val token: UUID
-        val fingerPrint: String
-        try {
-            email = json["email"] as String
-            token = UUID.fromString(json["refreshToken"] as String)
-            fingerPrint = json["fingerprint"] as String
-        } catch (e: ClassCastException) {
-            return ResponseEntity.badRequest().body("Неверный формат")
-        }
+    fun refreshToken(
+        @RequestParam email: String,
+        @RequestParam token: UUID,
+        @RequestParam fingerPrint: String
+    ): ResponseEntity<String> {
 
         val user = userService?.getUserByEmail(email)
             ?: return ResponseEntity.badRequest()

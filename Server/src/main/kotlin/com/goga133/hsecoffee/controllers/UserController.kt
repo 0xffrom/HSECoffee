@@ -2,6 +2,7 @@ package com.goga133.hsecoffee.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.objects.Sex
+import com.goga133.hsecoffee.objects.User
 import com.goga133.hsecoffee.service.ImageStorageService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.UserService
@@ -30,18 +31,9 @@ class UserController {
     @Autowired
     private val imageStorageService: ImageStorageService? = null
 
-    @RequestMapping(value = ["/api/user/settings"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/api/user/settings/{token}"], method = [RequestMethod.PUT])
     @ResponseStatus(HttpStatus.OK)
-    fun changeSettings(@RequestBody body: String): ResponseEntity<String> {
-        val json = JsonParserFactory.getJsonParser().parseMap(body)
-
-        val token: String
-        try {
-            token = json["token"] as String
-        } catch (e: ClassCastException) {
-            return ResponseEntity.badRequest().body("Неверный формат")
-        }
-
+    fun setSettings(@PathVariable("token") token: String, @RequestBody newUser: User): ResponseEntity<User?> {
         val email: String
 
         try {
@@ -52,96 +44,28 @@ class UserController {
             else
                 email = claim.body.subject
         } catch (e: ExpiredJwtException) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token has expired")
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
         } catch (e: JwtException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect token")
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         }
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-            .body("Server error");
+        val user = userService?.getUserByEmail(email)
 
-        if (json.containsKey("first_name")) {
-            user.firstName = json["first_name"] as String
-        }
-        if (json.containsKey("last_name")) {
-            user.lastName = json["last_name"] as String
-        }
-        if (json.containsKey("sex")) {
-            try {
-                user.sex = Sex.valueOf(json["sex"] as String)
-            } catch (e: IllegalArgumentException) {
-                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Incorrect sex")
-            }
-        }
-        if (json.containsKey("contacts")) {
-            val contacts: List<String>
-            try {
-                contacts = json["contacts"] as List<String>
-            } catch (e: ClassCastException) {
-                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Incorrect contacts")
-            }
-
-            contacts.forEach {
-                val map = it.toString().split(":")
-                if (map.size != 2)
-                    return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                        .body("Incorrect contacts: incorrect element format of array")
-            }
-
-            user.contacts = contacts
-        }
-        if (json.containsKey("faculty")) {
-            user.faculty = json["faculty"] as String
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        } else {
+            user.setParams(newUser)
+            userService?.save(user)
         }
 
-        userService.save(user)
-        return ResponseEntity.ok("Success")
+
+        return ResponseEntity.ok(user)
     }
 
-
-    @RequestMapping(value =["/api/user/image"], method = [RequestMethod.POST])
-    fun changeImage(@RequestParam("token") token : String, @RequestParam("image") image: MultipartFile): ResponseEntity<String> {
-        val email: String
-
-        try {
-            val claim = jwtService?.validateAccessToken(token)
-
-            if (claim?.body?.subject == null)
-                return ResponseEntity.badRequest().build()
-            else
-                email = claim.body.subject
-        } catch (e: ExpiredJwtException) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token has expired")
-        } catch (e: JwtException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect token")
-        }
-
-        if(imageStorageService?.correctFile(image) == false){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad image")
-        }
-
-        try {
-            imageStorageService?.store(image, email)
-        }
-        catch (ioException : IOException){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Server error")
-        }
-        return ResponseEntity.ok("Success")
-    }
-
-    @RequestMapping(value = ["/api/user/settings"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/api/user/settings/{token}"], method = [RequestMethod.GET])
     @ResponseStatus(HttpStatus.OK)
-    fun getSettings(@RequestBody body: String): ResponseEntity<String> {
-        val json = JsonParserFactory.getJsonParser().parseMap(body)
-
-        val token: String
-        try {
-            token = json["token"] as String
-        } catch (e: ClassCastException) {
-            return ResponseEntity.badRequest().body("Неверный формат")
-        }
-
-        val email : String
+    fun getSettings(@PathVariable("token") token: String): ResponseEntity<String> {
+        val email: String
 
         try {
             val claim = jwtService?.validateAccessToken(token)
@@ -161,6 +85,38 @@ class UserController {
 
 
         return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(user))
+    }
+
+    @RequestMapping(value = ["/api/user/image/{token}"], method = [RequestMethod.POST])
+    fun setImage(
+        @PathVariable("token") token: String,
+        @RequestParam("image") image: MultipartFile
+    ): ResponseEntity<String> {
+        val email: String
+
+        try {
+            val claim = jwtService?.validateAccessToken(token)
+
+            if (claim?.body?.subject == null)
+                return ResponseEntity.badRequest().build()
+            else
+                email = claim.body.subject
+        } catch (e: ExpiredJwtException) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token has expired")
+        } catch (e: JwtException) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect token")
+        }
+
+        if (imageStorageService?.correctFile(image) == false) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad image")
+        }
+
+        try {
+            imageStorageService?.store(image, email)
+        } catch (ioException: IOException) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Server error")
+        }
+        return ResponseEntity.ok("Success")
     }
 }
 

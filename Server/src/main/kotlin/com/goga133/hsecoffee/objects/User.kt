@@ -43,4 +43,12 @@ data class User(
     constructor() : this(null) {
 
     }
+
+    fun setParams(user : User){
+        firstName = user.firstName
+        lastName = user.lastName
+        sex = user.sex
+        faculty = user.faculty
+        contacts = user.contacts
+    }
 }
