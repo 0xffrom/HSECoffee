@@ -13,7 +13,7 @@ import java.time.Instant
 import java.util.*
 
 @Service
-@PropertySource("mail.properties")
+@PropertySource("classpath:mail.properties")
 class EmailService(
     private val javaMailSender: JavaMailSender,
     @Value("\${mail.text}") private val text: String,
@@ -39,8 +39,8 @@ class EmailService(
     fun isValid(receiver: String, code: Int): Boolean {
         val confirmationCode = confirmationCodeRepository?.findByEmail(receiver) ?: return false
 
-        if (confirmationCode.email == receiver && Instant.now().minusMillis(confirmationCode.createdDate.time)
-                .toEpochMilli() < lifeTime
+        if (confirmationCode.code == code && Instant.now().minusMillis(confirmationCode.createdDate.time)
+                .toEpochMilli() <= lifeTime
         )
             return true
 

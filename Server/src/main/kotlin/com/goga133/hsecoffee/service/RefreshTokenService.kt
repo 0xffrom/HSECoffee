@@ -5,6 +5,7 @@ import com.goga133.hsecoffee.objects.User
 import com.goga133.hsecoffee.repository.RefreshTokenRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -12,6 +13,7 @@ class RefreshTokenService {
     @Autowired
     private val refreshTokenRepository: RefreshTokenRepository? = null
 
+    @Transactional
     fun createByUser(user: User, fingerprint: String): RefreshToken {
         // Если существует:
         val refreshToken = RefreshToken(user, fingerprint)

@@ -12,7 +12,7 @@ data class RefreshToken(
     @Column(name = "id")
     val id: Long,
 
-    @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(nullable = false, name = "user_id")
     val user: User,
     @Column(name = "uuid")
