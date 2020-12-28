@@ -9,30 +9,41 @@ import kotlin.random.Random
  */
 @Entity
 data class ConfirmationCode(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "id")
-        val id: Long = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    val id: Long = 0,
 
-        @Column(name = "code")
-        val code: Int = Random.nextInt(MIN_CODE, MAX_CODE),
+    @Column(name = "code")
+    val code: Int = Random.nextInt(MIN_CODE, MAX_CODE),
 
-        @Temporal(TemporalType.TIMESTAMP)
-        val createdDate: Date = Date(),
+    @Column(name = "created_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    val createdDate: Date = Date(),
 
-        @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER)
-        @JoinColumn(nullable = false, name = "user_id")
-        val user: User? = null) {
+    @Column(name = "email")
+    val email: String? = null
+) {
 
     companion object {
         private const val MIN_CODE = 100000
         private const val MAX_CODE = 1000000
     }
 
-    constructor(user: User) : this(
-            user = user,
-            createdDate = Date(),
-            code = Random.nextInt(MIN_CODE, MAX_CODE)) {
+    constructor(email: String) : this(
+        email = email,
+        createdDate = Date(),
+        code = Random.nextInt(MIN_CODE, MAX_CODE)
+    ) {
+        //
+    }
+
+
+    constructor(email: String, code: Int) : this(
+        email = email,
+        createdDate = Date(),
+        code = code
+    ) {
         //
     }
 }

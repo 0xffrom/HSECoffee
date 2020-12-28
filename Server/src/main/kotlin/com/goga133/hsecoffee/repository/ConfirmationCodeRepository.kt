@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository
 @EnableJpaRepositories
 @Repository("confirmationCode")
 interface ConfirmationCodeRepository : CrudRepository<ConfirmationCode, Long> {
-    fun removeConfirmationTokenByUser(user : User)
+    fun removeConfirmationTokenByEmail(email : String)
 
-    fun existsByUser(user : User) : Boolean
+    fun existsByEmail(email : String) : Boolean
 
-    fun findByUser(user: User) : ConfirmationCode?
+    fun findByEmail(email : String) : ConfirmationCode?
 
     fun findByCode(code : Int) : ConfirmationCode?
 }

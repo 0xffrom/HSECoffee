@@ -42,7 +42,9 @@ class EmailService(
     fun isValid(receiver: String, code: Int): Boolean {
         val userByCode = confirmationCodeRepository?.findByCode(code) ?: return false
 
-        if (userByCode.user?.email == receiver && Instant.now().minusMillis(userByCode.createdDate.time).toEpochMilli() < lifeTime)
+        if (userByCode.email == receiver && Instant.now().minusMillis(userByCode.createdDate.time)
+                .toEpochMilli() < lifeTime
+        )
             return true
 
         return false
@@ -51,31 +53,25 @@ class EmailService(
     @Transactional
     fun trySendCode(receiver: String): Boolean {
         try {
-            var user = userService?.getUserByEmail(receiver);
-
-            if (user == null) {
-                user = userService?.createUserByEmail(receiver) ?: return false
-            }
-
             // Если код существует:
-            if (confirmationCodeRepository?.existsByUser(user) == true) {
-                val confirmation = confirmationCodeRepository.findByUser(user)
+            if (confirmationCodeRepository?.existsByEmail(receiver) == true) {
+                val confirmation = confirmationCodeRepository.findByEmail(receiver)
 
                 // Проверка на время:
                 val delta = (Date.from(confirmation?.createdDate?.time?.let { Instant.now().minusMillis(it) }))
 
                 if (delta.time > lifeTime) {
                     confirmationCodeRepository.apply {
-                        removeConfirmationTokenByUser(user)
-                        save(ConfirmationCode(user))
+                        removeConfirmationTokenByEmail(receiver)
+                        save(ConfirmationCode(receiver))
                     }
                 }
 
             } else {
-                confirmationCodeRepository?.save(ConfirmationCode(user))
+                confirmationCodeRepository?.save(ConfirmationCode(receiver))
             }
 
-            confirmationCodeRepository?.findByUser(user)?.code?.let {
+            confirmationCodeRepository?.findByEmail(receiver)?.code?.let {
                 sendCode(receiver, it)
             }
 
