@@ -10,7 +10,7 @@ import kotlin.random.Random
 @Entity
 data class ConfirmationCode(
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id")
         val id: Long = 0,
 
