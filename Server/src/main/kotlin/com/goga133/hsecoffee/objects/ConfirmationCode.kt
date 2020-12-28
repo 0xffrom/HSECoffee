@@ -4,6 +4,9 @@ import java.util.*
 import javax.persistence.*
 import kotlin.random.Random
 
+/**
+ * Email-код для подтверждения аккаунта.
+ */
 @Entity
 data class ConfirmationCode(
         @Id
