@@ -31,6 +31,16 @@ class AuthController {
     @Autowired
     private val refreshTokenService: RefreshTokenService? = null
 
+    @RequestMapping(value = ["/api/code"], method = [RequestMethod.POST])
+    @ResponseStatus(HttpStatus.OK)
+    fun sendCode(@RequestParam(value = "email") receiver: String): ResponseEntity<String> {
+        if (emailService?.trySendCode(receiver) == true) {
+            return ResponseEntity.ok("Код был выслан.")
+        }
+
+        return ResponseEntity.badRequest().build()
+    }
+
     @RequestMapping(value = ["/api/confirm"], method = [RequestMethod.POST])
     @ResponseStatus(HttpStatus.OK)
     fun confirmCode(
