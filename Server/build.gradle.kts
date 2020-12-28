@@ -24,9 +24,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    implementation("junit:junit:4.12")
+
     runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     runtimeOnly("mysql:mysql-connector-java")
+    runtimeOnly("com.h2database:h2:1.4.200")
+
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
@@ -37,8 +40,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
-
 }
+
 
 
 tasks.withType<Test> {

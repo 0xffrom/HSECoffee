@@ -25,9 +25,6 @@ class EmailService(
     @Autowired
     private val confirmationCodeRepository: ConfirmationCodeRepository? = null
 
-    @Autowired
-    private val userService: UserService? = null
-
     private fun sendCode(receiver: String, code: Int) {
         val message = SimpleMailMessage()
 
@@ -40,9 +37,9 @@ class EmailService(
     }
 
     fun isValid(receiver: String, code: Int): Boolean {
-        val userByCode = confirmationCodeRepository?.findByCode(code) ?: return false
+        val confirmationCode = confirmationCodeRepository?.findByEmail(receiver) ?: return false
 
-        if (userByCode.email == receiver && Instant.now().minusMillis(userByCode.createdDate.time)
+        if (confirmationCode.email == receiver && Instant.now().minusMillis(confirmationCode.createdDate.time)
                 .toEpochMilli() < lifeTime
         )
             return true

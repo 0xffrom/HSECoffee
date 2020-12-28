@@ -1,9 +1,6 @@
 package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.repository.ImageStorageRepository
-import org.junit.platform.commons.logging.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.PropertySource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service

@@ -1,10 +1,11 @@
 package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.objects.User
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
-import kotlin.random.Random
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertThrows
 
 internal class JwtServiceTest {
 

@@ -1,9 +1,7 @@
 package com.goga133.hsecoffee.objects
 
-import org.hibernate.annotations.CollectionType
 import java.util.*
 import javax.persistence.*
-import kotlin.collections.HashMap
 
 @Entity
 data class User(
