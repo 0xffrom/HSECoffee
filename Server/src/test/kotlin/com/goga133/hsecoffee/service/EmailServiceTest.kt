@@ -10,18 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.mail.javamail.JavaMailSenderImpl
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
-import org.springframework.test.context.junit4.SpringRunner
+import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @RunWith(SpringJUnit4ClassRunner::class)
 internal class EmailServiceTest{
-
     @Autowired
     private val entityManager: TestEntityManager? = null
 
@@ -32,27 +29,29 @@ internal class EmailServiceTest{
     val emailService : EmailService? = null
 
     @Test
-    fun isValid() {
-        emailService?.isValid("test@test", 1)?.let { assertFalse(it) }
+    fun is_correct_validator_by_exist() {
+        val mockCode : Int =  Random.nextInt()
+        emailService?.isValid("test@test$mockCode", mockCode)?.let { assertFalse(it) }
 
-        confirmationCodeRepository?.save(ConfirmationCode("test@test", 1))
-        entityManager?.persist(ConfirmationCode("test@test", 1))
+        entityManager?.persist(ConfirmationCode("test@test$mockCode", mockCode))
 
-        emailService?.isValid("test@test", 1)?.let { assertTrue(it) }
+        emailService?.isValid("test@test$mockCode", mockCode)?.let { assertTrue(it) }
     }
 
+    @Test
+    fun is_correct_validator_by_time() {
+        val mockCode : Int =  Random.nextInt()
 
-    fun isValidWithTime() {
-        val emailServiceLong = EmailService(JavaMailSenderImpl(), "", "", "", 1)
+        emailService?.setLifeTime(1).let {
+            TimeUnit.MILLISECONDS.sleep(10)
+        }
 
-        assertFalse(emailServiceLong.isValid("test1@test", 1))
+        emailService?.isValid("test@test$mockCode", 1)?.let { assertFalse(it) }
 
-        confirmationCodeRepository?.save(ConfirmationCode("test1@test", 1))
+        confirmationCodeRepository?.save(ConfirmationCode("test@test$mockCode",  mockCode))
 
-        assertFalse(emailServiceLong.isValid("test1@test", 1))
+        entityManager?.persist(ConfirmationCode("test@test$mockCode",  mockCode))
+
+        emailService?.isValid("test@test$mockCode", mockCode)?.let { assertFalse(it) }
     }
-
-/*    @Test
-    fun trySendCode() {
-    }*/
 }

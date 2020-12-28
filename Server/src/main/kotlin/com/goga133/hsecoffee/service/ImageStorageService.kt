@@ -30,7 +30,9 @@ class ImageStorageService : ImageStorageRepository {
     }
 
     private fun isSupportedContentType(contentType: String): Boolean {
-        return contentType == "image/png" || contentType == "image/jpg" || contentType == "image/jpeg"
+        return contentType == "image/png"
+                || contentType == "image/jpg"
+                || contentType == "image/jpeg"
     }
 
     override fun store(file: MultipartFile, fileName : String) {

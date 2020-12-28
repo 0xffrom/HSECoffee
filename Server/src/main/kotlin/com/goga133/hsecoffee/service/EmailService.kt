@@ -19,7 +19,7 @@ class EmailService(
     @Value("\${mail.text}") private val text: String,
     @Value("\${mail.subject}") private val subject: String,
     @Value("\${mail.from}") private val from: String,
-    @Value("\${mail.lifetime.ms}") val lifeTime: Int
+    @Value("\${mail.lifetime.ms}") private var lifeTime: Int
 ) {
 
     @Autowired
@@ -79,5 +79,9 @@ class EmailService(
         }
 
         return false
+    }
+
+    fun setLifeTime(lifeTime: Int){
+        this.lifeTime = lifeTime
     }
 }

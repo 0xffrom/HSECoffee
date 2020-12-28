@@ -10,6 +10,7 @@ class HseCoffeeApplication {
         @JvmStatic
         fun main(args: Array<String>) {
             runApplication<HseCoffeeApplication>(*args)
+
             ImageStorageService().init()
         }
 

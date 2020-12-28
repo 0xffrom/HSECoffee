@@ -6,7 +6,10 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.runner.RunWith
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
+@RunWith(SpringJUnit4ClassRunner::class)
 internal class JwtServiceTest {
 
     private val mockSecretKey : String = "rXDm2ZfPA8kvi+luLS2+mYTOPzCr+FUC/SLGpehOtgd4TZstuH6COLA2aaUhY2HcoXj8lolkekTES/A6EYUQHA=="
