@@ -23,7 +23,6 @@ data class Meet(
     @Enumerated(EnumType.STRING)
     val meetStatus: MeetStatus = MeetStatus.NONE
 ) {
-    constructor() : this(user1 = null, user2 = null, meetStatus = MeetStatus.NONE) {
-
-    }
+    constructor() : this(user1 = null, user2 = null, meetStatus = MeetStatus.NONE)
+    constructor(user1: User?, meetStatus: MeetStatus) : this(user1 = user1, user2 = null, meetStatus = meetStatus)
 }

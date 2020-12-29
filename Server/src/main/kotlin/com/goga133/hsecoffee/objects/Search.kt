@@ -8,7 +8,7 @@ data class Search(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Long,
+    val id: Long = 0,
 
     @Column(name = "finder")
     @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
@@ -23,4 +23,6 @@ data class Search(
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     val createdDate: Date = Date()
-)
+){
+    constructor(finder: User?, searchParams: SearchParams?) : this(0, finder, searchParams)
+}

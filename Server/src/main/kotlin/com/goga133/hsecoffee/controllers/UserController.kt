@@ -28,6 +28,7 @@ class UserController {
     @Autowired
     private val imageStorageService: ImageStorageService? = null
 
+
     @RequestMapping(value = ["/api/user/settings/{token}"], method = [RequestMethod.PUT])
     @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
     fun setSettings(@PathVariable("token") token: String, @RequestBody user: User): ResponseEntity<String> {
