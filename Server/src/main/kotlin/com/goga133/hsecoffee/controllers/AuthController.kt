@@ -1,7 +1,7 @@
 package com.goga133.hsecoffee.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.goga133.hsecoffee.objects.User
+import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.service.EmailService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.RefreshTokenService
@@ -46,13 +46,13 @@ class AuthController {
     fun confirmCode(
         @RequestParam email: String,
         @RequestParam code: Int,
-        @RequestParam fingerPrint: String
+        @RequestParam fingerprint: String
     ): ResponseEntity<String> {
         if (emailService?.isValid(email, code) == true) {
             val user =
                 userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity.badRequest().body("Server Error")
 
-            return ResponseEntity.ok(getTokensJSON(user, fingerPrint))
+            return ResponseEntity.ok(getTokensJSON(user, fingerprint))
         }
 
         return ResponseEntity.badRequest().body("Incorrect code or email.")

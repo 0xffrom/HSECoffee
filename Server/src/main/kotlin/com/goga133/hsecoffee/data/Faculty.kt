@@ -1,4 +1,4 @@
-package com.goga133.hsecoffee.objects
+package com.goga133.hsecoffee.data
 
 enum class Faculty {
     LYCEUM,

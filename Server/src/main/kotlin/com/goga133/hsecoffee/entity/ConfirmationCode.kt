@@ -1,4 +1,4 @@
-package com.goga133.hsecoffee.objects
+package com.goga133.hsecoffee.entity
 
 import java.util.*
 import javax.persistence.*

@@ -1,6 +1,6 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.objects.ConfirmationCode
+import com.goga133.hsecoffee.entity.ConfirmationCode
 import com.goga133.hsecoffee.repository.ConfirmationCodeRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value

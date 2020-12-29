@@ -1,6 +1,6 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.objects.User
+import com.goga133.hsecoffee.entity.User
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
@@ -30,7 +29,7 @@ internal class JwtServiceTest {
         )
 
         assertDoesNotThrow {
-            val valid = jwtService.validateAccessToken(key)
+            val valid = jwtService.parseAccessToken(key)
 
             assertEquals(valid.body.subject, "test@test")
         }
@@ -42,14 +41,14 @@ internal class JwtServiceTest {
         val key = jwtService.createAccessToken(mockUser)
 
         assertDoesNotThrow {
-            jwtService.validateAccessToken(key)
+            jwtService.parseAccessToken(key)
         }
 
         assertThrows(io.jsonwebtoken.security.SignatureException::class.java) {
-            jwtService.validateAccessToken(key + "z")
+            jwtService.parseAccessToken(key + "z")
         }
         assertThrows(io.jsonwebtoken.MalformedJwtException::class.java) {
-            jwtService.validateAccessToken("$key.")
+            jwtService.parseAccessToken("$key.")
         }
     }
 }

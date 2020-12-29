@@ -1,6 +1,6 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.objects.User
+import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -28,17 +28,13 @@ class UserService {
 
     fun createUserByEmail(email: String): User? {
         val user = User(email)
-        try {
-            userRepository?.save(user)
-            return user
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
-        return null;
+        userRepository?.save(user)
+        return user
+
     }
 
-    fun save(user : User){
+    fun save(user: User) {
         userRepository?.save(user)
     }
 }

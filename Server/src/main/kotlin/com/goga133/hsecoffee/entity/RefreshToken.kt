@@ -1,4 +1,4 @@
-package com.goga133.hsecoffee.objects
+package com.goga133.hsecoffee.entity
 
 import java.time.Duration
 import java.time.Instant
@@ -12,7 +12,7 @@ data class RefreshToken(
     @Column(name = "id")
     val id: Long,
 
-    @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     val user: User,
     @Column(name = "uuid")

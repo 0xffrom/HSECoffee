@@ -1,6 +1,6 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.objects.User
+import com.goga133.hsecoffee.entity.User
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.Test

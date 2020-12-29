@@ -1,5 +1,7 @@
-package com.goga133.hsecoffee.objects
+package com.goga133.hsecoffee.entity
 
+import com.goga133.hsecoffee.data.Faculty
+import com.goga133.hsecoffee.data.FacultyParams
 import javax.persistence.*
 
 @Entity
@@ -11,15 +13,12 @@ data class SearchParams(
 
     @Column(name = "faculties")
     @ElementCollection
-    val faculties: Set<Faculty>? = null,
+    val faculties: Set<Faculty> = setOf(),
 ) {
-    constructor() : this(faculties = null)
+    constructor() : this(faculties = setOf())
 
-    val facultyParams: FacultyParams
-        get() {
-            if (faculties == null)
-                return FacultyParams.NONE
-
+    fun getFacultyParams(): FacultyParams
+        {
             return when (faculties.size) {
                 0 -> FacultyParams.ANY
                 1 -> FacultyParams.ONE
