@@ -1,5 +1,6 @@
-package com.goga133.hsecoffee.objects
+package com.goga133.hsecoffee.entity
 
+import com.goga133.hsecoffee.data.status.MeetStatus
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -12,14 +13,12 @@ data class Meet(
         @Column(name = "id")
         val id: Long = 0,
 
-        @Column(name = "user1")
-        @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-        @JoinColumn(nullable = false, name = "user_id")
+        @ManyToOne(targetEntity = User::class, fetch = FetchType.EAGER)
+        @JoinColumn(nullable = false, name = "user1_id")
         val user1: User?,
 
-        @Column(name = "user2")
-        @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-        @JoinColumn(nullable = false, name = "user_id")
+        @ManyToOne(targetEntity = User::class, fetch = FetchType.EAGER)
+        @JoinColumn(nullable = false, name = "user2_id")
         val user2: User?,
 
         @Column(name = "status")

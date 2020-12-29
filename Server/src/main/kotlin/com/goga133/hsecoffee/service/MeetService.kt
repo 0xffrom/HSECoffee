@@ -1,12 +1,19 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.objects.*
+import com.goga133.hsecoffee.data.FacultyParams
+import com.goga133.hsecoffee.data.status.CancelStatus
+import com.goga133.hsecoffee.entity.Meet
+import com.goga133.hsecoffee.entity.Search
+import com.goga133.hsecoffee.entity.SearchParams
+import com.goga133.hsecoffee.entity.User
+import com.goga133.hsecoffee.data.status.MeetStatus
 import com.goga133.hsecoffee.repository.MeetRepository
 import com.goga133.hsecoffee.repository.SearchRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.persistence.Transient
 
 @Service
 class MeetService {
@@ -25,7 +32,7 @@ class MeetService {
     // иначе - он встречается.
     fun getMeet(user: User): Meet {
         // Мы ищим среди всех встреч
-        val meet = meetRepository?.findTopByUser1OrUser2(user)
+        val meet = meetRepository?.findTopByUser1OrUser2(user,user)
 
         if (searchRepository?.findSearchByFinder(user) != null) {
             return Meet(user, MeetStatus.SEARCH)
@@ -37,12 +44,24 @@ class MeetService {
         return Meet()
     }
 
-    fun deleteMeet(user: User) {
+    @Transient
+    fun cancelSearch(user: User) : CancelStatus{
+        val finderSearch = searchRepository?.findSearchByFinder(user)
 
+        if (finderSearch != null) {
+            searchRepository?.delete(finderSearch)
+
+            return CancelStatus.SUCCESS
+        }
+
+        return CancelStatus.FAIL
     }
 
+    @Transient
     fun searchMeet(user: User, searchParams: SearchParams): MeetStatus {
-        if (meetRepository?.findTopByUser1OrUser2(user)?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE)
+        if (meetRepository?.findTopByUser1OrUser2(user, user)
+                ?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE
+        )
             return MeetStatus.ACTIVE
 
         // Если его нет в доске поиска:
@@ -51,17 +70,17 @@ class MeetService {
 
             val finder = searches?.firstOrNull {
                 // Если обоим пользователям всё равно, кого искать:
-                if (searchParams.facultyParams == FacultyParams.ANY && it.searchParams?.facultyParams == FacultyParams.ANY)
+                if (searchParams.getFacultyParams() == FacultyParams.ANY && it.searchParams.getFacultyParams() == FacultyParams.ANY)
                     return@firstOrNull true
                 // Если первому всё равно, смотрим на второго: содержится ли в его предпочтениях факультет первого.
-                else if (searchParams.facultyParams == FacultyParams.ANY && (it?.searchParams?.faculties?.contains(user.faculty) == true))
+                else if (searchParams.getFacultyParams() == FacultyParams.ANY && (it?.searchParams?.faculties?.contains(user.faculty) == true))
                     return@firstOrNull true
                 // Тоже самое, только наоборот.
-                else if (it.searchParams?.facultyParams == FacultyParams.ANY && searchParams.faculties?.contains(it.finder?.faculty) == true)
+                else if (it.searchParams.getFacultyParams() == FacultyParams.ANY && searchParams.faculties.contains(it.finder.faculty))
                     return@firstOrNull true
                 // Смотрим, содержатся ли в предпочтениях факультет собеседника:
-                else if (searchParams.faculties?.contains(it.finder?.faculty!!) == true
-                        && it?.searchParams?.faculties?.contains(user.faculty) == true)
+                else if (searchParams.faculties.contains(it.finder.faculty) && it?.searchParams?.faculties?.contains(user.faculty) == true
+                )
                     return@firstOrNull true
 
                 return@firstOrNull false
@@ -85,7 +104,7 @@ class MeetService {
         return MeetStatus.SEARCH
     }
 
-    private fun updateMeetStatus(meet : Meet) {
+    private fun updateMeetStatus(meet: Meet) {
         if (Date() >= meet.expiresDate || meet.meetStatus == MeetStatus.FINISHED) {
             meet.meetStatus = MeetStatus.FINISHED
         }
