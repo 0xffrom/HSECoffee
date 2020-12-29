@@ -1,5 +1,5 @@
 package com.goga133.hsecoffee.objects
 
-enum class Status {
+enum class MeetStatus {
     ACTIVE, FINISHED, NONE
 }

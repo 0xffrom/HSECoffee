@@ -9,6 +9,7 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     val userid: Long = 0,
+
     val email: String? = null,
     @Column(name = "first_name")
     var firstName: String? = null,
@@ -25,7 +26,10 @@ data class User(
 
     @Column(name = "contacts")
     @ElementCollection
-    var contacts: List<String>
+    var contacts: List<String>,
+
+    @Column(name = "course")
+    var course : Int
 ) {
 
     constructor(email: String?) : this(
@@ -33,20 +37,13 @@ data class User(
         firstName = null,
         lastName = null,
         faculty = null,
-        contacts = ArrayList()
+        contacts = ArrayList(),
+        course = 1
     ) {
 
     }
 
     constructor() : this(null) {
 
-    }
-
-    fun setParams(user : User){
-        firstName = user.firstName
-        lastName = user.lastName
-        sex = user.sex
-        faculty = user.faculty
-        contacts = user.contacts
     }
 }

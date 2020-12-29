@@ -7,7 +7,7 @@ data class Meet(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Long,
+    val id: Long = 0,
 
     @Column(name = "user1")
     @OneToOne(targetEntity = User::class, fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
@@ -21,9 +21,9 @@ data class Meet(
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    val status: Status = Status.NONE
+    val meetStatus: MeetStatus = MeetStatus.NONE
 ) {
-    constructor() : this(0, user1 = null, user2 = null, status = Status.NONE) {
+    constructor() : this(user1 = null, user2 = null, meetStatus = MeetStatus.NONE) {
 
     }
 }
