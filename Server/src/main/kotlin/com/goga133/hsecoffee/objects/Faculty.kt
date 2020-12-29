@@ -21,5 +21,6 @@ enum class Faculty {
     GEOGRAPHY,
     LANGUAGE,
     STATISTIC,
-    BANK
+    BANK,
+    NONE
 }
