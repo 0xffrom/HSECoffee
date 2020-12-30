@@ -1,14 +1,12 @@
 package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.data.TokenResponse
-import com.goga133.hsecoffee.data.status.TokenStatus
 import com.goga133.hsecoffee.entity.User
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
