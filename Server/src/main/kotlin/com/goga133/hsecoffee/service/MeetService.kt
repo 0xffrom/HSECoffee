@@ -32,7 +32,7 @@ class MeetService {
     // иначе - он встречается.
     fun getMeet(user: User): Meet {
         // Мы ищим среди всех встреч
-        val meet = meetRepository?.findTopByUser1OrUser2(user,user)
+        val meet = meetRepository?.findTopByUser1OrUser2(user, user)
 
         if (searchRepository?.findSearchByFinder(user) != null) {
             return Meet(user, MeetStatus.SEARCH)
@@ -44,8 +44,14 @@ class MeetService {
         return Meet()
     }
 
-    @Transient
-    fun cancelSearch(user: User) : CancelStatus{
+    fun getMeets(user: User): Collection<Meet> {
+        return meetRepository?.findAll()?.filter { it ->
+            (it.user1 == user || it.user2 == user) && it.apply { updateMeetStatus(it) }.meetStatus == MeetStatus.FINISHED
+        } ?: listOf()
+    }
+
+
+    fun cancelSearch(user: User): CancelStatus {
         val finderSearch = searchRepository?.findSearchByFinder(user)
 
         if (finderSearch != null) {
@@ -57,7 +63,7 @@ class MeetService {
         return CancelStatus.FAIL
     }
 
-    @Transient
+
     fun searchMeet(user: User, searchParams: SearchParams): MeetStatus {
         if (meetRepository?.findTopByUser1OrUser2(user, user)
                 ?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE
@@ -73,13 +79,18 @@ class MeetService {
                 if (searchParams.getFacultyParams() == FacultyParams.ANY && it.searchParams.getFacultyParams() == FacultyParams.ANY)
                     return@firstOrNull true
                 // Если первому всё равно, смотрим на второго: содержится ли в его предпочтениях факультет первого.
-                else if (searchParams.getFacultyParams() == FacultyParams.ANY && (it?.searchParams?.faculties?.contains(user.faculty) == true))
+                else if (searchParams.getFacultyParams() == FacultyParams.ANY && (it?.searchParams?.faculties?.contains(
+                        user.faculty
+                    ) == true)
+                )
                     return@firstOrNull true
                 // Тоже самое, только наоборот.
                 else if (it.searchParams.getFacultyParams() == FacultyParams.ANY && searchParams.faculties.contains(it.finder.faculty))
                     return@firstOrNull true
                 // Смотрим, содержатся ли в предпочтениях факультет собеседника:
-                else if (searchParams.faculties.contains(it.finder.faculty) && it?.searchParams?.faculties?.contains(user.faculty) == true
+                else if (searchParams.faculties.contains(it.finder.faculty) && it?.searchParams?.faculties?.contains(
+                        user.faculty
+                    ) == true
                 )
                     return@firstOrNull true
 

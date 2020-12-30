@@ -80,4 +80,19 @@ class MeetController {
             else  -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Can't cancel search")
         }
     }
+
+    @RequestMapping(value = ["/api/meets/{token}"], method = [RequestMethod.GET])
+    fun getMeets(@PathVariable("token") token: String): ResponseEntity<String> {
+        val validator = jwtService?.validateToken(token).apply {
+            if (this?.httpStatus != HttpStatus.OK)
+                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
+        }
+        val email: String =
+            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error with validation")
+
+        val meets = meetService?.getMeets(userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Error with user"))
+
+        return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(meets))
+    }
 }
