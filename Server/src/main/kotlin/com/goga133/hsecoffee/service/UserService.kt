@@ -23,7 +23,7 @@ class UserService {
     }
 
     fun getUserByEmail(email: String): User? {
-        return userRepository?.findByEmailEquals(email = email);
+        return userRepository?.findByEmail(email = email);
     }
 
     fun createUserByEmail(email: String): User? {

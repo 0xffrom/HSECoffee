@@ -23,7 +23,7 @@ data class Search(
     val createdDate: Date = Date()
 ){
     constructor(finder: User, searchParams: SearchParams) : this(0, finder, searchParams)
-    constructor() : this(User(null), SearchParams(0, setOf())) {
+    constructor() : this(User(null), SearchParams()) {
 
     }
 }

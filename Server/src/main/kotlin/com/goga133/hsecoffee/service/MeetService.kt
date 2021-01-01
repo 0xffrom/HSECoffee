@@ -9,6 +9,7 @@ import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.data.status.MeetStatus
 import com.goga133.hsecoffee.repository.MeetRepository
 import com.goga133.hsecoffee.repository.SearchRepository
+import com.goga133.hsecoffee.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -21,6 +22,10 @@ class MeetService {
     @Autowired
     private val meetRepository: MeetRepository? = null
 
+    @Qualifier("userRepository")
+    @Autowired
+    private val userRepository : UserRepository? = null
+
     @Qualifier("searchRepository")
     @Autowired
     private val searchRepository: SearchRepository? = null
@@ -31,6 +36,10 @@ class MeetService {
     // Тогда проверим на статус последней встречи, если встречи нет или статус финешед - значит он свободен
     // иначе - он встречается.
     fun getMeet(user: User): Meet {
+        if(userRepository == null || !userRepository.existsUserById(user.id)){
+            return Meet();
+        }
+
         // Мы ищим среди всех встреч
         val meet = meetRepository?.findTopByUser1OrUser2(user, user)
 
@@ -45,13 +54,21 @@ class MeetService {
     }
 
     fun getMeets(user: User): Collection<Meet> {
+        if(userRepository == null || !userRepository.existsUserById(user.id)){
+            return arrayListOf();
+        }
+
         return meetRepository?.findAll()?.filter { it ->
             (it.user1 == user || it.user2 == user) && it.apply { updateMeetStatus(it) }.meetStatus == MeetStatus.FINISHED
         } ?: listOf()
     }
 
-
+    @Transient
     fun cancelSearch(user: User): CancelStatus {
+        if(userRepository == null || !userRepository.existsUserById(user.id)){
+            return CancelStatus.FAIL
+        }
+
         val finderSearch = searchRepository?.findSearchByFinder(user)
 
         if (finderSearch != null) {
@@ -63,8 +80,12 @@ class MeetService {
         return CancelStatus.FAIL
     }
 
-
+    @Transient
     fun searchMeet(user: User, searchParams: SearchParams): MeetStatus {
+        if(userRepository == null || !userRepository.existsUserById(user.id)){
+            return MeetStatus.NONE
+        }
+
         if (meetRepository?.findTopByUser1OrUser2(user, user)
                 ?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE
         )
@@ -116,10 +137,14 @@ class MeetService {
     }
 
     private fun updateMeetStatus(meet: Meet) {
+        if(meetRepository == null || meetRepository.existsMeetById(meet.id)){
+            return
+        }
+
         if (Date() >= meet.expiresDate || meet.meetStatus == MeetStatus.FINISHED) {
             meet.meetStatus = MeetStatus.FINISHED
         }
 
-        meetRepository?.save(meet);
+        meetRepository.save(meet);
     }
 }

@@ -2,6 +2,7 @@ package com.goga133.hsecoffee.entity
 
 import com.goga133.hsecoffee.data.Faculty
 import com.goga133.hsecoffee.data.FacultyParams
+import org.hibernate.annotations.CollectionType
 import javax.persistence.*
 
 @Entity
@@ -11,11 +12,14 @@ data class SearchParams(
     @Column(name = "id")
     val id: Long = 0,
 
+
     @Column(name = "faculties")
-    @ElementCollection
-    val faculties: Set<Faculty> = setOf(),
+    @CollectionTable(name="faculties")
+    @ElementCollection(targetClass = Faculty::class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    val faculties: MutableSet<Faculty> = mutableSetOf(),
 ) {
-    constructor() : this(faculties = setOf())
+    constructor() : this(faculties = mutableSetOf())
 
     fun getFacultyParams(): FacultyParams
         {

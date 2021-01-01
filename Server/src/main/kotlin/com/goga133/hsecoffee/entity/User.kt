@@ -10,9 +10,9 @@ data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    val userid: Long = 0,
+    val id: Long = 0,
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     val email: String? = null,
 
     @Column(name = "first_name")
@@ -46,12 +46,6 @@ data class User(
         firstName = null,
         lastName = null,
         contacts = ArrayList(),
-        course = 1
-    ) {
-
-    }
-
-    constructor() : this(null) {
-
-    }
+        course = 1)
+    constructor() : this(null)
 }

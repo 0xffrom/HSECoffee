@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository
 interface MeetRepository : CrudRepository<Meet, Long> {
     fun findTopByUser1OrUser2(user1: User, user2 : User) : Meet?
 
+    fun existsMeetById(id : Long) : Boolean
 }

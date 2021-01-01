@@ -3,10 +3,12 @@ package com.goga133.hsecoffee.service
 import com.goga133.hsecoffee.data.status.MeetStatus
 import com.goga133.hsecoffee.entity.SearchParams
 import com.goga133.hsecoffee.entity.User
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.runner.RunWith
 import org.opentest4j.TestAbortedException
@@ -17,7 +19,7 @@ import java.util.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class MeetServiceTest {
+internal class MeetServiceTest {
     @Autowired
     val userService: UserService? = null
 
@@ -29,10 +31,8 @@ class MeetServiceTest {
     val user3: User = User("testUSER3")
     val user4: User = User("testUSER4")
 
-    @BeforeAll
+    @BeforeEach
     fun init_users() {
-        TODO("ПРОТЕСТИРОВАТЬ")
-
         if (userService == null) {
             throw TestAbortedException()
         }
@@ -48,13 +48,14 @@ class MeetServiceTest {
         val meet1 = meetService?.getMeet(user1)
 
         assertTrue(meet1?.meetStatus == MeetStatus.NONE)
-        assertTrue(meet1?.user1 == user1)
+        assertTrue(meet1?.user1 == null)
         assertTrue(meet1?.user2 == null)
         assertTrue(meet1?.createdDate?.before(Date()) == true)
 
+        meetService?.searchMeet(user2, SearchParams())
         val meet2 = meetService?.getMeet(user2)
         assertTrue(meet2?.meetStatus == MeetStatus.SEARCH)
-        assertTrue(meet2?.user1 == user2)
+        assertTrue(meet2?.user1 == null)
         assertTrue(meet2?.user2 == null)
     }
 
