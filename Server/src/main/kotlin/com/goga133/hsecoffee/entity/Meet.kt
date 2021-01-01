@@ -35,4 +35,6 @@ data class Meet(
     constructor() : this(user1 = null, user2 = null, meetStatus = MeetStatus.NONE)
     constructor(user1: User?, meetStatus: MeetStatus) : this(user1 = user1, user2 = null, meetStatus = meetStatus)
     constructor(user1: User, user2: User, meetStatus: MeetStatus) : this(id = 0, user1 = user1, user2 = user2, meetStatus = meetStatus)
+
+
 }
