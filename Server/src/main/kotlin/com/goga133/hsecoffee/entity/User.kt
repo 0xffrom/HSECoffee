@@ -2,6 +2,7 @@ package com.goga133.hsecoffee.entity
 
 import com.goga133.hsecoffee.data.Faculty
 import com.goga133.hsecoffee.data.Sex
+import com.goga133.hsecoffee.data.status.UserStatus
 import java.util.*
 import javax.persistence.*
 
@@ -38,7 +39,14 @@ data class User(
     var contacts: List<String>,
 
     @Column(name = "course")
-    var course: Int
+    var course: Int,
+
+    @Column(name = "user_status")
+    @Enumerated(EnumType.STRING)
+    var userStatus: UserStatus = UserStatus.UNKNOWN,
+
+    @Column(name = "photo_uri")
+    var photoUri: String? = null
 ) {
 
     constructor(email: String?) : this(
@@ -46,6 +54,9 @@ data class User(
         firstName = null,
         lastName = null,
         contacts = ArrayList(),
-        course = 1)
+        course = 1,
+        userStatus = UserStatus.ACTIVE
+    )
+
     constructor() : this(null)
 }

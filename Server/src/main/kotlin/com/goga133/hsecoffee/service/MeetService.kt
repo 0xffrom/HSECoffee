@@ -24,7 +24,7 @@ class MeetService {
 
     @Qualifier("userRepository")
     @Autowired
-    private val userRepository : UserRepository? = null
+    private val userRepository: UserRepository? = null
 
     @Qualifier("searchRepository")
     @Autowired
@@ -36,7 +36,7 @@ class MeetService {
     // Тогда проверим на статус последней встречи, если встречи нет или статус финешед - значит он свободен
     // иначе - он встречается.
     fun getMeet(user: User): Meet {
-        if(userRepository == null || !userRepository.existsUserById(user.id)){
+        if (userRepository == null || !userRepository.existsUserById(user.id)) {
             return Meet();
         }
 
@@ -54,7 +54,7 @@ class MeetService {
     }
 
     fun getMeets(user: User): Collection<Meet> {
-        if(userRepository == null || !userRepository.existsUserById(user.id)){
+        if (userRepository == null || !userRepository.existsUserById(user.id)) {
             return arrayListOf();
         }
 
@@ -65,7 +65,7 @@ class MeetService {
 
     @Transient
     fun cancelSearch(user: User): CancelStatus {
-        if(userRepository == null || !userRepository.existsUserById(user.id)){
+        if (userRepository == null || !userRepository.existsUserById(user.id)) {
             return CancelStatus.FAIL
         }
 
@@ -82,20 +82,20 @@ class MeetService {
 
     @Transient
     fun searchMeet(user: User, searchParams: SearchParams): MeetStatus {
-        if(userRepository == null || !userRepository.existsUserById(user.id)){
-            return MeetStatus.NONE
+        if (userRepository == null || !userRepository.existsUserById(user.id) || meetRepository == null || searchRepository == null) {
+            return MeetStatus.ERROR
         }
 
-        if (meetRepository?.findTopByUser1OrUser2(user, user)
+        if (meetRepository.findTopByUser1OrUser2(user, user)
                 ?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE
         )
             return MeetStatus.ACTIVE
 
         // Если его нет в доске поиска:
-        if (searchRepository?.findSearchByFinder(user) == null) {
-            val searches = searchRepository?.findAll()
+        if (searchRepository.findSearchByFinder(user) == null) {
+            val searches = searchRepository.findAll()
 
-            val finder = searches?.firstOrNull {
+            val finder = searches.firstOrNull {
                 // Если обоим пользователям всё равно, кого искать:
                 if (searchParams.getFacultyParams() == FacultyParams.ANY && it.searchParams.getFacultyParams() == FacultyParams.ANY)
                     return@firstOrNull true
@@ -120,15 +120,15 @@ class MeetService {
 
             // Если поиск неудачен, то добавляем в зал ожидания.
             return if (finder?.finder == null) {
-                searchRepository?.save(Search(user, searchParams))
+                searchRepository.save(Search(user, searchParams))
 
                 MeetStatus.SEARCH
             }
             // Если поиск удачен - делаем встречу.
             else {
-                searchRepository?.delete(finder)
+                searchRepository.delete(finder)
 
-                meetRepository?.save(Meet(user, finder.finder, MeetStatus.ACTIVE))
+                meetRepository.save(Meet(user, finder.finder, MeetStatus.ACTIVE))
 
                 MeetStatus.ACTIVE
             }
@@ -137,7 +137,7 @@ class MeetService {
     }
 
     private fun updateMeetStatus(meet: Meet) {
-        if(meetRepository == null || meetRepository.existsMeetById(meet.id)){
+        if (meetRepository == null || meetRepository.existsMeetById(meet.id)) {
             return
         }
 

@@ -1,6 +1,8 @@
 package com.goga133.hsecoffee.service
 
+import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.repository.ImageStorageRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -13,6 +15,9 @@ import java.util.stream.Stream
 
 @Service
 class ImageStorageService : ImageStorageRepository {
+    @Autowired
+    private val userService : UserService? = null
+
     private val rootLocation: Path = Paths.get("uploads")
 
     override fun correctFile(file: MultipartFile) : Boolean{
@@ -35,10 +40,12 @@ class ImageStorageService : ImageStorageRepository {
                 || contentType == "image/jpeg"
     }
 
-    override fun store(file: MultipartFile, fileName : String) {
-        Files.deleteIfExists(this.rootLocation.resolve(fileName))
+    override fun store(file: MultipartFile, user: User) {
+        Files.deleteIfExists(this.rootLocation.resolve(user.email.toString()))
 
-        Files.copy(file.inputStream, this.rootLocation.resolve(fileName))
+        Files.copy(file.inputStream, this.rootLocation.resolve(user.email.toString()))
+
+        userService?.changeFolderAndSave(user)
     }
 
     override fun loadFile(filename: String): Resource {

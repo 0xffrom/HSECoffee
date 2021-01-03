@@ -1,7 +1,5 @@
 package com.goga133.hsecoffee.controllers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.service.EmailService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.RefreshTokenService
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import java.util.*
 
-@Controller
+
 /**
  * Контроллер для авторизации пользователя.
  * Авторизация может происходить только через код, высланный на Email с доменами @edu.hse.ru или @hse.ru.
@@ -28,6 +26,7 @@ import java.util.*
  * Пользователь также может получить AccessToken, отправив свой RefreshToken и fingerprint.
  * fingerprint - некий отпечаток устройства, можно называть его идентификатором.
  */
+@Controller
 class AuthController {
 
     /**
@@ -60,10 +59,11 @@ class AuthController {
      *
      *
      * @param email - email адрес пользователя.
-     * @return
+     * @return HTTP-ответ с телом из описания ответа сервера.
      */
     @RequestMapping(value = ["/api/code"], method = [RequestMethod.POST])
     fun sendCode(@RequestParam(value = "email") email: String): ResponseEntity<String> {
+        // Проверка на валидность почты:
         if (emailService?.isValidMail(email) != true) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Некорректный домен почты")
         }
@@ -72,57 +72,75 @@ class AuthController {
             return ResponseEntity.ok("Код был выслан")
         }
 
+        // Если не удалось отослать письмо:
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Не удалось отправить код")
     }
 
+    /**
+     * Метод для подтверждения кода, присланного на почту пользоваля.
+     * POST запрос по адресу /api/confirm.
+     *
+     *
+     * @param email - email адрес пользователя.
+     * @param code - код с почты.
+     * @param fingerprint - уникальный идентификатор устройства.
+     * @return HTTP-ответ с телом из JSON двух строковых полей (токенов) или описанием ошибки.
+     */
     @RequestMapping(value = ["/api/confirm"], method = [RequestMethod.POST])
-    @ResponseStatus(HttpStatus.OK)
     fun confirmCode(
-            @RequestParam email: String,
-            @RequestParam code: Int,
-            @RequestParam fingerprint: String
+        @RequestParam email: String,
+        @RequestParam code: Int,
+        @RequestParam fingerprint: String
     ): ResponseEntity<String> {
         if (emailService?.isValidCode(email, code) == true) {
             val user =
-                    userService?.getUserByEmailOrCreate(email)
-                            ?: return ResponseEntity.badRequest().body("Server Error")
+                userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity(
+                    "Server error",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                )
 
-            return ResponseEntity.ok(getTokensJSON(user, fingerprint))
+            return ResponseEntity.ok(
+                jwtService?.getJsonTokens(user, fingerprint) ?: return ResponseEntity(
+                    "Server error",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            )
         }
 
-        return ResponseEntity.badRequest().body("Incorrect code or email.")
+        return ResponseEntity.badRequest().body("Некорректный код или email.")
     }
 
+    /**
+     * Метод для обновления пары Refresh - Access токенов.
+     * POST запрос по адресу /api/refresh.
+     *
+     * @param email - email адрес пользователя.
+     * @param refreshToken - Refresh Token пользовотеля, представляет из себя UUID.
+     * @param fingerprint - уникальный идентификатор устройства.
+     * @return HTTP-ответ с телом из JSON двух строковых полей (токенов) или описанием ошибки.
+     */
     @RequestMapping(value = ["/api/refresh"], method = [RequestMethod.POST])
     @ResponseStatus(HttpStatus.OK)
     fun refreshToken(
-            @RequestParam email: String,
-            @RequestParam token: UUID,
-            @RequestParam fingerPrint: String
+        @RequestParam email: String,
+        @RequestParam refreshToken: UUID,
+        @RequestParam fingerprint: String
     ): ResponseEntity<String> {
-
+        // Если user == null, значит пользователя нет в БД, а значит операция невозможна.
         val user = userService?.getUserByEmail(email)
-                ?: return ResponseEntity.badRequest()
-                        .body("Пользователя с такой почтой не существует.")
+            ?: return ResponseEntity.badRequest()
+                .body("Пользователя с такой почтой не существует.")
 
-        if (refreshTokenService?.isValid(user, token, fingerPrint) == true) {
-            return ResponseEntity.ok(getTokensJSON(user, fingerPrint))
+        if (refreshTokenService?.isValid(user, refreshToken, fingerprint) == true) {
+            return ResponseEntity.ok(
+                jwtService?.getJsonTokens(user, fingerprint) ?: return ResponseEntity(
+                    "Server error",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            )
         }
 
         return ResponseEntity.badRequest().body("Невозможно обновить токен.")
-    }
-
-
-    private fun getTokensJSON(user: User, fingerPrint: String): String {
-        val accessToken = jwtService?.createAccessToken(user)
-        val refreshToken = refreshTokenService?.createByUser(user, fingerPrint)?.uuid
-
-        return jacksonObjectMapper().writeValueAsString(
-                mapOf<String, Any?>(
-                        "accessToken" to accessToken,
-                        "refreshToken" to refreshToken
-                )
-        )
     }
 }
 

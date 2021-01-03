@@ -1,9 +1,11 @@
 package com.goga133.hsecoffee.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.data.TokenResponse
 import com.goga133.hsecoffee.entity.User
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.http.HttpStatus
@@ -18,6 +20,10 @@ class JwtService(
     @Value("\${jwt.key}") val secretKey: String,
     @Value("\${jwt.access.min}") val minutes: Long
 ) {
+
+    @Autowired
+    val refreshTokenService : RefreshTokenService? = null
+
     fun createAccessToken(user: User): String {
         return Jwts.builder()
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()), SignatureAlgorithm.HS512)
@@ -61,4 +67,16 @@ class JwtService(
             .parseClaimsJws(token)
     }
 
+
+    fun getJsonTokens(user: User, fingerPrint: String): String {
+        val accessToken = createAccessToken(user)
+        val refreshToken = refreshTokenService?.createByUser(user, fingerPrint)?.uuid
+
+        return jacksonObjectMapper().writeValueAsString(
+            mapOf<String, Any?>(
+                "accessToken" to accessToken,
+                "refreshToken" to refreshToken
+            )
+        )
+    }
 }
