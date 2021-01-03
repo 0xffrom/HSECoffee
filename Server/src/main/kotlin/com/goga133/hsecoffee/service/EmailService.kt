@@ -19,7 +19,8 @@ class EmailService(
     @Value("\${mail.text}") private val text: String,
     @Value("\${mail.subject}") private val subject: String,
     @Value("\${mail.from}") private val from: String,
-    @Value("\${mail.lifetime.ms}") private var lifeTime: Int
+    @Value("\${mail.lifetime.ms}") private var lifeTime: Int,
+    @Value("\${mail.domains}") private val domains: String
 ) {
 
     @Autowired
@@ -36,13 +37,27 @@ class EmailService(
         javaMailSender.send(message)
     }
 
-    fun isValid(receiver: String, code: Int): Boolean {
+    fun isValidCode(receiver: String, code: Int): Boolean {
         val confirmationCode = confirmationCodeRepository?.findByEmail(receiver) ?: return false
 
         if (confirmationCode.code == code && Instant.now().minusMillis(confirmationCode.createdDate.time)
                 .toEpochMilli() <= lifeTime
         )
             return true
+
+        return false
+    }
+
+
+    fun isValidMail(email : String?) : Boolean{
+        if(email == null)
+            return false;
+
+        for (domain in domains.split(";")){
+            if(email.endsWith(domain)){
+                return true
+            }
+        }
 
         return false
     }

@@ -31,10 +31,10 @@ internal class EmailServiceTest {
     @Test
     fun is_correct_validator_by_exist() {
         val mockCode: Int = Random.nextInt()
-        assertFalse(emailService!!.isValid("test@test$mockCode", mockCode))
+        assertFalse(emailService!!.isValidCode("test@test$mockCode", mockCode))
         confirmationCodeRepository?.save(ConfirmationCode("test@test$mockCode", mockCode))
 
-        assertTrue(emailService!!.isValid("test@test$mockCode", mockCode))
+        assertTrue(emailService!!.isValidCode("test@test$mockCode", mockCode))
     }
 
     @Test
@@ -44,10 +44,10 @@ internal class EmailServiceTest {
         emailService?.setLifeTime(1)
         TimeUnit.MILLISECONDS.sleep(10)
 
-        assertFalse(emailService!!.isValid("test@test$mockCode", mockCode))
+        assertFalse(emailService!!.isValidCode("test@test$mockCode", mockCode))
 
         confirmationCodeRepository?.save(ConfirmationCode("test@test$mockCode", mockCode))
 
-        assertFalse(emailService!!.isValid("test@test$mockCode", mockCode))
+        assertFalse(emailService!!.isValidCode("test@test$mockCode", mockCode))
     }
 }
