@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 import java.net.InetAddress
 
 @Service
-@PropertySource("classpath:storage.properties")
 class UserService(
     @Value("\${storage.folder}")
     private val folder: String,

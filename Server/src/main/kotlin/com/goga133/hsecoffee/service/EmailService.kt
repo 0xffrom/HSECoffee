@@ -13,7 +13,6 @@ import java.time.Instant
 import java.util.*
 
 @Service
-@PropertySource("classpath:mail.properties")
 class EmailService(
     private val javaMailSender: JavaMailSender,
     @Value("\${mail.text}") private val text: String,

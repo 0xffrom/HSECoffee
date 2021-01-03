@@ -15,7 +15,6 @@ import java.time.Instant
 import java.util.*
 
 @Service
-@PropertySource("classpath:jwt.properties")
 class JwtService(
     @Value("\${jwt.key}") val secretKey: String,
     @Value("\${jwt.access.min}") val minutes: Long

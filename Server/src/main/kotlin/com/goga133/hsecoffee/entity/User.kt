@@ -35,7 +35,7 @@ data class User(
     var faculty: Faculty = Faculty.NONE,
 
     @Column(name = "contacts")
-    @ElementCollection
+    @ElementCollection(targetClass = String::class, fetch = FetchType.EAGER)
     var contacts: List<String>,
 
     @Column(name = "course")
