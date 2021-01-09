@@ -5,6 +5,9 @@ import com.goga133.hsecoffee.data.FacultyParams
 import org.hibernate.annotations.CollectionType
 import javax.persistence.*
 
+/**
+ * Data-class. Параметры поиска встреч.
+ */
 @Entity
 data class SearchParams(
     @Id

@@ -1,12 +1,14 @@
+import org.jetbrains.kotlin.cli.jvm.compiler.findMainClass
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    application
     id("org.springframework.boot") version "2.4.0"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     kotlin("jvm") version "1.4.10"
     kotlin("plugin.spring") version "1.4.10"
-
 }
+
 
 group = "com.goga133"
 version = "0.0.1-SNAPSHOT"
@@ -16,6 +18,9 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClassName = "com.goga133.hsecoffee.RunKt"
+}
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
@@ -42,15 +47,30 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
 }
 
+val appName = "app"
+val appVer = "0.0.1+app"
 
 
+tasks{
+    bootJar {
+        manifest {
+            attributes("Multi-Release" to true)
+        }
+        if (project.hasProperty("archiveName")) {
+            archiveFileName.set(project.properties["archiveName"] as String)
+        }
+    }
+}
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
+
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
     }
 }
+
+

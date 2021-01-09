@@ -5,6 +5,9 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+/**
+ * Data-class. Токен для обновления сессии. Длительность жизни: 60 дней.
+ */
 @Entity
 data class RefreshToken(
     @Id

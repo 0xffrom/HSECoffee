@@ -6,6 +6,9 @@ import com.goga133.hsecoffee.data.status.UserStatus
 import java.util.*
 import javax.persistence.*
 
+/**
+ * Data-class. Пользователь.
+ */
 @Entity
 data class User(
     @Id

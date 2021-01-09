@@ -6,6 +6,9 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+/**
+ * Data-class. Встреча. Длительность активности - 3 дня.
+ */
 @Entity
 data class Meet(
     @Id

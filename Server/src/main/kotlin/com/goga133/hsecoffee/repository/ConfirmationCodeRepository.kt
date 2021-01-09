@@ -13,6 +13,4 @@ interface ConfirmationCodeRepository : CrudRepository<ConfirmationCode, Long> {
     fun existsByEmail(email : String) : Boolean
 
     fun findByEmail(email : String) : ConfirmationCode?
-
-    fun findByCode(code : Int) : ConfirmationCode?
 }

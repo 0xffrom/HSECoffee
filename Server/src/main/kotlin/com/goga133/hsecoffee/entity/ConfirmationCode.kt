@@ -5,7 +5,7 @@ import javax.persistence.*
 import kotlin.random.Random
 
 /**
- * Email-код для подтверждения аккаунта.
+ * Data-class. Email-код для подтверждения аккаунта.
  */
 @Entity
 data class ConfirmationCode(

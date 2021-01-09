@@ -49,7 +49,7 @@ class ImageStorageService : ImageStorageRepository {
     }
 
     override fun loadFile(filename: String): Resource {
-        val file = rootLocation.resolve(filename)
+        val file = rootLocation.resolve("$filename.png")
         val resource = UrlResource(file.toUri())
 
         if (resource.exists() || resource.isReadable) {
