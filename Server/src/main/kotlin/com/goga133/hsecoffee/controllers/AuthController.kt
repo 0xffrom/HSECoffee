@@ -4,6 +4,8 @@ import com.goga133.hsecoffee.service.EmailService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.RefreshTokenService
 import com.goga133.hsecoffee.service.UserService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import java.util.*
+import kotlin.math.log
 
 
 /**
@@ -28,6 +31,10 @@ import java.util.*
  */
 @Controller
 class AuthController {
+    /**
+     * Логгер.
+     */
+    var logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
 
     /**
      * Сервис для работы с SMTP.
@@ -63,15 +70,21 @@ class AuthController {
      */
     @RequestMapping(value = ["/api/code"], method = [RequestMethod.POST])
     fun sendCode(@RequestParam(value = "email") email: String): ResponseEntity<String> {
+        logger.debug("Запрос на отправку кода подтверждения на $email.")
         // Проверка на валидность почты:
         if (emailService?.isValidMail(email) != true) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Некорректный домен почты")
+            val message = "Некорректный домен почты."
+
+            logger.info("Код не был отправлен на $email. Причина: $message")
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message)
         }
 
         if (emailService.trySendCode(email)) {
+            logger.info("Код был выслан на $email.")
             return ResponseEntity.ok("Код был выслан")
         }
 
+        logger.debug("Ошибка. Не удалось отправить код на $email.")
         // Если не удалось отослать письмо:
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Не удалось отправить код")
     }
@@ -92,21 +105,34 @@ class AuthController {
         @RequestParam code: Int,
         @RequestParam fingerprint: String
     ): ResponseEntity<String> {
+        logger.debug("Запрос на подтверждение кода для $email.")
         if (emailService?.isValidCode(email, code) == true) {
-            val user =
-                userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity(
-                    "Server error",
-                    HttpStatus.INTERNAL_SERVER_ERROR
+            val user = userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity(
+                "Server error",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            ).also {
+                logger.error(
+                    "Возникла серверная ошибка при получении пользователя. " +
+                            "Email = $email; Code = $code; fingerprint = $fingerprint."
                 )
+            }
+
 
             return ResponseEntity.ok(
-                jwtService?.getJsonTokens(user, fingerprint) ?: return ResponseEntity(
+                jwtService?.getJsonTokens(user, fingerprint).also {
+                    logger.info("Пользовать с email = $email подтвердил учётную запись.")
+                } ?: return ResponseEntity(
                     "Server error",
                     HttpStatus.INTERNAL_SERVER_ERROR
-                )
+                ).also {
+                    logger.error(
+                        "Возникла серверная ошибка при получении токенов." +
+                                "Email = $email; Code = $code; fingerprint = $fingerprint.\""
+                    )
+                }
             )
         }
-
+        logger.info("Код $code не является валидным для $email.")
         return ResponseEntity.badRequest().body("Некорректный код или email.")
     }
 
@@ -126,19 +152,28 @@ class AuthController {
         @RequestParam refreshToken: UUID,
         @RequestParam fingerprint: String
     ): ResponseEntity<String> {
+        logger.debug("Запрос на обновление refreshToken. Email = $email")
         // Если user == null, значит пользователя нет в БД, а значит операция невозможна.
         val user = userService?.getUserByEmail(email)
             ?: return ResponseEntity.badRequest()
-                .body("Пользователя с такой почтой не существует.")
+                .body("Пользователя с такой почтой не существует.").also {
+                    logger.debug("Пользователь с email = $email не найден.")
+                }
 
         if (refreshTokenService?.isValid(user, refreshToken, fingerprint) == true) {
             return ResponseEntity.ok(
-                jwtService?.getJsonTokens(user, fingerprint) ?: return ResponseEntity(
+                jwtService?.getJsonTokens(user, fingerprint).also {
+                    logger.info("Пользователь $user обновил RefreshToken.")
+                } ?: return ResponseEntity(
                     "Server error",
                     HttpStatus.INTERNAL_SERVER_ERROR
-                )
+                ).also {
+                    logger.error("Пользователю $user не удалось обновить RefreshToken.")
+                }
             )
         }
+
+        logger.debug("Обновитель Refresh Token для user = $user невозможно. Данные некорректные.")
 
         return ResponseEntity.badRequest().body("Невозможно обновить токен.")
     }
