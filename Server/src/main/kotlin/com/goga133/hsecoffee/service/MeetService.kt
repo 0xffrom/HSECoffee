@@ -1,6 +1,5 @@
 package com.goga133.hsecoffee.service
 
-import com.goga133.hsecoffee.data.FacultyParams
 import com.goga133.hsecoffee.data.status.CancelStatus
 import com.goga133.hsecoffee.entity.Meet
 import com.goga133.hsecoffee.entity.Search
@@ -37,7 +36,7 @@ class MeetService {
     // иначе - он встречается.
     fun getMeet(user: User): Meet {
         if (userRepository == null || !userRepository.existsUserById(user.id)) {
-            return Meet();
+            return Meet()
         }
 
         // Мы ищим среди всех встреч
@@ -55,7 +54,7 @@ class MeetService {
 
     fun getMeets(user: User): Collection<Meet> {
         if (userRepository == null || !userRepository.existsUserById(user.id)) {
-            return arrayListOf();
+            return arrayListOf()
         }
 
         return meetRepository?.findAll()?.filter { it ->
@@ -97,16 +96,16 @@ class MeetService {
 
             val finder = searches.firstOrNull {
                 // Если обоим пользователям всё равно, кого искать:
-                if (searchParams.getFacultyParams() == FacultyParams.ANY && it.searchParams.getFacultyParams() == FacultyParams.ANY)
+                if (searchParams.faculties.size == 0 && it.searchParams.faculties.size == 0)
                     return@firstOrNull true
                 // Если первому всё равно, смотрим на второго: содержится ли в его предпочтениях факультет первого.
-                else if (searchParams.getFacultyParams() == FacultyParams.ANY && (it?.searchParams?.faculties?.contains(
+                else if (searchParams.faculties.size == 0 && (it?.searchParams?.faculties?.contains(
                         user.faculty
                     ) == true)
                 )
                     return@firstOrNull true
                 // Тоже самое, только наоборот.
-                else if (it.searchParams.getFacultyParams() == FacultyParams.ANY && searchParams.faculties.contains(it.finder.faculty))
+                else if (it.searchParams.faculties.size == 0 && searchParams.faculties.contains(it.finder.faculty))
                     return@firstOrNull true
                 // Смотрим, содержатся ли в предпочтениях факультет собеседника:
                 else if (searchParams.faculties.contains(it.finder.faculty) && it?.searchParams?.faculties?.contains(
@@ -145,6 +144,6 @@ class MeetService {
             meet.meetStatus = MeetStatus.FINISHED
         }
 
-        meetRepository.save(meet);
+        meetRepository.save(meet)
     }
 }

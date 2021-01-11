@@ -6,6 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
+/**
+ * Интерфейс для описания операций для взаимодействия с таблицей поиска встреч.
+ * @see Search
+ */
 @EnableJpaRepositories
 @Repository("searchRepository")
 interface SearchRepository : CrudRepository<Search, Long> {

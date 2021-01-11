@@ -1,13 +1,12 @@
 package com.goga133.hsecoffee.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.goga133.hsecoffee.data.TokenResponse
+import com.goga133.hsecoffee.data.Response
 import com.goga133.hsecoffee.entity.User
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.PropertySource
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -33,26 +32,26 @@ class JwtService(
             .compact()
     }
 
-    fun validateToken(token: String): TokenResponse {
+    fun validateToken(token: String): Response {
         try {
             val claim = parseAccessToken(token)
 
             if (claim.body?.subject == null)
                 return getIncorrectTokenResponse()
         } catch (e: ExpiredJwtException) {
-            return TokenResponse(HttpStatus.FORBIDDEN, "The token has expired", null)
+            return Response(HttpStatus.FORBIDDEN, "The token has expired", null)
         } catch (e: JwtException) {
             return getIncorrectTokenResponse()
         }
 
-        return  TokenResponse(
+        return  Response(
             HttpStatus.OK,
             "Correct token",
             parseAccessToken(token).body?.subject ?: return getIncorrectTokenResponse())
     }
 
-    private fun getIncorrectTokenResponse(): TokenResponse {
-        return TokenResponse(HttpStatus.UNAUTHORIZED, "Incorrect token", null)
+    private fun getIncorrectTokenResponse(): Response {
+        return Response(HttpStatus.UNAUTHORIZED, "Incorrect token", null)
     }
 
     /**

@@ -5,6 +5,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
+/**
+ * Интерфейс для описания операций для взаимодействия с таблицей пользователей.
+ * @see User
+ */
 @EnableJpaRepositories
 @Repository("userRepository")
 interface UserRepository : CrudRepository<User, Long> {

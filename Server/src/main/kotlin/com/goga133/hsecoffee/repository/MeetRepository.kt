@@ -6,6 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
+/**
+ * Интерфейс для описания операций для взаимодействия с таблицей встреч.
+ * @see Meet
+ */
 @EnableJpaRepositories
 @Repository("meetRepository")
 interface MeetRepository : CrudRepository<Meet, Long> {

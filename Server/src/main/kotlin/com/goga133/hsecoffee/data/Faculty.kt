@@ -1,5 +1,8 @@
 package com.goga133.hsecoffee.data
 
+/**
+ * Enum class. Перечисление доступных факультетов НИУ ВШЭ.
+ */
 enum class Faculty {
     LYCEUM,
     MATH,

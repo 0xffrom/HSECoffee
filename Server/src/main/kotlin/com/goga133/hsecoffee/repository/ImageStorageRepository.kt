@@ -6,6 +6,10 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Path
 import java.util.stream.Stream
 
+/**
+ * Интерфейс для описания операций для взаимодействия с изображениями пользователей.
+ * @see com.goga133.hsecoffee.service.ImageStorageService
+ */
 interface ImageStorageRepository {
     fun correctFile(file: MultipartFile) : Boolean
     fun store(file: MultipartFile, user : User)

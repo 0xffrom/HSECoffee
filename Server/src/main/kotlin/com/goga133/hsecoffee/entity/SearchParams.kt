@@ -1,8 +1,6 @@
 package com.goga133.hsecoffee.entity
 
 import com.goga133.hsecoffee.data.Faculty
-import com.goga133.hsecoffee.data.FacultyParams
-import org.hibernate.annotations.CollectionType
 import javax.persistence.*
 
 /**
@@ -23,14 +21,5 @@ data class SearchParams(
     val faculties: MutableSet<Faculty> = mutableSetOf(),
 ) {
     constructor() : this(faculties = mutableSetOf())
-
-    fun getFacultyParams(): FacultyParams
-        {
-            return when (faculties.size) {
-                0 -> FacultyParams.ANY
-                1 -> FacultyParams.ONE
-                else -> FacultyParams.MANY
-            }
-        }
 }
 
