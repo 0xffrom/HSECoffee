@@ -34,7 +34,7 @@ class AuthController {
     /**
      * Логгер.
      */
-    var logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
+    val logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
 
     /**
      * Сервис для работы с SMTP.
@@ -70,7 +70,6 @@ class AuthController {
      */
     @RequestMapping(value = ["/api/code"], method = [RequestMethod.POST])
     fun sendCode(@RequestParam(value = "email") email: String): ResponseEntity<String> {
-        logger.debug("Запрос на отправку кода подтверждения на $email.")
         // Проверка на валидность почты:
         if (emailService?.isValidMail(email) != true) {
             val message = "Некорректный домен почты."
@@ -105,16 +104,12 @@ class AuthController {
         @RequestParam code: Int,
         @RequestParam fingerprint: String
     ): ResponseEntity<String> {
-        logger.debug("Запрос на подтверждение кода для $email.")
         if (emailService?.isValidCode(email, code) == true) {
             val user = userService?.getUserByEmailOrCreate(email) ?: return ResponseEntity(
-                "Server error",
-                HttpStatus.INTERNAL_SERVER_ERROR
+                "Incorrect email",
+                HttpStatus.BAD_REQUEST
             ).also {
-                logger.error(
-                    "Возникла серверная ошибка при получении пользователя. " +
-                            "Email = $email; Code = $code; fingerprint = $fingerprint."
-                )
+                logger.debug("Пользователь с email = $email не был найден.")
             }
 
 
@@ -125,7 +120,7 @@ class AuthController {
                     "Server error",
                     HttpStatus.INTERNAL_SERVER_ERROR
                 ).also {
-                    logger.error(
+                    logger.warn(
                         "Возникла серверная ошибка при получении токенов." +
                                 "Email = $email; Code = $code; fingerprint = $fingerprint.\""
                     )
@@ -152,7 +147,6 @@ class AuthController {
         @RequestParam refreshToken: UUID,
         @RequestParam fingerprint: String
     ): ResponseEntity<String> {
-        logger.debug("Запрос на обновление refreshToken. Email = $email")
         // Если user == null, значит пользователя нет в БД, а значит операция невозможна.
         val user = userService?.getUserByEmail(email)
             ?: return ResponseEntity.badRequest()
@@ -168,7 +162,7 @@ class AuthController {
                     "Server error",
                     HttpStatus.INTERNAL_SERVER_ERROR
                 ).also {
-                    logger.error("Пользователю $user не удалось обновить RefreshToken.")
+                    logger.warn("Пользователю $user не удалось обновить RefreshToken.")
                 }
             )
         }

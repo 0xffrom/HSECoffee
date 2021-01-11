@@ -5,6 +5,8 @@ import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.service.ImageStorageService
 import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.UserService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import kotlin.math.log
 
 
 /**
@@ -22,6 +25,11 @@ import java.io.IOException
  */
 @Controller
 class UserController {
+    /**
+     * Логгер.
+     */
+    val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
+
     /**
      * Сервис для работы с пользователями.
      */
@@ -53,15 +61,20 @@ class UserController {
     fun setSettings(@PathVariable("token") token: String, @RequestBody user: User): ResponseEntity<String> {
         // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
         val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK)
+            if (this?.httpStatus != HttpStatus.OK) {
+                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
                 return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
+            }
+
         }
         // Читаем Email после валидации:
         val email: String =
-            validator?.email ?: return ResponseEntity("Возникла ошибка при валидации токена.", HttpStatus.BAD_REQUEST)
+            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Возникла ошибка при валидации токена.")
 
-        // Пользователь из БД:
-        val userDb = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        val userDb = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Возникла серверная ошибка")
+            .apply { logger.warn("При верном token = $token пользователя не существует.") }
 
         with(userDb) {
             // Копируем текущего пользователя в пользователя БД:
@@ -70,6 +83,7 @@ class UserController {
             // Сохраняем
             userService.save(this)
 
+            logger.info("Пользователю $user обновлены настройки.")
             return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(this))
         }
     }
@@ -86,18 +100,22 @@ class UserController {
     fun getSettings(@PathVariable("token") token: String): ResponseEntity<String> {
         // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
         val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK)
+            if (this?.httpStatus != HttpStatus.OK) {
+                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
                 return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
+            }
+
         }
         // Читаем Email после валидации:
         val email: String =
             validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Возникла ошибка при валидации токена.")
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Возникла серверная ошибка.")
+        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Возникла серверная ошибка")
+            .apply { logger.warn("При верном token = $token пользователя не существует.") }
 
-
+        logger.info("Выданы настройки для пользователя $user")
         return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(user))
     }
 
@@ -118,28 +136,34 @@ class UserController {
     ): ResponseEntity<String> {
         // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
         val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK)
+            if (this?.httpStatus != HttpStatus.OK) {
+                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
                 return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
+            }
+
         }
         // Читаем Email после валидации:
-        val email: String = validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла ошибка при валидации токена.")
+        val email: String =
+            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Возникла ошибка при валидации токена.")
 
+        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Возникла серверная ошибка")
+            .apply { logger.warn("При верном token = $token пользователя не существует.") }
 
         if (imageStorageService?.correctFile(image) == false) {
+            logger.debug("Пользователь $user заслал некорректный файл.")
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Некорректная фотография.")
         }
 
         try {
-            imageStorageService?.store(
-                image,
-                userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Неверная почта.")
-            )
+            imageStorageService?.store(image, user)
         } catch (ioException: IOException) {
+            logger.error("Произошла ошибка при работе с файловой системой.", ioException)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Серверная ошибка.")
         }
 
+        logger.info("Польватель $user успешно загрузил фотографию размером в ${image.size} байт.")
         return ResponseEntity.ok("Успешно.")
     }
 
