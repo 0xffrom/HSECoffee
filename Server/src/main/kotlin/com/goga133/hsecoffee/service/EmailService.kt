@@ -2,6 +2,8 @@ package com.goga133.hsecoffee.service
 
 import com.goga133.hsecoffee.entity.ConfirmationCode
 import com.goga133.hsecoffee.repository.ConfirmationCodeRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
@@ -29,7 +31,6 @@ class EmailService(
     @Value("\${mail.lifetime.ms}") private var lifeTime: Int,
     @Value("\${mail.domains}") private val domains: String
 ) {
-
     companion object {
         /**
          * Минимальная длина логика у EMAIL адреса. Логином считается первая часть, разделённая @.
@@ -38,6 +39,14 @@ class EmailService(
         const val MIN_LENGTH_LOGIN = 3
     }
 
+    /**
+     * Логгер.
+     */
+    private val logger: Logger = LoggerFactory.getLogger(EmailService::class.java)
+
+    /**
+     * Репозиторий для кодов подтверждения.
+     */
     @Autowired
     private val confirmationCodeRepository: ConfirmationCodeRepository? = null
 
@@ -50,19 +59,25 @@ class EmailService(
     fun isValidCode(receiver: String, code: Int): Boolean {
         val confirmationCode = confirmationCodeRepository?.findByEmail(receiver) ?: return false
 
-        if (confirmationCode.code == code && Instant.now().minusMillis(confirmationCode.createdDate.time)
-                .toEpochMilli() <= lifeTime
-        ) {
-            return true
+        if (confirmationCode.code == code) {
+            if (Instant.now().minusMillis(confirmationCode.createdDate.time)
+                    .toEpochMilli() <= lifeTime
+            ) {
+                logger.debug("Код $code для $receiver корректный.")
+                return true
+            }
+
+            logger.debug("Код $code для $receiver недействителен.")
+            return false
         }
 
-
+        logger.debug("Код $code для $receiver некорректный.")
         return false
     }
 
     /**
      * Проверка на валидность Email-адреса.
-     * Валидным Email-адресом считается такой, который содержит больше @code {MIN_LENGTH_LOGIN} символов.
+     * Валидным Email-адресом считается такой, который содержит больше [MIN_LENGTH_LOGIN] символов.
      * @see MIN_LENGTH_LOGIN
      * @param email - email-адрес, проверяемый на корректность.
      * @return true - если адрес корректный, иначе - false.
@@ -73,10 +88,12 @@ class EmailService(
 
         domains.split(";").forEach { domain ->
             if (email.endsWith(domain) && email.length - domain.length > MIN_LENGTH_LOGIN) {
+                logger.debug("$email корректный.")
                 return true
             }
         }
 
+        logger.debug("$email некорректный.")
         return false
     }
 
@@ -91,19 +108,23 @@ class EmailService(
             // Если код существует:
             if (confirmationCodeRepository?.existsByEmail(receiver) == true) {
                 val confirmation = confirmationCodeRepository.findByEmail(receiver)
+                logger.debug("Для email = $receiver был найден $confirmation")
 
                 // Проверка на время:
                 val delta = (Date.from(confirmation?.createdDate?.time?.let { Instant.now().minusMillis(it) }))
 
                 if (delta.time > lifeTime) {
+                    logger.debug("Для email = $receiver срок действия предыщего кода вышел, будет сгенерирован новый.")
                     confirmationCodeRepository.apply {
                         removeConfirmationTokenByEmail(receiver)
                         save(ConfirmationCode(receiver))
                     }
                 }
-
             } else {
-                confirmationCodeRepository?.save(ConfirmationCode(receiver))
+                with(ConfirmationCode(receiver)) {
+                    logger.debug("Для email = $receiver был сгененирован $this")
+                    confirmationCodeRepository?.save(this)
+                }
             }
 
             confirmationCodeRepository?.findByEmail(receiver)?.code?.let {
@@ -113,10 +134,9 @@ class EmailService(
             return true
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Произошла ошибка при отправке кода подтверждения", e)
+            return false
         }
-
-        return false
     }
 
     /**
@@ -136,12 +156,13 @@ class EmailService(
         val message = SimpleMailMessage()
 
         message.apply {
-            subject?.let { setSubject(it) }
-            text?.let { setText(it.replace("{code}", code.toString())) }
-            from?.let { setFrom(it) }
+            setSubject(subject!!)
+            setText(text!!.replace("{code}", code.toString()))
+            setFrom(from!!)
             setTo(receiver)
+            javaMailSender.send(this)
         }
 
-        javaMailSender.send(message)
+        logger.debug("На почту $receiver был отправлен следующий код подтверждения: $code")
     }
 }

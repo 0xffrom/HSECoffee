@@ -28,7 +28,7 @@ class UserController {
     /**
      * Логгер.
      */
-    val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
 
     /**
      * Сервис для работы с пользователями.
@@ -121,7 +121,7 @@ class UserController {
 
     /**
      * Метод для загрузки фотографии пользователя.
-     * Максимальный объём выставлен в поле@code{spring.servlet.multipart.max-file-size}
+     * Максимальный объём выставлен в поле [properties.spring.servlet.multipart.max-file-size]
      *
      * POST по адресу /api/user/image/{token}, где token - access токен пользователя.
      *

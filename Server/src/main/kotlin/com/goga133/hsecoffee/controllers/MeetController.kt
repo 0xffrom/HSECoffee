@@ -29,7 +29,7 @@ class MeetController {
     /**
      * Логгер.
      */
-    val logger: Logger = LoggerFactory.getLogger(MeetController::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(MeetController::class.java)
 
     /**
      * Сервис для работы с пользователями.
@@ -50,7 +50,7 @@ class MeetController {
     private val meetService: MeetService? = null
 
     /**
-     * Метод для получения текущей встречи, если её нет возвращается неизвестная встреча с @code{"MeetStatus.NONE"}
+     * Метод для получения текущей встречи, если её нет возвращается неизвестная встреча с [MeetStatus.NONE]
      * GET запрос по адресу /api/meet/{token}, где token - access токен пользователя.
      *
      * @return HTTP-ответ с телом из JSON представления объекта встречи или описания ошибки.
@@ -86,8 +86,8 @@ class MeetController {
     }
 
     /**
-     * Метод для начала поиска встречи. Если встреча была уже начата - возвращается @code{MeetStatus.ACTIVE},
-     * если же встреча уже ищется - @code{MeetStatus.SEARCH}, если произошла ошибка - @code{MeetStatus.ERROR}
+     * Метод для начала поиска встречи. Если встреча была уже начата - возвращается [MeetStatus.ACTIVE],
+     * если же встреча уже ищется - [MeetStatus.SEARCH], если произошла ошибка - [MeetStatus.ERROR]
      * GET запрос по адресу /api/meet/{token}, где token - access токен пользователя.
      *
      * @param searchParams - Body из JSON объекта SearchParams
@@ -168,7 +168,7 @@ class MeetController {
 
     /**
      * Метод для получения списка из законченный встреч. Законченной встречей считается такая встреча,
-     * у которой @code{MeetStatus.FINISHED}
+     * у которой [MeetStatus.FINISHED]
      *
      * DELETE запрос по адресу /api/meet/{token}, где token - access токен пользователя.
      *

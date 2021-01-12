@@ -34,7 +34,7 @@ class AuthController {
     /**
      * Логгер.
      */
-    val logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
 
     /**
      * Сервис для работы с SMTP.
@@ -136,7 +136,7 @@ class AuthController {
      * POST запрос по адресу /api/refresh.
      *
      * @param email - email адрес пользователя.
-     * @param refreshToken - Refresh Token пользовотеля, представляет из себя UUID.
+     * @param refreshToken - Refresh Token пользовотеля, представляет из себя [UUID].
      * @param fingerprint - уникальный идентификатор устройства.
      * @return HTTP-ответ с телом из JSON двух строковых полей (токенов) или описанием ошибки.
      */
