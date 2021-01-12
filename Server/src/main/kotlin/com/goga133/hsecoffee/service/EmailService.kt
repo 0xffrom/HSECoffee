@@ -155,13 +155,11 @@ class EmailService(
     private fun sendCode(receiver: String, code: Int) {
         val message = SimpleMailMessage()
 
-        message.apply {
-            setSubject(subject!!)
-            setText(text!!.replace("{code}", code.toString()))
-            setFrom(from!!)
-            setTo(receiver)
-            javaMailSender.send(this)
-        }
+        message.setSubject(subject)
+        message.setText(text.replace("{code}", code.toString()))
+        message.setFrom(from)
+        message.setTo(receiver)
+        javaMailSender.send(message)
 
         logger.debug("На почту $receiver был отправлен следующий код подтверждения: $code")
     }

@@ -23,7 +23,7 @@ class UserService(
     /**
      * Логгер.
      */
-    private val logger: Logger = LoggerFactory.getLogger(UserRepository::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
     /**
      * Репозиторий для работы с пользователями.
