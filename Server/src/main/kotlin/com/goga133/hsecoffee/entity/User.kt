@@ -38,8 +38,8 @@ data class User(
     var faculty: Faculty = Faculty.NONE,
 
     @Column(name = "contacts")
-    @ElementCollection(targetClass = String::class, fetch = FetchType.EAGER)
-    var contacts: List<String>,
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    var contacts: List<Contact>,
 
     @Column(name = "course")
     var course: Int,
