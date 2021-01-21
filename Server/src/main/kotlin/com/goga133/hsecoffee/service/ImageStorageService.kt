@@ -81,7 +81,7 @@ class ImageStorageService : ImageStorageRepository {
     override fun store(file: MultipartFile, user: User) {
         try {
             // Удаляем если существует:
-            Files.deleteIfExists(rootLocation.resolve(user.email.toString()))
+            Files.deleteIfExists(rootLocation.resolve(user.email.toString() + ".png"))
 
             // Помещаем в память:
             Files.copy(file.inputStream, rootLocation.resolve(user.email.toString() + ".png"))

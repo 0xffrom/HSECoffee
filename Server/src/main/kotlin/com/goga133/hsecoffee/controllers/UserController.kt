@@ -78,7 +78,8 @@ class UserController {
 
         with(userDb) {
             // Копируем текущего пользователя в пользователя БД:
-            BeanUtils.copyProperties(user, this, "id", "createdDate", "email")
+            BeanUtils.copyProperties(user, this,
+                "id", "createdDate", "email", "photoUri", "userStatus")
 
             // Сохраняем
             userService.save(this)

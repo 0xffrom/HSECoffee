@@ -4,5 +4,11 @@
       "name": "jwt.key",
       "type": "java.lang.String",
       "description": "Description for jwt.key."
-  }
-] }
+    },
+    {
+      "name": "jwt.access.min",
+      "type": "java.lang.Integer",
+      "description": "Description for jwt.access.min."
+    }
+  ]
+}

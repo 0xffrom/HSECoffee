@@ -16,9 +16,7 @@ import java.net.InetAddress
 @Service
 class UserService(
     @Value("\${storage.folder}")
-    private val folder: String,
-    @Value("\${server.address}")
-    private val serverAddress: InetAddress,
+    private val folder: String
 ) {
     /**
      * Логгер.
@@ -79,12 +77,12 @@ class UserService(
 
     /**
      * Метод для смена у пользователя пути с его фотографией.
-     * Фотография пользователя всегда находится по пути {ip}/uploads/{email}.png.
+     * Фотография пользователя всегда находится по пути uploads/{email}.png.
      * @param user - пользователь, для которого нужно поменять путь его фотографии.
      */
     fun changeFolderAndSave(user: User) {
         with(user) {
-            photoUri = "${folder.replace("{ip}", serverAddress.hostAddress)}${user.email}.png"
+            photoUri = "${folder}${user.email}.png"
             save(this)
 
             logger.debug("Пользователю $user был присвоен путь для фотографии.")

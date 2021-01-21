@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.cli.jvm.compiler.findMainClass
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     application
@@ -30,7 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("junit:junit:4.12")
-
+    compileOnly( "org.springframework.boot:spring-boot-configuration-processor")
     runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     runtimeOnly("mysql:mysql-connector-java")
     runtimeOnly("com.h2database:h2:1.4.200")
@@ -48,7 +49,7 @@ dependencies {
 }
 
 val appName = "app"
-val appVer = "0.0.1+app"
+val appVer = "0.0.2+app"
 
 
 tasks{

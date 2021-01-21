@@ -95,11 +95,13 @@ class MeetController {
      * @see com.goga133.hsecoffee.entity.SearchParams
      * @see com.goga133.hsecoffee.entity.Meet
      */
-    @RequestMapping(value = ["/api/meet/{token}"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/api/search/{token}"], method = [RequestMethod.POST])
     fun findMeet(
         @PathVariable("token") token: String,
         @RequestBody searchParams: SearchParams
     ): ResponseEntity<String> {
+        // TODO: Добавить для пола
+
         // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
         val validator = jwtService?.validateToken(token).apply {
             if (this?.httpStatus != HttpStatus.OK) {
