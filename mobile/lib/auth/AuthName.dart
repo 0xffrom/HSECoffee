@@ -3,12 +3,15 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hse_coffee/data/User.dart';
+import 'package:hse_coffee/business_logic/Api.dart';
+import 'package:hse_coffee/business_logic/UserStorage.dart';
+import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
+import '../RouterHelper.dart';
 import 'Header.dart';
 
 class AuthNameScreen extends StatefulWidget {
-  static const String routeName = "/Auth/name";
+  static const String routeName = "/auth/name";
 
   @override
   _AuthNameScreen createState() => _AuthNameScreen();
@@ -16,18 +19,43 @@ class AuthNameScreen extends StatefulWidget {
 
 class _AuthNameScreen extends State<AuthNameScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
-  final textFieldKey = GlobalKey<FormState>();
-  AnimationController rotationController;
+
+  final firstNameFieldController = TextEditingController();
+  final secondNameFieldController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
 
+  void callSnackBar(String text) {
+    globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+  }
+
+  @override
+  void dispose() {
+    firstNameFieldController.dispose();
+    secondNameFieldController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    void callSnackBar(String text) {
-      globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    final textFieldsKey = GlobalKey<FormState>();
+
+    void _onButtonClick() {
+      if (textFieldsKey.currentState.validate()) {
+        UserStorage.instance.user.firstName = firstNameFieldController.text;
+        UserStorage.instance.user.lastName = secondNameFieldController.text;
+
+        Api.setUser(UserStorage.instance.user).then((value) => {
+              if (value.isSuccess())
+                  RouterHelper.routeByUser(context, UserStorage.instance.user)
+              else
+                callSnackBar("Произошла ошибка! Попробуйте позже.")
+            });
+      }
     }
 
     return Scaffold(
@@ -36,37 +64,53 @@ class _AuthNameScreen extends State<AuthNameScreen> {
             builder: (context) =>
                 Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Меня зовут"),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 10.0),
-                    child: Form(
-                        key: textFieldKey,
-                        child: TextField(hintText: "Введите своё имя", labelText: "Имя")),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 10.0),
-                    child: Form(
-                        child: TextField(hintText: "Введите свою фамилию", labelText: "Фамилия")),
-                  ),
-                  ButtonContinue()
+                  Form(
+                      key: textFieldsKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 10.0),
+                            child: TextField(
+                              controller: firstNameFieldController,
+                              hintText: "Введите своё имя",
+                              labelText: "Имя",
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 10.0),
+                            child: TextField(
+                                controller: secondNameFieldController,
+                                hintText: "Введите свою фамилию",
+                                labelText: "Фамилия"),
+                          )
+                        ],
+                      )),
+                  ButtonContinue(onPressed: _onButtonClick)
                 ])));
   }
 }
 
-class ScreenAuthNameArguments {
-  final User user;
-
-  ScreenAuthNameArguments(this.user);
-}
-
 class TextField extends StatelessWidget {
+  static const int MinLengthName = 2;
+
   final String hintText;
   final String labelText;
+  final TextEditingController controller;
 
-  TextField({Key key, this.hintText, this.labelText}) : super(key: key);
+  TextField({Key key, this.hintText, this.labelText, this.controller})
+      : super(key: key);
+
+  bool _isValidName(String text) {
+    return text != null && text.length > MinLengthName;
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: this.controller,
+      validator: (input) =>
+          _isValidName(input) ? null : "Пожалуйста, заполните корректно поле!",
       cursorColor: Colors.blueAccent,
       decoration: InputDecoration(
         hintText: hintText,
