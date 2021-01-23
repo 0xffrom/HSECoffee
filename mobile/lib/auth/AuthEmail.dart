@@ -1,15 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hse_coffee/auth/AuthCode.dart';
 import 'package:hse_coffee/auth/Header.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
-import 'package:http/http.dart' as http;
 
 class AuthEmailScreen extends StatefulWidget {
-  static const String routeName = "/Auth/email";
+  static const String routeName = "/auth/email";
 
   @override
   _AuthEmailScreen createState() => _AuthEmailScreen();
@@ -43,6 +40,7 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
         SnackBar(content: Text('Ошибка! Попробуйте повторить запрос позже.'));
 
     void onError(Object error) {
+      count--;
       globalKey.currentState.showSnackBar(errorSnackBar);
     }
 
@@ -80,7 +78,6 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                           SnackBar(content: Text("Ошибка: ${value.message}")))
                     }
                 })
-            .timeout(Duration(seconds: 5))
             .catchError(onError);
       }
     }

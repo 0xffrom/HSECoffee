@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hse_coffee/RouterHelper.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
+import 'package:hse_coffee/business_logic/UserStorage.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
 import 'Header.dart';
 
 class AuthCodeScreen extends StatefulWidget {
-  static const String routeName = "/Auth/code";
+  static const String routeName = "/auth/code";
 
   @override
   _AuthCodeScreen createState() => _AuthCodeScreen();
@@ -84,8 +85,10 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
             .then((value) => {
                   if (value.isSuccess())
                     {
-                      Api.getUser().then((value) =>
-                          RouterHelper.routeByUser(context, value.getData()))
+                      Api.getUser().then((value) => {
+                            UserStorage.instance.user = value.getData(),
+                            RouterHelper.routeByUser(context, value.getData())
+                          })
                     }
                   else
                     {
