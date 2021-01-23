@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hse_coffee/auth/AuthCode.dart';
 import 'package:hse_coffee/auth/AuthEmail.dart';
 import 'package:hse_coffee/auth/AuthName.dart';
+import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/splash/Splash.dart';
 
 import 'home/Home.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     AuthNameScreen.routeName: (BuildContext context) => AuthNameScreen(),
     AuthCodeScreen.routeName: (BuildContext context) => AuthCodeScreen(),
     AuthEmailScreen.routeName: (BuildContext context) => AuthEmailScreen(),
+    AuthGenderScreen.routeName: (BuildContext context) => AuthGenderScreen(),
     HomeScreen.routeName: (BuildContext context) => HomeScreen(title: 'HSECoffee')
   };
 
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'HSEcoffee',
       // в котором будет Splash Screen с указанием следующего маршрута
-      home: SplashScreen(nextRoute: '/Auth/email'),
+      home: SplashScreen(nextRoute: '/auth/email'),
       // передаём маршруты в приложение
       routes: routes,
     );
