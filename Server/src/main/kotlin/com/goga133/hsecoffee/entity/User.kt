@@ -1,7 +1,7 @@
 package com.goga133.hsecoffee.entity
 
 import com.goga133.hsecoffee.data.Faculty
-import com.goga133.hsecoffee.data.Sex
+import com.goga133.hsecoffee.data.Gender
 import com.goga133.hsecoffee.data.status.UserStatus
 import java.util.*
 import javax.persistence.*
@@ -17,17 +17,17 @@ data class User(
     val id: Long = 0,
 
     @Column(name = "email", nullable = false, unique = true)
-    val email: String? = null,
+    val email: String = "",
 
     @Column(name = "first_name")
-    var firstName: String? = null,
+    var firstName: String = "",
 
     @Column(name = "last_name")
-    var lastName: String? = null,
+    var lastName: String = "",
 
     @Column(name = "sex")
     @Enumerated(EnumType.STRING)
-    var sex: Sex = Sex.NONE,
+    var gender: Gender = Gender.NONE,
 
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -49,17 +49,18 @@ data class User(
     var userStatus: UserStatus = UserStatus.UNKNOWN,
 
     @Column(name = "photo_uri")
-    var photoUri: String? = null
+    var photoUri: String = "uploads/default/${gender.name}.png"
 ) {
 
     constructor(email: String?) : this(
-        email = email,
-        firstName = null,
-        lastName = null,
+        email = email.toString(),
+        firstName = "",
+        lastName = "",
         contacts = ArrayList(),
         course = 1,
         userStatus = UserStatus.ACTIVE
     )
 
     constructor() : this(null)
+
 }
