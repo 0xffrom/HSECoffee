@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hse_coffee/auth/AuthCode.dart';
-import 'package:hse_coffee/auth/Header.dart';
+import 'package:hse_coffee/auth/authCode.dart';
+import 'package:hse_coffee/auth/header.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
 

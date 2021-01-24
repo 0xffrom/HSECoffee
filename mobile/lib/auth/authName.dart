@@ -8,7 +8,7 @@ import 'package:hse_coffee/business_logic/UserStorage.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
 import '../RouterHelper.dart';
-import 'Header.dart';
+import 'header.dart';
 
 class AuthNameScreen extends StatefulWidget {
   static const String routeName = "/auth/name";

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/data/gender.dart';
 
-import 'auth/AuthName.dart';
+import 'auth/authName.dart';
 import 'data/user.dart';
 
 class RouterHelper {

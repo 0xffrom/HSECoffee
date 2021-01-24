@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hse_coffee/auth/AuthCode.dart';
-import 'package:hse_coffee/auth/AuthEmail.dart';
-import 'package:hse_coffee/auth/AuthName.dart';
+import 'package:hse_coffee/auth/authCode.dart';
+import 'package:hse_coffee/auth/authEmail.dart';
+import 'package:hse_coffee/auth/authName.dart';
 import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/splash/Splash.dart';
 

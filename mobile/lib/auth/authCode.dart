@@ -7,7 +7,7 @@ import 'package:hse_coffee/RouterHelper.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
 import 'package:hse_coffee/business_logic/UserStorage.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
-import 'Header.dart';
+import 'header.dart';
 
 class AuthCodeScreen extends StatefulWidget {
   static const String routeName = "/auth/code";
@@ -43,23 +43,6 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
     }
 
     void _onRetry() {
-      if (!_block) {
-        count++;
-
-        Api.sendCode(args.email)
-            .then((value) => {
-                  if (value.statusCode == 200)
-                    {callSnackBar("Код был успешно выслан на почту повторно!")}
-                  else
-                    {
-                      callSnackBar(
-                          "К сожалению, произошла ошибка. Попробуйте позже.")
-                    }
-                })
-            .catchError((Object object) => callSnackBar(
-                "Кажется, что-то не так с сетью. Попробуйте позже."));
-      }
-
       if (count >= 1) {
         _blockTime = DateTime.now().add(Duration(minutes: 3));
         _block = true;
@@ -77,6 +60,23 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
         }
         return;
       }
+
+      count++;
+      Api.sendCode(args.email)
+          .then((value) => {
+                if (value.statusCode == 200)
+                  {
+                    callSnackBar("Код был успешно выслан на почту повторно!")
+                  }
+                else
+                  {
+                    count--,
+                    callSnackBar(
+                        "К сожалению, произошла ошибка. Попробуйте позже.")
+                  }
+              })
+          .catchError((Object object) => callSnackBar(
+              "Кажется, что-то не так с сетью. Попробуйте позже."));
     }
 
     Future<void> _onPressed() async {

@@ -10,7 +10,7 @@ import 'package:hse_coffee/data/gender.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/widgets/ButtonContinue.dart';
 import '../RouterHelper.dart';
-import 'Header.dart';
+import 'header.dart';
 
 class AuthGenderScreen extends StatefulWidget {
   static const String routeName = "/auth/gender";
