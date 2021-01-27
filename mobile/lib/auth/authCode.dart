@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hse_coffee/RouterHelper.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
 import 'package:hse_coffee/business_logic/UserStorage.dart';
-import 'package:hse_coffee/widgets/ButtonContinue.dart';
+import 'package:hse_coffee/widgets/button_continue.dart';
 import 'header.dart';
 
 class AuthCodeScreen extends StatefulWidget {

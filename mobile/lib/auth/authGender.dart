@@ -1,14 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
 import 'package:hse_coffee/business_logic/UserStorage.dart';
 import 'package:hse_coffee/data/gender.dart';
-import 'package:hse_coffee/data/user.dart';
-import 'package:hse_coffee/widgets/ButtonContinue.dart';
+import 'package:hse_coffee/widgets/button_continue.dart';
 import '../RouterHelper.dart';
 import 'header.dart';
 
@@ -38,10 +34,10 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _toggleButtonState = _ToggleButtonState();
+    final _toggleButton = ToggleButton();
 
     bool _isValidInput() {
-      if (_toggleButtonState.isSelected.contains(true)) {
+      if (_toggleButton.buttonState.isSelected.contains(true)) {
         return true;
       }
 
@@ -52,7 +48,9 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
     void _onButtonClick() {
       if (_isValidInput()) {
         UserStorage.instance.user.gender =
-            _toggleButtonState.isSelected[0] ? Gender.MALE : Gender.FEMALE;
+            _toggleButton.buttonState.isSelected[0]
+                ? Gender.MALE
+                : Gender.FEMALE;
 
         Api.setUser(UserStorage.instance.user).then((value) => {
               if (value.isSuccess())
@@ -69,7 +67,7 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
             builder: (context) =>
                 Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Мой пол"),
-                  ToggleButton(_toggleButtonState),
+                  _toggleButton,
                   Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 80.0, vertical: 10.0),
@@ -87,10 +85,10 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
 }
 
 class ToggleButton extends StatefulWidget {
-  final _ToggleButtonState buttonState;
+  final _ToggleButtonState buttonState = _ToggleButtonState();
   final Function onPressed;
 
-  ToggleButton(this.buttonState, {Key key, this.onPressed}) : super(key: key);
+  ToggleButton({Key key, this.onPressed}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -104,16 +102,15 @@ class _ToggleButtonState extends State {
   static const String SecondButtonText = "Женский";
 
   void onClicked(int index) {
-    if(isSelected[index])
-      return;
+    if (isSelected[index]) return;
 
     setState(() {
-        bool state = isSelected[index];
-        isSelected[index] = !state;
-        for (int i = 0; i < isSelected.length; i++) {
-          if (i != index) {
-            isSelected[i] = state;
-          }
+      bool state = isSelected[index];
+      isSelected[index] = !state;
+      for (int i = 0; i < isSelected.length; i++) {
+        if (i != index) {
+          isSelected[i] = state;
+        }
       }
     });
   }

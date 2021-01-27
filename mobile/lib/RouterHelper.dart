@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'auth/authFaculty.dart';
 import 'package:hse_coffee/auth/authGender.dart';
+import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/gender.dart';
 
 import 'auth/authName.dart';
@@ -13,11 +15,14 @@ class RouterHelper {
         user.lastName.isEmpty) {
       Navigator.of(context).pushNamed(AuthNameScreen.routeName);
     }
-    if(user.gender == null || user.gender == Gender.NONE){
+    else if(user.gender == null || user.gender == Gender.NONE){
       Navigator.of(context).pushNamed(AuthGenderScreen.routeName);
     }
+    else if(user.faculty == null || user.faculty == Faculty.NONE || user.course == null || user.course == 0){
+      Navigator.of(context).pushNamed(AuthFacultyScreen.routeName);
+    }
     else {
-      Navigator.of(context).pushNamed(AuthGenderScreen.routeName);
+      Navigator.of(context).pushNamed(AuthFacultyScreen.routeName);
     }
   }
 }

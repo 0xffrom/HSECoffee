@@ -5,7 +5,6 @@ import 'package:hse_coffee/business_logic/EventWrapper.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:http/http.dart' as http;
 
-import 'UserStorage.dart';
 
 class Api {
   // http://188.120.233.197

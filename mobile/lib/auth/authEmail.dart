@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hse_coffee/auth/authCode.dart';
 import 'package:hse_coffee/auth/header.dart';
 import 'package:hse_coffee/business_logic/Api.dart';
-import 'package:hse_coffee/widgets/ButtonContinue.dart';
+import 'package:hse_coffee/widgets/button_continue.dart';
 
 class AuthEmailScreen extends StatefulWidget {
   static const String routeName = "/auth/email";
