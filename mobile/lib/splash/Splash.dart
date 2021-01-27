@@ -88,10 +88,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 Expanded(
                     child: Stack(children: <Widget>[
                   Positioned(
-                      left: -30, bottom: -80, child: buildCube(-45, 300, 300)),
+                      left: -30, bottom: -150, child: buildCube(-45, 300, 300)),
                   Positioned(
                       right: -20,
-                      bottom: -100,
+                      bottom: -170,
                       child: buildCube(-45, 300, 300)),
                 ]))
               ],
