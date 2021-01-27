@@ -57,7 +57,7 @@ data class User(
         firstName = "",
         lastName = "",
         contacts = ArrayList(),
-        course = 1,
+        course = 0,
         userStatus = UserStatus.ACTIVE
     )
 
