@@ -5,6 +5,7 @@ import 'package:hse_coffee/auth/authName.dart';
 import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/splash/Splash.dart';
 
+import 'auth/authFaculty.dart';
 import 'home/Home.dart';
 
 // Запуск приложения
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
 
   // Формируем маршрутизацию приложения
   final routes = <String, WidgetBuilder>{
+    AuthFacultyScreen.routeName: (BuildContext context) => AuthFacultyScreen(),
     AuthNameScreen.routeName: (BuildContext context) => AuthNameScreen(),
     AuthCodeScreen.routeName: (BuildContext context) => AuthCodeScreen(),
     AuthEmailScreen.routeName: (BuildContext context) => AuthEmailScreen(),

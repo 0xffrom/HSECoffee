@@ -32,11 +32,16 @@ class Header extends StatelessWidget {
                     color: Color.fromRGBO(30, 51, 123, 0.5),
                     borderRadius: BorderRadius.circular(50)),
                 child: SizedBox(height: 75, width: 75))),
-        Text(title, style: TextStyle(
-            fontFamily: 'Nunito',
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold))
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 80),
+          child: Text(title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontFamily: 'Nunito',
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold)),
+        )
       ],
     );
   }
