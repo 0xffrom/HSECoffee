@@ -1,10 +1,12 @@
 package com.goga133.hsecoffee.entity
 
+import com.goga133.hsecoffee.data.Degree
 import com.goga133.hsecoffee.data.Faculty
 import com.goga133.hsecoffee.data.Gender
 import com.goga133.hsecoffee.data.status.UserStatus
 import java.util.*
 import javax.persistence.*
+import kotlin.collections.HashSet
 
 /**
  * Data-class. Пользователь.
@@ -37,12 +39,16 @@ data class User(
     @Column(name = "faculty")
     var faculty: Faculty = Faculty.NONE,
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "degree")
+    var degree: Degree = Degree.NONE,
+
     @Column(name = "contacts")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    var contacts: List<Contact>,
+    var contacts: Set<Contact> = HashSet<Contact>(),
 
     @Column(name = "course")
-    var course: Int,
+    var course: Int = 0,
 
     @Column(name = "user_status")
     @Enumerated(EnumType.STRING)
@@ -54,10 +60,6 @@ data class User(
 
     constructor(email: String?) : this(
         email = email.toString(),
-        firstName = "",
-        lastName = "",
-        contacts = ArrayList(),
-        course = 0,
         userStatus = UserStatus.ACTIVE
     )
 
