@@ -4,6 +4,7 @@ import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.repository.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -88,6 +89,26 @@ class UserService(
             logger.debug("Пользователю $user был присвоен путь для фотографии.")
         }
 
+    }
+
+    fun setSettings(oldUser: User, newUser: User) : Boolean{
+        try {
+            with(oldUser) {
+                // Копируем текущего пользователя в пользователя БД:
+                BeanUtils.copyProperties(
+                    newUser, this,
+                    "id", "createdDate", "email", "photoUri", "userStatus"
+                )
+
+                // Сохраняем
+                save(this)
+            }
+        }
+        catch (e : Exception){
+            return false
+        }
+
+        return true
     }
 
     /**

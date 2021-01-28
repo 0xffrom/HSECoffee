@@ -1,7 +1,7 @@
 package com.goga133.hsecoffee.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.goga133.hsecoffee.data.Response
+import com.goga133.hsecoffee.data.wrappers.JwtResponseWrapper
 import com.goga133.hsecoffee.entity.User
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
@@ -63,7 +63,7 @@ class JwtService(
      * Метод для валидации токена средствами [Jwts.parserBuilder]
      * @param token - JWT токен.
      */
-    fun validateToken(token: String): Response {
+    fun validateToken(token: String): JwtResponseWrapper {
         try {
             val claim = parseAccessToken(token)
 
@@ -71,21 +71,21 @@ class JwtService(
                 return getIncorrectTokenResponse()
         } catch (e: ExpiredJwtException) {
             logger.debug("Срок действие токена $token истекло.")
-            return Response(HttpStatus.FORBIDDEN, "The token has expired", null)
+            return JwtResponseWrapper(HttpStatus.FORBIDDEN, "The token has expired", null)
         } catch (e: JwtException) {
             return getIncorrectTokenResponse()
         }
 
         logger.debug("Токен $token успешно прошёл валидацию.")
-        return Response(
+        return JwtResponseWrapper(
             HttpStatus.OK,
             "Correct token",
             parseAccessToken(token).body?.subject ?: return getIncorrectTokenResponse()
         )
     }
 
-    private fun getIncorrectTokenResponse(): Response {
-        return Response(HttpStatus.UNAUTHORIZED, "Incorrect token", null)
+    private fun getIncorrectTokenResponse(): JwtResponseWrapper {
+        return JwtResponseWrapper(HttpStatus.UNAUTHORIZED, "Incorrect token", null)
     }
 
     /**
