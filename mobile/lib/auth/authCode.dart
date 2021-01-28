@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hse_coffee/RouterHelper.dart';
-import 'package:hse_coffee/business_logic/Api.dart';
-import 'package:hse_coffee/business_logic/UserStorage.dart';
+import 'package:hse_coffee/router_auth.dart';
+import 'package:hse_coffee/business_logic/api.dart';
+import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/widgets/button_continue.dart';
 import 'header.dart';
+
+import 'package:hse_coffee/widgets/dialog_loading.dart';
 
 class AuthCodeScreen extends StatefulWidget {
   static const String routeName = "/auth/code";
@@ -32,12 +34,18 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dialogLoading = DialogLoading(context: this.context);
+
     String code;
     final ScreenAuthCodeArguments args =
         ModalRoute.of(context).settings.arguments;
 
     void callSnackBar(String text) {
       globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    }
+
+    void errorSnackBar() {
+      callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
     }
 
     void _onRetry() {
@@ -60,27 +68,28 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
       }
 
       count++;
+      dialogLoading.show();
       Api.sendCode(args.email)
           .then((value) => {
+                dialogLoading.stop(),
                 if (value.statusCode == 200)
-                  {
-                    callSnackBar("Код был успешно выслан на почту повторно!")
-                  }
+                  {callSnackBar("Код был успешно выслан на почту повторно!")}
                 else
                   {
                     count--,
-                    callSnackBar(
-                        "К сожалению, произошла ошибка. Попробуйте позже.")
+                    errorSnackBar(),
                   }
               })
-          .catchError((Object object) => callSnackBar(
-              "Кажется, что-то не так с сетью. Попробуйте позже."));
+          .catchError((Object object) =>
+              {count--, dialogLoading.stop(), errorSnackBar()});
     }
 
     Future<void> _onPressed() async {
       if (textFieldKey.currentState.validate()) {
+        dialogLoading.show();
         Api.confirmCode(code, args.email)
             .then((value) => {
+                  dialogLoading.stop(),
                   if (value.isSuccess())
                     {
                       Api.getUser().then((value) => {
@@ -94,8 +103,8 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
                           "К сожалению, код неверный или произошла ошибка.")
                     }
                 })
-            .catchError((Object object) => callSnackBar(
-                "Кажется, что-то не так с сетью. Попробуйте позже."));
+            .catchError((Object object) =>
+                {dialogLoading.stop(), errorSnackBar()});
       }
     }
 

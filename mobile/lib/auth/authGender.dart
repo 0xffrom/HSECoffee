@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hse_coffee/business_logic/Api.dart';
-import 'package:hse_coffee/business_logic/UserStorage.dart';
+import 'package:hse_coffee/business_logic/api.dart';
+import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/gender.dart';
 import 'package:hse_coffee/widgets/button_continue.dart';
-import '../RouterHelper.dart';
+import '../router_auth.dart';
 import 'header.dart';
+
+import 'package:hse_coffee/widgets/dialog_loading.dart';
 
 class AuthGenderScreen extends StatefulWidget {
   static const String routeName = "/auth/gender";
@@ -34,6 +36,9 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final dialogLoading = DialogLoading(context: this.context);
+
     final _toggleButton = ToggleButton();
 
     bool _isValidInput() {
@@ -52,12 +57,16 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
                 ? Gender.MALE
                 : Gender.FEMALE;
 
+        dialogLoading.show();
+
         Api.setUser(UserStorage.instance.user).then((value) => {
               if (value.isSuccess())
                 RouterHelper.routeByUser(context, UserStorage.instance.user)
               else
                 callSnackBar("Произошла ошибка! Попробуйте позже.")
             });
+
+        dialogLoading.stop();
       }
     }
 

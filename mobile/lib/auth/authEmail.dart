@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hse_coffee/auth/authCode.dart';
 import 'package:hse_coffee/auth/header.dart';
-import 'package:hse_coffee/business_logic/Api.dart';
+import 'package:hse_coffee/widgets/dialog_loading.dart';
+import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/widgets/button_continue.dart';
 
 class AuthEmailScreen extends StatefulWidget {
@@ -31,17 +32,19 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dialogLoading = DialogLoading(context: this.context);
+
     void _nextPage() {
       Navigator.of(context).pushNamed(AuthCodeScreen.routeName,
           arguments: ScreenAuthCodeArguments(email));
     }
 
-    final errorSnackBar =
-        SnackBar(content: Text('Ошибка! Попробуйте повторить запрос позже.'));
+    void callSnackBar(String text) {
+      globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    }
 
-    void onError(Object error) {
-      count--;
-      globalKey.currentState.showSnackBar(errorSnackBar);
+    void errorSnackBar() {
+      callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
     }
 
     void _onPressed() {
@@ -65,9 +68,10 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
         }
 
         count++;
-
+        dialogLoading.show();
         Api.sendCode(email)
             .then((value) => {
+                  dialogLoading.stop(),
                   if (value.statusCode == 200)
                     {_nextPage()}
                   else
@@ -78,7 +82,8 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                           SnackBar(content: Text("Ошибка: ${value.message}")))
                     }
                 })
-            .catchError(onError);
+            .catchError((Object object) =>
+                {--count, dialogLoading.stop(), errorSnackBar()});
       }
     }
 
