@@ -13,16 +13,16 @@ class RouterHelper {
         user.lastName == null ||
         user.firstName.isEmpty ||
         user.lastName.isEmpty) {
-      Navigator.of(context).pushNamed(AuthNameScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(AuthNameScreen.routeName);
     }
     else if(user.gender == null || user.gender == Gender.NONE){
-      Navigator.of(context).pushNamed(AuthGenderScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(AuthGenderScreen.routeName);
     }
     else if(user.faculty == null || user.faculty == Faculty.NONE || user.course == null || user.course == 0){
-      Navigator.of(context).pushNamed(AuthFacultyScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(AuthFacultyScreen.routeName);
     }
     else {
-      Navigator.of(context).pushNamed(AuthFacultyScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(AuthFacultyScreen.routeName);
     }
   }
 }

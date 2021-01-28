@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:hse_coffee/business_logic/Auth.dart';
-import 'package:hse_coffee/business_logic/EventWrapper.dart';
+import 'package:hse_coffee/business_logic/auth.dart';
+import 'package:hse_coffee/business_logic/event_wrapper.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:http/http.dart' as http;
 
 
 class Api {
-  // http://188.120.233.197
-  static const String ip = "http://10.0.2.2:8081";
+  // http://10.0.2.2:8081
+  static const String ip = "http://188.120.233.197";
 
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
@@ -61,6 +61,9 @@ class Api {
     print("PUT: /api/user. accessToken = [$accessToken]");
 
     var jsonEnc = json.encode(user.toJson());
+
+    print(jsonEnc);
+
     final response = await http.put('$ip/api/user/settings/$accessToken', body: jsonEnc, headers: _JSON_HEADERS);
 
     print("Код: ${response.statusCode}");
