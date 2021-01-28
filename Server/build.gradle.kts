@@ -12,7 +12,7 @@ plugins {
 
 
 group = "com.goga133"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -24,7 +24,6 @@ application {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -47,10 +46,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
 }
-
-val appName = "app"
-val appVer = "0.0.2+app"
-
 
 tasks{
     bootJar {
