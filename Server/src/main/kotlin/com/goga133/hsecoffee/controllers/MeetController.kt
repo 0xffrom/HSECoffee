@@ -4,9 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.data.status.CancelStatus
 import com.goga133.hsecoffee.data.status.MeetStatus
 import com.goga133.hsecoffee.entity.SearchParams
-import com.goga133.hsecoffee.service.JwtService
+import com.goga133.hsecoffee.service.AuthService
 import com.goga133.hsecoffee.service.MeetService
-import com.goga133.hsecoffee.service.UserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import kotlin.math.log
 
 /**
  * Контроллер для управления встречами авторизованных пользователей.
@@ -32,16 +30,10 @@ class MeetController {
     private val logger: Logger = LoggerFactory.getLogger(MeetController::class.java)
 
     /**
-     * Сервис для работы с пользователями.
+     * Сервис для работы с авторизацией
      */
     @Autowired
-    private val userService: UserService? = null
-
-    /**
-     * Сервис для работы с JWT.
-     */
-    @Autowired
-    private val jwtService: JwtService? = null
+    private val authService: AuthService? = null
 
     /**
      * Сервис для работы с встречами.
@@ -57,24 +49,14 @@ class MeetController {
      * @see com.goga133.hsecoffee.entity.Meet
      */
     @RequestMapping(value = ["/api/meet/{token}"], method = [RequestMethod.GET])
-    fun getMeet(@PathVariable("token") token: String): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    fun getMeet(@PathVariable("token") token: String): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
+        val user = loginWrapper.user!!
 
 
         // Получаем встречу, если получить не удалось - возвращаем ошибку.
@@ -99,25 +81,16 @@ class MeetController {
     fun findMeet(
         @PathVariable("token") token: String,
         @RequestBody searchParams: SearchParams
-    ): ResponseEntity<String> {
+    ): ResponseEntity<String>? {
         // TODO: Добавить для пола
 
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
+        val user = loginWrapper.user!!
 
         val meetStatus = meetService?.searchMeet(user, searchParams)
 
@@ -138,28 +111,14 @@ class MeetController {
      * @see com.goga133.hsecoffee.entity.Meet
      */
     @RequestMapping(value = ["/api/meet/{token}"], method = [RequestMethod.DELETE])
-    fun cancelSearch(@PathVariable("token") token: String): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    fun cancelSearch(@PathVariable("token") token: String): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
 
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
-
-
-        // Получаем пользователя:
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
-
-
+        val user = loginWrapper.user!!
 
         return when (meetService?.cancelSearch(user).also {
             logger.info("Отмена встречи для user = $user прозошла со статусом $it.") }) {
@@ -178,24 +137,14 @@ class MeetController {
      * @see com.goga133.hsecoffee.entity.Meet
      */
     @RequestMapping(value = ["/api/meets/{token}"], method = [RequestMethod.GET])
-    fun getMeets(@PathVariable("token") token: String): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    fun getMeets(@PathVariable("token") token: String): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
-
+        val user = loginWrapper.user!!
 
         // Список встреч:
         val meets = meetService?.getMeets(user)

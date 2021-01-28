@@ -2,12 +2,11 @@ package com.goga133.hsecoffee.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.entity.User
+import com.goga133.hsecoffee.service.AuthService
 import com.goga133.hsecoffee.service.ImageStorageService
-import com.goga133.hsecoffee.service.JwtService
 import com.goga133.hsecoffee.service.UserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
-import kotlin.math.log
 
 
 /**
@@ -31,16 +29,16 @@ class UserController {
     private val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
 
     /**
+     * Сервис для работы с авторизацией
+     */
+    @Autowired
+    private val authService: AuthService? = null
+
+    /**
      * Сервис для работы с пользователями.
      */
     @Autowired
     private val userService: UserService? = null
-
-    /**
-     * Сервис для работы с JWT.
-     */
-    @Autowired
-    private val jwtService: JwtService? = null
 
     /**
      * Сервис для работы с загрузкой фотографий.
@@ -58,35 +56,22 @@ class UserController {
      * @see com.goga133.hsecoffee.entity.User
      */
     @RequestMapping(value = ["/api/user/settings/{token}"], method = [RequestMethod.PUT])
-    fun setSettings(@PathVariable("token") token: String, @RequestBody user: User): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    fun setSettings(@PathVariable("token") token: String, @RequestBody newUser: User): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-        val userDb = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
-
-        with(userDb) {
-            // Копируем текущего пользователя в пользователя БД:
-            BeanUtils.copyProperties(user, this,
-                "id", "createdDate", "email", "photoUri", "userStatus")
-
-            // Сохраняем
-            userService.save(this)
-
-            logger.info("Пользователю $user обновлены настройки.")
+        if(userService?.setSettings(loginWrapper.user!!, newUser) == true){
+            logger.info("Пользователю $newUser обновлены настройки.")
             return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(this))
         }
+
+        logger.warn("С пользователем $newUser возникла ошибка при обновлении настроек.")
+
+        return ResponseEntity.badRequest().body("Возникла ошибка.")
+
     }
 
     /**
@@ -98,23 +83,14 @@ class UserController {
      */
     @RequestMapping(value = ["/api/user/settings/{token}"], method = [RequestMethod.GET])
     @ResponseStatus(HttpStatus.OK)
-    fun getSettings(@PathVariable("token") token: String): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    fun getSettings(@PathVariable("token") token: String): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
+        val user = loginWrapper.user!!
 
         logger.info("Выданы настройки для пользователя $user")
         return ResponseEntity.ok(jacksonObjectMapper().writeValueAsString(user))
@@ -134,23 +110,14 @@ class UserController {
     fun setImage(
         @PathVariable("token") token: String,
         @RequestParam("image") image: MultipartFile
-    ): ResponseEntity<String> {
-        // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
-        val validator = jwtService?.validateToken(token).apply {
-            if (this?.httpStatus != HttpStatus.OK) {
-                logger.debug("Неверный токен: token = $token. Ошибка: ${this?.message}")
-                return ResponseEntity.status(this?.httpStatus ?: HttpStatus.BAD_REQUEST).body(this?.message)
-            }
+    ): ResponseEntity<String>? {
+        val loginWrapper = authService?.logByToken(token)
 
+        if(loginWrapper?.isSuccessful() != true){
+            return loginWrapper?.responseEntity
         }
-        // Читаем Email после валидации:
-        val email: String =
-            validator?.email ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Возникла ошибка при валидации токена.")
 
-        val user = userService?.getUserByEmail(email) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Возникла серверная ошибка")
-            .apply { logger.warn("При верном token = $token пользователя не существует.") }
+        val user = loginWrapper.user!!
 
         if (imageStorageService?.correctFile(image) == false) {
             logger.debug("Пользователь $user заслал некорректный файл.")
