@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hse_coffee/auth/authCode.dart';
 import 'package:hse_coffee/auth/authEmail.dart';
 import 'package:hse_coffee/auth/authName.dart';
 import 'package:hse_coffee/auth/authGender.dart';
-import 'package:hse_coffee/splash/Splash.dart';
+import 'package:hse_coffee/splash/splash.dart';
 
 import 'auth/authFaculty.dart';
-import 'home/Home.dart';
+import 'home/home.dart';
 
-// Запуск приложения
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(new MyApp());
+  });
+}
 
-// Основной виджет приложения
 class MyApp extends StatelessWidget {
 
-  // Формируем маршрутизацию приложения
   final routes = <String, WidgetBuilder>{
     AuthFacultyScreen.routeName: (BuildContext context) => AuthFacultyScreen(),
     AuthNameScreen.routeName: (BuildContext context) => AuthNameScreen(),
@@ -24,15 +28,11 @@ class MyApp extends StatelessWidget {
     HomeScreen.routeName: (BuildContext context) => HomeScreen(title: 'HSECoffee')
   };
 
-  // Необходимо переопределить метод строительства инстанса виджета
   @override
   Widget build(BuildContext context) {
-    // Это будет приложение с поддержкой Material Design
     return MaterialApp(
       title: 'HSEcoffee',
-      // в котором будет Splash Screen с указанием следующего маршрута
       home: SplashScreen(nextRoute: '/auth/email'),
-      // передаём маршруты в приложение
       routes: routes,
     );
   }
