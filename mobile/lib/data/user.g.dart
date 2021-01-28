@@ -12,6 +12,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
     firstName: json['firstName'] as String,
     lastName: json['lastName'] as String,
     gender: _$enumDecodeNullable(_$GenderEnumMap, json['gender']),
+    degree: _$enumDecodeNullable(_$DegreeEnumMap, json['degree']),
     faculty: _$enumDecodeNullable(_$FacultyEnumMap, json['faculty']),
     contacts: (json['contacts'] as List)
         ?.map((e) =>
@@ -27,6 +28,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'gender': _$GenderEnumMap[instance.gender],
+      'degree': _$DegreeEnumMap[instance.degree],
       'faculty': _$FacultyEnumMap[instance.faculty],
       'contacts': instance.contacts?.map((e) => e?.toJson())?.toList(),
       'course': instance.course,
@@ -69,6 +71,14 @@ const _$GenderEnumMap = {
   Gender.MALE: 'MALE',
   Gender.FEMALE: 'FEMALE',
   Gender.NONE: 'NONE',
+};
+
+const _$DegreeEnumMap = {
+  Degree.NONE: 'NONE',
+  Degree.BACHELOR: 'BACHELOR',
+  Degree.MAGISTRACY: 'MAGISTRACY',
+  Degree.SPECIALTY: 'SPECIALTY',
+  Degree.POSTGRADUATE: 'POSTGRADUATE',
 };
 
 const _$FacultyEnumMap = {
