@@ -4,6 +4,7 @@ package com.goga133.hsecoffee.data
  * Enum class. Перечисление доступных факультетов НИУ ВШЭ.
  */
 enum class Faculty {
+    NONE,
     LYCEUM,
     MATH,
     ECONOMY,
@@ -24,6 +25,5 @@ enum class Faculty {
     GEOGRAPHY,
     LANGUAGE,
     STATISTIC,
-    BANK,
-    NONE
+    BANK
 }
