@@ -73,14 +73,14 @@ class _SplashScreenState extends State<SplashScreen> {
                                   style: TextStyle(
                                       fontFamily: 'Nunito',
                                       color: Colors.black,
-                                      fontSize: 54,
+                                      fontSize: 48,
                                       fontWeight: FontWeight.bold)),
                               TextSpan(
                                   text: "HSEcoffee",
                                   style: TextStyle(
                                       fontFamily: 'Nunito',
                                       color: Colors.white,
-                                      fontSize: 58,
+                                      fontSize: 54,
                                       fontWeight: FontWeight.bold))
                             ])))),
                   ],
