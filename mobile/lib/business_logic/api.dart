@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class Api {
   // http://10.0.2.2:8081
-  static const String ip = "http://188.120.233.197";
+  static const String ip = "http://10.0.2.2:8081";
 
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
@@ -96,6 +96,7 @@ class Api {
     if (response.statusCode == 200) {
       var user =  User.fromJson(jsonDecode(response.body));
 
+      print("GET 200: ${user.toString()}");
       return EventWrapper(response.statusCode, user, "Удачно");
     }
 
