@@ -26,8 +26,7 @@ Build automation tool: **Gradle**
 Libraries: **spring-boot mail, spring-boot data-jpa, Junit 4, mssql-jdbc, jjwt-api, jjwt-jackson, kotlinx-coroutines-core**
 
 ### **Build**
-Configure [application.property](https://github.com/goga133/HSECoffee/blob/main/Server/src/main/resources/application.properties) and then run a **./gradlew build**.
-In /build/libs folder will contain a jar file.
+Configure [application.property](https://github.com/goga133/HSECoffee/blob/main/Server/src/main/resources/application.properties) and then run a **./gradlew build**, **/build/libs** will contain a jar file.
 
 ### **Launch**
 
