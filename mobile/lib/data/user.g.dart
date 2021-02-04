@@ -17,7 +17,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
     contacts: (json['contacts'] as List)
         ?.map((e) =>
             e == null ? null : Contact.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+        ?.toSet(),
     course: json['course'] as int,
     photoUri: json['photoUri'] as String,
   );

@@ -15,7 +15,7 @@ class User {
   Gender gender;
   Degree degree;
   Faculty faculty;
-  List<Contact> contacts;
+  Set<Contact> contacts;
   int course;
   String photoUri;
 
