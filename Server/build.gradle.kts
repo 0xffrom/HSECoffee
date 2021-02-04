@@ -1,6 +1,4 @@
-import org.jetbrains.kotlin.cli.jvm.compiler.findMainClass
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     application
@@ -12,7 +10,7 @@ plugins {
 
 
 group = "com.goga133"
-version = "0.0.3-SNAPSHOT"
+version = "0.0.4-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -27,11 +25,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("junit:junit:4.12")
     compileOnly( "org.springframework.boot:spring-boot-configuration-processor")
-    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     runtimeOnly("mysql:mysql-connector-java")
     runtimeOnly("com.h2database:h2:1.4.200")
 
@@ -65,7 +61,7 @@ tasks.withType<KotlinCompile> {
 
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "14"
     }
 }
 
