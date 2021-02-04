@@ -1,5 +1,6 @@
 package com.goga133.hsecoffee.service
 
+import com.goga133.hsecoffee.entity.Contact
 import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.repository.UserRepository
 import org.slf4j.Logger
@@ -91,20 +92,25 @@ class UserService(
 
     }
 
-    fun setSettings(oldUser: User, newUser: User) : Boolean{
+    fun setSettings(oldUser: User, newUser: User): Boolean {
         try {
-            with(oldUser) {
-                // Копируем текущего пользователя в пользователя БД:
-                BeanUtils.copyProperties(
-                    newUser, this,
-                    "id", "createdDate", "email", "photoUri", "userStatus"
-                )
+            // Копируем текущего пользователя в пользователя БД:
+            BeanUtils.copyProperties(
+                newUser, oldUser,
+                "id", "createdDate", "email", "photoUri", "userStatus", "contacts"
+            )
 
-                // Сохраняем
-                save(this)
+            oldUser.contacts.apply {
+                clear()
+                addAll(newUser.contacts.map {
+                    Contact(0, null, it.name, it.value)
+                })
             }
-        }
-        catch (e : Exception){
+            // Сохраняем
+            save(oldUser)
+
+        } catch (e: Exception) {
+            logger.error(e.message)
             return false
         }
 

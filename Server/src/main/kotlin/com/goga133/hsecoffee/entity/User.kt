@@ -19,7 +19,7 @@ data class User(
     val id: Long = 0,
 
     @Column(name = "email", nullable = false, unique = true)
-    val email: String = "",
+    var email: String = "",
 
     @Column(name = "first_name")
     var firstName: String = "",
@@ -43,9 +43,8 @@ data class User(
     @Column(name = "degree")
     var degree: Degree = Degree.NONE,
 
-    @Column(name = "contacts")
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    var contacts: Set<Contact> = HashSet<Contact>(),
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], targetEntity = Contact::class)
+    val contacts: MutableList<Contact> = ArrayList(),
 
     @Column(name = "course")
     var course: Int = 0,
