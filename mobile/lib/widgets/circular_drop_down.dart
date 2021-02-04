@@ -36,10 +36,11 @@ class _CircularDropDownMenuState extends State<CircularDropDownMenu> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
+          isExpanded: true,
           items: widget.dropDownMenuItem,
           onChanged: widget.onChanged,
           hint: Text(
-            widget.hintText.length > 25 ? widget.hintText.substring(0,25) + "..." :widget.hintText,
+            widget.hintText.length > 35 ? widget.hintText.substring(0,35) + "..." :widget.hintText,
             style: TextStyle(
               fontFamily: 'Muli',
             ),
