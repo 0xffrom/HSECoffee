@@ -37,7 +37,6 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
 
   final _slider = _Slider();
 
-
   @override
   void initState() {
     super.initState();
@@ -54,7 +53,6 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final dialogLoading = DialogLoading(context: this.context);
 
     void _onButtonClick() {
@@ -64,24 +62,21 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
 
       if (currentFaculty == Faculty.NONE) {
         callSnackBar("Пожалуйста, выберите свою образовательную программу!");
-      }
-      else if (currentDegree == Degree.NONE) {
+      } else if (currentDegree == Degree.NONE) {
         callSnackBar("Пожалуйста, выберите акадимическую степень!");
-      }
-      else {
+      } else {
         UserStorage.instance.user.faculty = currentFaculty;
         UserStorage.instance.user.degree = currentDegree;
         UserStorage.instance.user.course = course.toInt();
 
         dialogLoading.show();
 
-        Api.setUser(UserStorage.instance.user).then((value) =>
-        {
-          if (value.isSuccess())
-            RouterHelper.routeByUser(context, UserStorage.instance.user)
-          else
-            callSnackBar("Произошла ошибка! Попробуйте позже.")
-        });
+        Api.setUser(UserStorage.instance.user).then((value) => {
+              if (value.isSuccess())
+                RouterHelper.routeByUser(context, UserStorage.instance.user)
+              else
+                callSnackBar("Произошла ошибка! Попробуйте позже.")
+            });
 
         dialogLoading.stop();
         return;
@@ -91,7 +86,9 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
     return Scaffold(
         key: globalKey,
         body: Builder(
-            builder: (context) =>
+            builder: (context) => SingleChildScrollView(
+                reverse: true,
+                child:
                 Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Образовательная\nпрограмма"),
                   Padding(
@@ -106,13 +103,11 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
                     padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("Курс: "),
-                        _slider
-                      ],),
+                      children: <Widget>[Text("Курс: "), _slider],
+                    ),
                   ),
                   ButtonContinue(onPressed: _onButtonClick)
-                ])));
+                ]))));
   }
 }
 
@@ -145,9 +140,9 @@ class _DropDownState<T> extends State<_DropDown> {
             setState(() {
               this.value = value;
               this.hint = ((items
-                  .firstWhere((element) => element.value == value)
-                  .child as GestureDetector)
-                  .child as Text)
+                          .firstWhere((element) => element.value == value)
+                          .child as GestureDetector)
+                      .child as Text)
                   .data;
             });
           },
@@ -157,7 +152,6 @@ class _DropDownState<T> extends State<_DropDown> {
     );
   }
 }
-
 
 class _Slider extends StatefulWidget {
   final state = _SliderState();
@@ -177,8 +171,8 @@ class _SliderState extends State<_Slider> {
     return Slider(
       value: currentSliderValue,
       min: 1,
-      max: 5,
-      divisions: 4,
+      max: 6,
+      divisions: 5,
       label: currentSliderValue.round().toString() + " курс",
       onChanged: (double value) {
         isInit = true;

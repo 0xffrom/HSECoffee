@@ -35,7 +35,7 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
     final dialogLoading = DialogLoading(context: this.context);
 
     void _nextPage() {
-      Navigator.of(context).pushNamed(AuthCodeScreen.routeName,
+      Navigator.of(context).pushReplacementNamed(AuthCodeScreen.routeName,
           arguments: ScreenAuthCodeArguments(email));
     }
 
@@ -69,7 +69,7 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
 
         count++;
         dialogLoading.show();
-        Api.sendCode(email)
+        Api.sendCode(email.toLowerCase())
             .then((value) => {
                   dialogLoading.stop(),
                   if (value.statusCode == 200)
@@ -92,20 +92,25 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
         return false;
       }
 
-      return (email.endsWith("@edu.hse.ru") || email.endsWith("@hse.ru"));
+      return (email.toLowerCase().endsWith("@edu.hse.ru") || email.toLowerCase().endsWith("@hse.ru"));
     }
 
     return Scaffold(
         key: globalKey,
+        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomPadding: true,
         body: Builder(
-            builder: (context) =>
-                Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            builder: (context) => SingleChildScrollView(
+                reverse: true,
+                child:
+                    Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Моя почта"),
                   Padding(
                     padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 10.0),
                     child: Form(
                         key: textFieldKey,
                         child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
                           cursorColor: Colors.blueAccent,
                           decoration: InputDecoration(
                             icon: Icon(Icons.email),
@@ -126,12 +131,13 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                             ),
                             labelText: 'Моя почта',
                           ),
-                          validator: (input) => _isValidEmailForm(input)
+                          validator: (input) => _isValidEmailForm(input.trim())
                               ? null
                               : "Не забудьте @hse.ru или @edu.hse.ru",
                           onChanged: (String value) {
-                            email = value;
+                            email = value.trim();
                           },
+                          onEditingComplete: _onPressed,
                         )),
                   ),
                   Padding(
@@ -145,6 +151,6 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                         )),
                   ),
                   ButtonContinue(onPressed: _onPressed),
-                ])));
+                ]))));
   }
 }

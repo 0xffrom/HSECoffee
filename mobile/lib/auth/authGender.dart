@@ -36,7 +36,6 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final dialogLoading = DialogLoading(context: this.context);
 
     final _toggleButton = ToggleButton();
@@ -73,8 +72,10 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
     return Scaffold(
         key: globalKey,
         body: Builder(
-            builder: (context) =>
-                Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            builder: (context) => SingleChildScrollView(
+                reverse: true,
+                child:
+                    Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Мой пол"),
                   _toggleButton,
                   Padding(
@@ -89,7 +90,7 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
                         ),
                       )),
                   ButtonContinue(onPressed: _onButtonClick),
-                ])));
+                ]))));
   }
 }
 

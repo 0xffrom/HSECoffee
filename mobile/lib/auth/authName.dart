@@ -64,8 +64,10 @@ class _AuthNameScreen extends State<AuthNameScreen> {
     return Scaffold(
         key: globalKey,
         body: Builder(
-            builder: (context) =>
-                Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            builder: (context) => SingleChildScrollView(
+                reverse: true,
+                child:
+                    Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Меня зовут"),
                   Form(
                       key: textFieldsKey,
@@ -90,7 +92,7 @@ class _AuthNameScreen extends State<AuthNameScreen> {
                         ],
                       )),
                   ButtonContinue(onPressed: _onButtonClick)
-                ])));
+                ]))));
   }
 }
 
@@ -111,6 +113,7 @@ class TextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: TextInputType.name,
       controller: this.controller,
       validator: (input) =>
           _isValidName(input) ? null : "Пожалуйста, заполните корректно поле!",
