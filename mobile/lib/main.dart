@@ -5,6 +5,7 @@ import 'package:hse_coffee/auth/authEmail.dart';
 import 'package:hse_coffee/auth/authName.dart';
 import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/auth/auth_contacts.dart';
+import 'package:hse_coffee/auth/auth_photo.dart';
 import 'package:hse_coffee/splash/splash.dart';
 
 import 'auth/authFaculty.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
     AuthCodeScreen.routeName: (BuildContext context) => AuthCodeScreen(),
     AuthEmailScreen.routeName: (BuildContext context) => AuthEmailScreen(),
     AuthGenderScreen.routeName: (BuildContext context) => AuthGenderScreen(),
+    AuthPhotoScreen.routeName: (BuildContext context) => AuthPhotoScreen(),
     AuthContactsScreen.routeName: (BuildContext context) =>
         AuthContactsScreen(),
     HomeScreen.routeName: (BuildContext context) =>

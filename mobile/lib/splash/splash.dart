@@ -1,10 +1,10 @@
 import 'dart:core';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hse_coffee/splash/splash_background.dart';
 
 class SplashScreen extends StatefulWidget {
   final String nextRoute;
-
 
   SplashScreen({this.nextRoute});
 
@@ -40,61 +40,33 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            decoration: new BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                  Color.fromRGBO(10, 70, 252, 1.0),
-                  Color.fromRGBO(151, 183, 250, 1.0)
-                ])),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                    child: Stack(children: <Widget>[
-                  Positioned(
-                      top: -150, left: -40, child: buildCube(-45, 300, 300)),
-                  Positioned(
-                      top: -50, right: 10, child: buildCube(-45, 200, 200))
-                ])),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 30.0),
-                            child: RichText(
-                                text: TextSpan(children: <TextSpan>[
-                              TextSpan(
-                                  text: "Добро пожаловать в ",
-                                  style: TextStyle(
-                                      fontFamily: 'Nunito',
-                                      color: Colors.black,
-                                      fontSize: 48,
-                                      fontWeight: FontWeight.bold)),
-                              TextSpan(
-                                  text: "HSEcoffee",
-                                  style: TextStyle(
-                                      fontFamily: 'Nunito',
-                                      color: Colors.white,
-                                      fontSize: 54,
-                                      fontWeight: FontWeight.bold))
-                            ])))),
-                  ],
-                ),
-                Expanded(
-                    child: Stack(children: <Widget>[
-                  Positioned(
-                      left: -30, bottom: -150, child: buildCube(-45, 300, 300)),
-                  Positioned(
-                      right: -20,
-                      bottom: -170,
-                      child: buildCube(-45, 300, 300)),
-                ]))
-              ],
-            )));
+        body: CustomPaint(
+            painter: BluePainter(),
+            child: Column(children: <Widget>[
+              Container(
+                  width: double.infinity,
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+                      child: RichText(
+                          text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                            text: "Добро\nпожаловать\nв ",
+                            style: TextStyle(
+                                fontFamily: 'Nunito',
+                                color: Colors.black,
+                                fontSize: 52,
+                                fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text: "HSEcoffee",
+                            style: TextStyle(
+                                fontFamily: 'Nunito',
+                                color: Colors.blueAccent,
+                                fontSize: 56,
+                                fontWeight: FontWeight.bold))
+                      ])))),
+              Transform.rotate(
+                  angle: 76, child: Image(image: AssetImage('images/bird.png')))
+            ])));
   }
 }

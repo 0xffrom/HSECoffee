@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hse_coffee/auth/auth_contacts.dart';
+import 'package:hse_coffee/auth/auth_photo.dart';
 import 'auth/authFaculty.dart';
 import 'package:hse_coffee/auth/authGender.dart';
 import 'package:hse_coffee/data/faculty.dart';
@@ -26,7 +27,7 @@ class RouterHelper {
       Navigator.of(context).pushReplacementNamed(AuthContactsScreen.routeName);
     }
     else {
-      Navigator.of(context).pushReplacementNamed(AuthContactsScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(AuthPhotoScreen.routeName);
     }
   }
 }
