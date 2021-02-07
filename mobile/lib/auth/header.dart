@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hse_coffee/business_logic/api.dart';
-import 'package:hse_coffee/business_logic/user_storage.dart';
 
 class Header extends StatelessWidget {
   Header({Key key, this.title, this.image}) : super(key: key);
@@ -37,13 +35,15 @@ class Header extends StatelessWidget {
                 child: SizedBox(height: 75, width: 75))),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 80),
-          child: image == null ? Text(title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: 'Nunito',
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold)) : image,
+          child: image == null
+              ? Text(title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Nunito',
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold))
+              : image,
         )
       ],
     );
