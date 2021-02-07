@@ -92,13 +92,12 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
         return false;
       }
 
-      return (email.toLowerCase().endsWith("@edu.hse.ru") || email.toLowerCase().endsWith("@hse.ru"));
+      return (email.toLowerCase().endsWith("@edu.hse.ru") ||
+          email.toLowerCase().endsWith("@hse.ru"));
     }
 
     return Scaffold(
         key: globalKey,
-        resizeToAvoidBottomInset: true,
-        resizeToAvoidBottomPadding: true,
         body: Builder(
             builder: (context) => SingleChildScrollView(
                 reverse: true,
