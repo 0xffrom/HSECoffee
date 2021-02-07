@@ -10,7 +10,7 @@ plugins {
 
 
 group = "com.goga133"
-version = "0.0.4-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -61,7 +61,7 @@ tasks.withType<KotlinCompile> {
 
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "14"
+        jvmTarget = "11"
     }
 }
 
