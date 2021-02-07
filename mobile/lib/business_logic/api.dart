@@ -1,18 +1,22 @@
 import 'dart:convert';
-
 import 'package:hse_coffee/business_logic/auth.dart';
 import 'package:hse_coffee/business_logic/event_wrapper.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:http/http.dart' as http;
-
+import 'dart:io';
+import 'package:dio/dio.dart' as dio;
 
 class Api {
   // http://10.0.2.2:8081
-  static const String ip = "http://10.0.2.2:8081";
+  static const String ip = "http://188.120.233.197/";
 
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
   };
+
+  static String getImageUrl(){
+    return ip;
+  }
 
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
@@ -79,6 +83,39 @@ class Api {
 
     if (response.body != null)
       return EventWrapper(response.statusCode, null, response.body);
+
+    return EventWrapper(
+        response.statusCode, null, "Связь с сервером не была установлена");
+
+  }
+
+  static Future<EventWrapper<bool>> setPhoto(User user, File file) async {
+    final accessToken = (await Auth.getData())["access"];
+    print("POST: api/user/image/. accessToken = [$accessToken]");
+
+    var jsonEnc = json.encode(user.toJson());
+
+    print(jsonEnc);
+
+    dio.FormData formData = new dio.FormData.fromMap({
+      "image": await dio.MultipartFile.fromFile(file.path)
+    });
+
+    final response = await dio.Dio().post("$ip/api/user/image/$accessToken", data: formData);
+
+    print("Код: ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      return EventWrapper(response.statusCode, true, "Удачно");
+    }
+
+    if ((response.statusCode == 403 || response.statusCode == 401) &&
+        (await _updateTokens()) == true) {
+      return setUser(user);
+    }
+
+    if (response.data != null)
+      return EventWrapper(response.statusCode, null, response.data);
 
     return EventWrapper(
         response.statusCode, null, "Связь с сервером не была установлена");
