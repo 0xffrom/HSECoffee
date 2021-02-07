@@ -28,7 +28,7 @@ class _AuthNameScreen extends State<AuthNameScreen> {
   }
 
   void callSnackBar(String text) {
-    globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override

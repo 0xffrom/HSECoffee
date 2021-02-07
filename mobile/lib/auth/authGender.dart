@@ -26,7 +26,7 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
   }
 
   void callSnackBar(String text) {
-    globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override

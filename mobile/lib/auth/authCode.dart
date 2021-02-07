@@ -41,7 +41,7 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
         ModalRoute.of(context).settings.arguments;
 
     void callSnackBar(String text) {
-      globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
     }
 
     void errorSnackBar() {

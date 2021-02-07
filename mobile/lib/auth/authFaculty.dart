@@ -43,7 +43,7 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
   }
 
   void callSnackBar(String text) {
-    globalKey.currentState.showSnackBar(SnackBar(content: Text(text)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override
@@ -89,7 +89,7 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
             builder: (context) => SingleChildScrollView(
                 reverse: true,
                 child:
-                Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                    Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Образовательная\nпрограмма"),
                   Padding(
                     padding: EdgeInsets.fromLTRB(45.0, 30.0, 45.0, 10.0),
