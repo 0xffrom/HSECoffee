@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hse_coffee/auth/authCode.dart';
-import 'package:hse_coffee/auth/authEmail.dart';
-import 'package:hse_coffee/auth/authName.dart';
-import 'package:hse_coffee/auth/authGender.dart';
-import 'package:hse_coffee/auth/auth_contacts.dart';
-import 'package:hse_coffee/auth/auth_photo.dart';
-import 'package:hse_coffee/splash/splash.dart';
-
-import 'auth/authFaculty.dart';
-import 'home/home.dart';
-
+import 'package:hse_coffee/ui/auth/auth_code.dart';
+import 'package:hse_coffee/ui/auth/auth_contacts.dart';
+import 'package:hse_coffee/ui/auth/auth_email.dart';
+import 'package:hse_coffee/ui/auth/auth_faculty.dart';
+import 'package:hse_coffee/ui/auth/auth_gender.dart';
+import 'package:hse_coffee/ui/auth/auth_name.dart';
+import 'package:hse_coffee/ui/auth/auth_photo.dart';
+import 'package:hse_coffee/ui/home/home.dart';
+import 'package:hse_coffee/ui/splash/splash.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -27,10 +25,8 @@ class MyApp extends StatelessWidget {
     AuthEmailScreen.routeName: (BuildContext context) => AuthEmailScreen(),
     AuthGenderScreen.routeName: (BuildContext context) => AuthGenderScreen(),
     AuthPhotoScreen.routeName: (BuildContext context) => AuthPhotoScreen(),
-    AuthContactsScreen.routeName: (BuildContext context) =>
-        AuthContactsScreen(),
-    HomeScreen.routeName: (BuildContext context) =>
-        HomeScreen(title: 'HSECoffee')
+    AuthContactsScreen.routeName: (BuildContext context) => AuthContactsScreen(),
+    HomeScreen.routeName: (BuildContext context) => HomeScreen(title: 'HSECoffee')
   };
 
   @override

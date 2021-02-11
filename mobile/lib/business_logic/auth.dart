@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:device_info/device_info.dart';
@@ -7,8 +8,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Auth {
   static final String emailKey = "email";
-  static final String accessTokenKey = "access";
-  static final String refreshTokenKey = "refresh";
+  static final String accessTokenKey = "accessToken";
+  static final String refreshTokenKey = "refreshToken";
 
   static Future<void> saveDataByJson(String email, String json) async {
     Map<String, dynamic> jsonMap = jsonDecode(json);
@@ -38,5 +39,17 @@ class Auth {
       var androidDeviceInfo = await deviceInfo.androidInfo;
       return androidDeviceInfo.androidId; // unique ID on Android
     }
+  }
+
+  static Future<String> getAccessToken() async {
+    return (await Auth.getData())[Auth.accessTokenKey];
+  }
+
+  static  Future<String> getEmail() async{
+    return (await Auth.getData())[Auth.emailKey];
+  }
+
+  static  Future<String> getRefreshToken() async{
+    return (await Auth.getData())[Auth.refreshTokenKey];
   }
 }

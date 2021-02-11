@@ -1,7 +1,12 @@
 import 'dart:core';
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hse_coffee/splash/splash_background.dart';
+import 'package:hse_coffee/business_logic/api.dart';
+import 'package:hse_coffee/business_logic/auth.dart';
+import 'package:hse_coffee/business_logic/user_storage.dart';
+import 'package:hse_coffee/router_auth.dart';
+import 'package:hse_coffee/ui/splash/splash_background.dart';
 
 class SplashScreen extends StatefulWidget {
   final String nextRoute;
@@ -20,8 +25,30 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacementNamed(widget.nextRoute);
+    Timer(Duration(seconds: 3), () {
+      Auth.getData()
+          .then((value) => {
+        if (value.containsKey(Auth.refreshTokenKey))
+          {
+            Api.getUser().then((value) => {
+              if (value.isSuccess())
+                {
+                  UserStorage.instance.user = value.getData(),
+                  RouterHelper.routeByUser(context, value.getData())
+                }
+              else
+                {
+                  Navigator.of(context)
+                      .pushReplacementNamed(widget.nextRoute)
+                }
+            })
+          }
+        else{
+          Navigator.of(context)
+              .pushReplacementNamed(widget.nextRoute)
+        }
+      })
+          .catchError((obj) => Navigator.of(context).pushReplacementNamed(widget.nextRoute));
     });
   }
 
@@ -55,18 +82,27 @@ class _SplashScreenState extends State<SplashScreen> {
                             style: TextStyle(
                                 fontFamily: 'Nunito',
                                 color: Colors.black,
-                                fontSize: 52,
+                                fontSize: 48,
                                 fontWeight: FontWeight.bold)),
                         TextSpan(
                             text: "HSEcoffee",
                             style: TextStyle(
                                 fontFamily: 'Nunito',
                                 color: Colors.blueAccent,
-                                fontSize: 56,
+                                fontSize: 52,
                                 fontWeight: FontWeight.bold))
                       ])))),
               Transform.rotate(
-                  angle: 76, child: Image(image: AssetImage('images/bird.png')))
+                  angle: 76,
+                  child: Image(image: AssetImage('images/bird.png'))),
+              Expanded(
+                  child: Padding(
+                padding: EdgeInsets.all(15),
+                child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 4.0, backgroundColor: Colors.white)),
+              ))
             ])));
   }
 }

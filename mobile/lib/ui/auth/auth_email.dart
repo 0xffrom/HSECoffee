@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hse_coffee/auth/authCode.dart';
-import 'package:hse_coffee/auth/header.dart';
-import 'package:hse_coffee/widgets/dialog_loading.dart';
 import 'package:hse_coffee/business_logic/api.dart';
-import 'package:hse_coffee/widgets/button_continue.dart';
+import 'package:hse_coffee/ui/widgets/button_continue.dart';
+import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
+import '../../router_auth.dart';
+import 'auth_code.dart';
+import 'header.dart';
 
 class AuthEmailScreen extends StatefulWidget {
   static const String routeName = "/auth/email";
@@ -83,7 +84,7 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                     }
                 })
             .catchError((Object object) =>
-                {--count, dialogLoading.stop(), errorSnackBar()});
+                {print(object), --count, dialogLoading.stop(), errorSnackBar()});
       }
     }
 

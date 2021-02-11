@@ -6,13 +6,12 @@ import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:hse_coffee/widgets/button_continue.dart';
-import '../router_auth.dart';
 import 'header.dart';
 import 'dart:io';
-
+import 'package:hse_coffee/ui/widgets/button_continue.dart';
+import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
+import '../../router_auth.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:hse_coffee/widgets/dialog_loading.dart';
 
 class AuthPhotoScreen extends StatefulWidget {
   static const String routeName = "/auth/photo";
@@ -41,22 +40,19 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
-  void _sendImage() {
-    var dialogLoading = DialogLoading(context: context);
-
-    dialogLoading.show();
-    Api.setPhoto(UserStorage.instance.user, _image).then((value) => {
+  Future _sendImage() {
+    return Api.setPhoto(UserStorage.instance.user, _image).then((value) => {
           if (value.isSuccess())
             {
               Api.getUser().then((value) => {
                     UserStorage.instance.user = value.getData(),
+                    setState(() {}),
                     RouterHelper.routeByUser(context, value.getData())
                   })
             }
           else
             {callSnackBar("К сожалению, не удалось загрузить фотографию.")}
         });
-    dialogLoading.stop();
   }
 
   Future getImage(ImageSource source) async {
@@ -74,7 +70,9 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
       setState(() {
         //
       });
-      _sendImage();
+      var dialogLoading = DialogLoading(context: context);
+      dialogLoading.show();
+      _sendImage().then((value) => dialogLoading.stop());
     }
   }
 
@@ -86,13 +84,13 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              title: Text("Pick from Gallery"),
+              title: Text("Выбрать из галерии"),
               onTap: () {
                 getImage(ImageSource.gallery);
               },
             ),
             ListTile(
-              title: Text("Take a picture"),
+              title: Text("Сделать фотографию"),
               onTap: () {
                 getImage(ImageSource.camera);
               },
@@ -106,7 +104,12 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
   @override
   Widget build(BuildContext context) {
     void _onButtonClick() {
-      print(_image);
+      var user = UserStorage.instance.user;
+      if (user.photoUri.contains(user.email)) {
+        RouterHelper.routeByUser(context, user);
+      } else {
+        callSnackBar("Загрузите свою фотографию, это важно!");
+      }
     }
 
     return Scaffold(
@@ -134,8 +137,16 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
                         backgroundImage:
                             _image != null ? FileImage(_image) : null,
                       )),
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
+                      child: Text(
+                        "Загрузите, пожалуйста, свою фотографию. Вашему будущему собеседнику будет приятно!",
+                        style: TextStyle(color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      )),
                   GradientButton(
-                    child: Text("Продолжить", style: TextStyle(fontSize: 16.0)),
+                    child: Text("Загрузить фотографию",
+                        style: TextStyle(fontSize: 16.0)),
                     callback: () {
                       _showPickOptionsDialog(context);
                     },
@@ -152,7 +163,9 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
                     shadowColor:
                         Gradients.backToFuture.colors.last.withOpacity(0.25),
                   ),
-                  ButtonContinue(onPressed: _onButtonClick)
+                  Expanded(
+                      child: Center(
+                          child: ButtonContinue(onPressed: _onButtonClick)))
                 ])));
   }
 }

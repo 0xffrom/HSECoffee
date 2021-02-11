@@ -5,16 +5,16 @@ import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/degree.dart';
-import 'package:hse_coffee/widgets/button_continue.dart';
-import '../router_auth.dart';
 import '../widgets/circular_drop_down.dart';
 import 'header.dart';
 
-import 'package:hse_coffee/widgets/dialog_loading.dart';
+import 'package:hse_coffee/ui/widgets/button_continue.dart';
+import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
+import '../../router_auth.dart';
 import '../widgets/auth_faculty_items.dart';
 
 class AuthFacultyScreen extends StatefulWidget {
-  static const String routeName = "/auth/faculty";
+  static const String routeName = "/ui/auth/faculty";
 
   @override
   _AuthFacultyScreen createState() => _AuthFacultyScreen();

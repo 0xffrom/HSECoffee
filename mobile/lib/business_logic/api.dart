@@ -8,20 +8,23 @@ import 'package:dio/dio.dart' as dio;
 
 class Api {
   // http://10.0.2.2:8081
-  static const String ip = "http://188.120.233.197/";
+  static const String _Ip = "http://188.120.233.197/";
 
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
   };
 
   static String getImageUrl(){
-    return ip;
+    return _Ip;
   }
 
+  static String getImageByUser(User user){
+    return _Ip + user.photoUri;
+  }
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
 
-    final response = await http.post('$ip/api/code?email=$email');
+    final response = await http.post('$_Ip/api/code?email=$email');
 
     print("Код: ${response.statusCode}");
 
@@ -43,7 +46,7 @@ class Api {
     print(
         "/api/confirm. Email: $email; fingerprint: $fingerprint; code: $code");
 
-    final response = await http.post('$ip/api/confirm',
+    final response = await http.post('$_Ip/api/confirm',
         body: {"email": email, "fingerprint": fingerprint, "code": code});
 
     print("Код: ${response.statusCode}");
@@ -61,14 +64,14 @@ class Api {
   }
 
   static Future<EventWrapper<bool>> setUser(User user) async {
-    final accessToken = (await Auth.getData())["access"];
+    final accessToken = await Auth.getAccessToken();
     print("PUT: /api/user. accessToken = [$accessToken]");
 
     var jsonEnc = json.encode(user.toJson());
 
     print(jsonEnc);
 
-    final response = await http.put('$ip/api/user/settings/$accessToken', body: jsonEnc, headers: _JSON_HEADERS);
+    final response = await http.put('$_Ip/api/user/settings/$accessToken', body: jsonEnc, headers: _JSON_HEADERS);
 
     print("Код: ${response.statusCode}");
 
@@ -90,7 +93,7 @@ class Api {
   }
 
   static Future<EventWrapper<bool>> setPhoto(User user, File file) async {
-    final accessToken = (await Auth.getData())["access"];
+    final accessToken = await Auth.getAccessToken();
     print("POST: api/user/image/. accessToken = [$accessToken]");
 
     var jsonEnc = json.encode(user.toJson());
@@ -101,7 +104,7 @@ class Api {
       "image": await dio.MultipartFile.fromFile(file.path)
     });
 
-    final response = await dio.Dio().post("$ip/api/user/image/$accessToken", data: formData);
+    final response = await dio.Dio().post("$_Ip/api/user/image/$accessToken", data: formData);
 
     print("Код: ${response.statusCode}");
 
@@ -123,10 +126,10 @@ class Api {
   }
 
   static Future<EventWrapper<User>> getUser() async {
-    final accessToken = (await Auth.getData())["access"];
+    final accessToken = await Auth.getAccessToken();
     print("GET: /api/user. accessToken = [$accessToken]");
 
-    final response = await http.get('$ip/api/user/settings/$accessToken');
+    final response = await http.get('$_Ip/api/user/settings/$accessToken');
 
     print("Код: ${response.statusCode}");
 
@@ -150,24 +153,25 @@ class Api {
   }
 
   static Future<bool> _updateTokens() async {
-    var data = await Auth.getData();
+    var email = await Auth.getEmail();
+    var refreshToken = await Auth.getRefreshToken();
     var fingerprint = await Auth.getFingerprint();
 
     print("/api/refresh. "
         "fingerprint = [$fingerprint], "
-        "email = [${data["email"]}], "
-        "refreshToken = [${data["refresh"]}]");
+        "email = [$email], "
+        "refreshToken = [$refreshToken]");
 
-    final response = await http.post("$ip/api/refresh?", body: {
+    final response = await http.post("$_Ip/api/refresh?", body: {
       "fingerprint": fingerprint,
-      "email": data["email"],
-      "refreshToken": data["refresh"]
+      "email": email,
+      "refreshToken": refreshToken
     });
 
     print("Код: ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      await Auth.saveDataByJson(data["email"], response.body);
+      await Auth.saveDataByJson(email, response.body);
 
       return true;
     }

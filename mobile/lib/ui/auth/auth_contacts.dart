@@ -5,14 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/contact.dart';
-import 'package:hse_coffee/widgets/button_continue.dart';
-import '../router_auth.dart';
+import 'package:hse_coffee/ui/widgets/button_continue.dart';
+import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
+import '../../router_auth.dart';
 import 'header.dart';
 
-import 'package:hse_coffee/widgets/dialog_loading.dart';
-
 class AuthContactsScreen extends StatefulWidget {
-  static const String routeName = "/auth/contacts";
+  static const String routeName = "auth/contacts";
 
   @override
   _AuthContactsScreen createState() => _AuthContactsScreen();
