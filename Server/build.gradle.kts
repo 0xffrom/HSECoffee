@@ -10,7 +10,7 @@ plugins {
 
 
 group = "com.goga133"
-version = "0.0.5-SNAPSHOT"
+version = "0.0.6-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {

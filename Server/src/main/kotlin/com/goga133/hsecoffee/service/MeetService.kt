@@ -71,10 +71,15 @@ class MeetService {
         if (searchRepository?.findSearchByFinder(user) != null) {
             return Meet(user, MeetStatus.SEARCH)
         } else if (meet != null) {
-            return meet.apply {
-                updateMeetStatus(this)
+            updateMeetStatus(meet)
+
+            if(meet.meetStatus == MeetStatus.FINISHED){
+                return Meet()
             }
+
+            return meet
         }
+
         return Meet()
     }
 
@@ -195,7 +200,7 @@ class MeetService {
      * @see Meet
      */
     private fun updateMeetStatus(meet: Meet) {
-        if (meetRepository == null || meetRepository.existsMeetById(meet.id)) {
+        if (meetRepository == null || !meetRepository.existsMeetById(meet.id)) {
             return
         }
 

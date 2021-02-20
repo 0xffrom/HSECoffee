@@ -33,7 +33,7 @@ data class Meet(
     val createdDate: Date = Date(),
 
     @Temporal(TemporalType.TIMESTAMP)
-    val expiresDate: Date = Date.from(Instant.now().plus(Duration.ofDays(3)))
+    val expiresDate: Date = Date.from(Instant.now().plus(Duration.ofMinutes(1)))
 ) {
     constructor() : this(user1 = null, user2 = null, meetStatus = MeetStatus.NONE)
     constructor(user1: User?, meetStatus: MeetStatus) : this(user1 = user1, user2 = null, meetStatus = meetStatus)
