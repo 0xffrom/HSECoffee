@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,19 +25,19 @@ class AuthFacultyScreen extends StatefulWidget {
 class _AuthFacultyScreen extends State<AuthFacultyScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
 
-  final _facultyDropDown = _DropDown<_DropDownState<Faculty>>(
-      state: _DropDownState<Faculty>(
+  final _facultyDropDown = DropDown<DropDownState<Faculty>>(
+      state: DropDownState<Faculty>(
           hint: "Моя образовательная программа",
           value: Faculty.NONE,
           items: DataRes.faculties));
 
-  final _degreeDropDown = _DropDown<_DropDownState<Degree>>(
-      state: _DropDownState<Degree>(
+  final _degreeDropDown = DropDown<DropDownState<Degree>>(
+      state: DropDownState<Degree>(
           hint: "Академическая степень",
           value: Degree.NONE,
           items: DataRes.degrees));
 
-  final _slider = _Slider();
+  final _slider = SliderCourse(state: SliderState(currentSliderValue: 1.0));
 
   @override
   void initState() {
@@ -111,10 +113,10 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
   }
 }
 
-class _DropDown<T extends State<StatefulWidget>> extends StatefulWidget {
+class DropDown<T extends State<StatefulWidget>> extends StatefulWidget {
   final T state;
 
-  _DropDown({@required this.state});
+  DropDown({@required this.state});
 
   @override
   State<StatefulWidget> createState() {
@@ -122,12 +124,12 @@ class _DropDown<T extends State<StatefulWidget>> extends StatefulWidget {
   }
 }
 
-class _DropDownState<T> extends State<_DropDown> {
+class DropDownState<T> extends State<DropDown> {
   T value;
   String hint;
   List<DropdownMenuItem<T>> items;
 
-  _DropDownState(
+  DropDownState(
       {@required this.value, @required this.hint, @required this.items});
 
   @override
@@ -153,18 +155,20 @@ class _DropDownState<T> extends State<_DropDown> {
   }
 }
 
-class _Slider extends StatefulWidget {
-  final state = _SliderState();
+class SliderCourse extends StatefulWidget {
+  final SliderState state;
 
-  _Slider({Key key}) : super(key: key);
+  SliderCourse({this.state, Key key}) : super(key: key);
 
   @override
-  _SliderState createState() => state;
+  SliderState createState() => state;
 }
 
-class _SliderState extends State<_Slider> {
+class SliderState extends State<SliderCourse> {
   bool isInit = false;
   double currentSliderValue = 1;
+
+  SliderState({this.currentSliderValue});
 
   @override
   Widget build(BuildContext context) {

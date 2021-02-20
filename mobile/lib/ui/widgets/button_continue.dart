@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 
 class ButtonContinue extends StatelessWidget {
+  String textButton = "Продолжить";
   ButtonContinue({Key key, this.onPressed}) : super(key: key);
   final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GradientButton(
-      child: Text("Продолжить", style: TextStyle(fontSize: 16.0)),
+      child: Text(textButton, style: TextStyle(fontSize: 16.0)),
       callback: () {
         onPressed();
       },

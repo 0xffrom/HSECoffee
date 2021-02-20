@@ -17,8 +17,6 @@ class AuthGenderScreen extends StatefulWidget {
 }
 
 class _AuthGenderScreen extends State<AuthGenderScreen> {
-  final globalKey = GlobalKey<ScaffoldState>();
-
   @override
   void initState() {
     super.initState();
@@ -69,7 +67,6 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
     }
 
     return Scaffold(
-        key: globalKey,
         body: Builder(
             builder: (context) => SingleChildScrollView(
                 reverse: true,
@@ -106,9 +103,11 @@ class ToggleButton extends StatefulWidget {
 }
 
 class _ToggleButtonState extends State {
-  final isSelected = <bool>[false, false];
+  List<bool> isSelected = <bool>[false, false];
   static const String FirstButtonText = "Мужской";
   static const String SecondButtonText = "Женский";
+
+  _ToggleButtonState();
 
   void onClicked(int index) {
     if (isSelected[index]) return;
@@ -129,14 +128,14 @@ class _ToggleButtonState extends State {
     return Column(children: <Widget>[
       Padding(
           padding: EdgeInsets.fromLTRB(30.0, 50.0, 30.0, 10.0),
-          child: _TButton(
+          child: TButton(
             FirstButtonText,
             () => onClicked(0),
             isClicked: isSelected[0],
           )),
       Padding(
           padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
-          child: _TButton(
+          child: TButton(
             SecondButtonText,
             () => onClicked(1),
             isClicked: isSelected[1],
@@ -145,17 +144,17 @@ class _ToggleButtonState extends State {
   }
 }
 
-class _TButton extends StatelessWidget {
+class TButton extends StatelessWidget {
   final String _text;
   final Function _onPressed;
   final bool isClicked;
 
-  _TButton(this._text, this._onPressed, {this.isClicked});
+  TButton(this._text, this._onPressed, {this.isClicked});
 
   @override
   Widget build(BuildContext context) {
     return new SizedBox(
-      width: 240.0,
+      width: 160.0,
       height: 50.0,
       child: isClicked
           ? _ClickedButton(_text, _onPressed)

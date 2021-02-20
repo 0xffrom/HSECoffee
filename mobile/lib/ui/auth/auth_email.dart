@@ -18,7 +18,6 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
   final textFieldKey = GlobalKey<FormState>();
 
-  List<String> emails;
   bool _block;
   DateTime _blockTime;
   String email;
@@ -78,13 +77,16 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                   else
                     {
                       --count,
-                      emails.clear(),
                       globalKey.currentState.showSnackBar(
                           SnackBar(content: Text("Ошибка: ${value.message}")))
                     }
                 })
-            .catchError((Object object) =>
-                {print(object), --count, dialogLoading.stop(), errorSnackBar()});
+            .catchError((Object object) => {
+                  print(object),
+                  --count,
+                  dialogLoading.stop(),
+                  errorSnackBar()
+                });
       }
     }
 

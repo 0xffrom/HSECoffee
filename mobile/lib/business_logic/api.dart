@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:hse_coffee/business_logic/auth.dart';
 import 'package:hse_coffee/business_logic/event_wrapper.dart';
 import 'package:hse_coffee/data/user.dart';
@@ -8,8 +9,9 @@ import 'package:dio/dio.dart' as dio;
 
 class Api {
   // http://10.0.2.2:8081
-  static const String _Ip = "http://188.120.233.197/";
-
+  // http://188.120.233.197/
+  static const String _Ip = "http://10.0.2.2:8080";
+  static Random random = new Random();
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
   };
@@ -18,8 +20,8 @@ class Api {
     return _Ip;
   }
 
-  static String getImageByUser(User user){
-    return _Ip + user.photoUri;
+  static String getImageUrlByUser(User user){
+    return _Ip + user.photoUri + "?${random.nextInt(10000)}";
   }
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
@@ -108,13 +110,14 @@ class Api {
 
     print("Код: ${response.statusCode}");
 
+    // TODO: Токен обновить
     if (response.statusCode == 200) {
       return EventWrapper(response.statusCode, true, "Удачно");
     }
 
     if ((response.statusCode == 403 || response.statusCode == 401) &&
         (await _updateTokens()) == true) {
-      return setUser(user);
+      return setPhoto(user, file);
     }
 
     if (response.data != null)
