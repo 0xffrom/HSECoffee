@@ -1,7 +1,9 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:hse_coffee/ui/home/home_meets.dart';
 
 import 'home_cabinet.dart';
+import 'home_find_start.dart';
 
 // Такое же виджет, как и SplashScreen, только передаём ему ещё и заголовок
 class HomeScreen extends StatefulWidget {
@@ -17,16 +19,8 @@ class HomeScreen extends StatefulWidget {
 // Формирование состояния виджета
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ), HomeCabinetScreen()
+    HomeFindScreen(), HomeMeetsScreen(), HomeCabinetScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -63,3 +57,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

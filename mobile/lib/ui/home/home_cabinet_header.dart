@@ -96,17 +96,20 @@ class HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      child: new Column(
-        children: <Widget>[
-          new GestureDetector(
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        Image.asset("images/header/cloud.png"),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 80),
+          child: new GestureDetector(
               onTap: () => onTap(),
               child: Stack(
                 children: <Widget>[
                   new Container(
                       margin: EdgeInsets.only(top: 30, bottom: 15),
-                      width: 190.0,
-                      height: 190.0,
+                      width: 220.0,
+                      height: 220.0,
                       decoration: new BoxDecoration(
                           shape: BoxShape.circle,
                           image: new DecorationImage(
@@ -115,32 +118,13 @@ class HeaderState extends State<Header> {
                                   Api.getImageUrlByUser(currentUser))))),
                   new Container(
                       margin: EdgeInsets.only(top: 30, bottom: 15),
-                      width: 190.0,
-                      height: 190.0,
+                      width: 220.0,
+                      height: 220.0,
                       child: Icon(Icons.add, color: Colors.white54, size: 64))
                 ],
               )),
-          Padding(
-              padding: EdgeInsets.all(10),
-              child: new Text(
-                currentUser.email,
-                style: new TextStyle(fontSize: 15, color: Colors.white),
-              )),
-        ],
-        mainAxisSize: MainAxisSize.min,
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(45),
-              bottomRight: Radius.circular(45)),
-          gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Color.fromRGBO(22, 108, 241, 1.0),
-                Color.fromRGBO(49, 94, 252, 1),
-                Color.fromRGBO(111, 177, 252, 1)
-              ])),
+        )
+      ],
     );
   }
 }

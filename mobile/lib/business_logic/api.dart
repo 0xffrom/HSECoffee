@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:hse_coffee/business_logic/auth.dart';
 import 'package:hse_coffee/business_logic/event_wrapper.dart';
+import 'package:hse_coffee/data/meet.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 
 class Api {
-  // http://10.0.2.2:8081
+  // http://10.0.2.2:8081/
   // http://188.120.233.197/
-  static const String _Ip = "http://10.0.2.2:8080";
+  static const String _Ip = "http://10.0.2.2:8080/";
   static Random random = new Random();
   static const Map<String, String> _JSON_HEADERS = {
     "content-type": "application/json"
@@ -21,8 +22,9 @@ class Api {
   }
 
   static String getImageUrlByUser(User user){
-    return _Ip + user.photoUri + "?${random.nextInt(10000)}";
+    return "http://188.120.233.197/" + user.photoUri;
   }
+
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
 
@@ -154,6 +156,36 @@ class Api {
     return EventWrapper(
         response.statusCode, null, "Связь с сервером не была установлена");
   }
+
+  static Future<EventWrapper<List<Meet>>> getMeets() async {
+    final accessToken = await Auth.getAccessToken();
+    print("GET: /api/meets. accessToken = [$accessToken]");
+
+    final response = await http.get('$_Ip/api/meets/$accessToken');
+
+    print("Код: ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      Iterable l = json.decode(response.body);
+      List<Meet> meets = List<Meet>.from(l.map((model)=> Meet.fromJson(model)));
+
+      print("GET 200: ${meets.toString()}");
+      return EventWrapper(response.statusCode, meets, "Удачно");
+    }
+
+    if ((response.statusCode == 403 || response.statusCode == 401) &&
+        (await _updateTokens()) == true) {
+      return getMeets();
+    }
+
+    if (response.body != null)
+      return EventWrapper(response.statusCode, null, response.body);
+
+    return EventWrapper(
+        response.statusCode, null, "Связь с сервером не была установлена");
+  }
+
+
 
   static Future<bool> _updateTokens() async {
     var email = await Auth.getEmail();
