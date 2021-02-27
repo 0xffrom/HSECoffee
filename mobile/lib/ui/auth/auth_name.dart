@@ -38,6 +38,10 @@ class _AuthNameScreen extends State<AuthNameScreen> {
     super.dispose();
   }
 
+  void errorSnackBar() {
+    callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
+  }
+
   @override
   Widget build(BuildContext context) {
     final dialogLoading = DialogLoading(context: this.context);
@@ -50,12 +54,16 @@ class _AuthNameScreen extends State<AuthNameScreen> {
         UserStorage.instance.user.lastName = secondNameFieldController.text;
 
         dialogLoading.show();
-        Api.setUser(UserStorage.instance.user).then((value) => {
-              if (value.isSuccess())
-                RouterHelper.routeByUser(context, UserStorage.instance.user)
-              else
-                callSnackBar("Произошла ошибка! Попробуйте позже.")
-            });
+        Api.setUser(UserStorage.instance.user)
+            .then((value) => {
+                  if (value.isSuccess())
+                    RouterHelper.routeByUser(context, UserStorage.instance.user)
+                  else
+                    callSnackBar("Произошла ошибка! Попробуйте позже.")
+                })
+            .timeout(Duration(seconds: 15))
+            .catchError(
+                (Object object) => {dialogLoading.stop(), errorSnackBar()});
         dialogLoading.stop();
       }
     }

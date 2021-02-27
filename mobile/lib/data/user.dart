@@ -18,6 +18,7 @@ class User {
   Set<Contact> contacts;
   int course;
   String photoUri;
+  String aboutMe;
 
   User(
       {this.email,
@@ -28,9 +29,39 @@ class User {
       this.faculty,
       this.contacts,
       this.course,
-      this.photoUri});
+      this.photoUri,
+      this.aboutMe});
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  String getFullName() {
+    return firstName + " " + lastName;
+  }
+
+  String getVk() {
+    return _getValueContact("vk");
+  }
+
+  String getInst() {
+    return _getValueContact("inst");
+  }
+
+  String getTelegram() {
+    return "${_getValueContact("tg")}";
+  }
+
+  String _getValueContact(String name) {
+    Contact contact;
+
+    try {
+       contact = contacts.firstWhere((element) => element.name == name);
+    }
+    catch(StateError){
+      return "";
+    }
+
+    return contact.value;
+  }
 }

@@ -20,7 +20,6 @@ class AuthContactsScreen extends StatefulWidget {
 class _AuthContactsScreen extends State<AuthContactsScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
 
-  final vkFieldController = TextEditingController();
   final telegramFieldController = TextEditingController();
 
   @override
@@ -34,14 +33,9 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
 
   @override
   void dispose() {
-    vkFieldController.dispose();
     telegramFieldController.dispose();
 
     super.dispose();
-  }
-
-  String vkCleaner(String vk) {
-    return vk.trim().replaceAll("https://", "").replaceAll("vk.com/", "");
   }
 
   String tgCleaner(String tg) {
@@ -52,31 +46,39 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
   Widget build(BuildContext context) {
     final dialogLoading = DialogLoading(context: this.context);
 
+    void callSnackBar(String text) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    }
+
+    void errorSnackBar() {
+      callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
+    }
+
     final textFieldsKey = GlobalKey<FormState>();
 
     void _onButtonClick() {
       if (textFieldsKey.currentState.validate()) {
         UserStorage.instance.user.contacts = HashSet.of({
-            new Contact("vk", vkCleaner(vkFieldController.text)),
-            new Contact("tg", tgCleaner(telegramFieldController.text))});
+          Contact.createTelegram(telegramFieldController.text),
+        });
 
         dialogLoading.show();
-        Api.setUser(UserStorage.instance.user).then((value) => {
-              if (value.isSuccess())
-                RouterHelper.routeByUser(context, UserStorage.instance.user)
-              else
-                callSnackBar("Произошла ошибка! Попробуйте позже.")
-            });
+        Api.setUser(UserStorage.instance.user)
+            .then((value) => {
+                  if (value.isSuccess())
+                    RouterHelper.routeByUser(context, UserStorage.instance.user)
+                  else
+                    callSnackBar("Произошла ошибка! Попробуйте позже.")
+                })
+            .timeout(Duration(seconds: 15))
+            .catchError(
+                (Object object) => {dialogLoading.stop(), errorSnackBar()});
         dialogLoading.stop();
       }
     }
 
-    bool onVKValidate(String input) {
-      return input != null && input.length > 3;
-    }
-
     bool onTelegramValidate(String input) {
-      return input != null && input.length > 1;
+      return input != null && input.length > 2;
     }
 
     return Scaffold(
@@ -95,7 +97,7 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
                             padding:
                                 EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 10.0),
                             child: Text(
-                              "Прежде чем продолжить, введите, пожалуйста, свои контакты VK и Telegram",
+                              "Прежде чем продолжить, введите, пожалуйста, свой реальный Telegram-логин",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12.0,
@@ -106,23 +108,11 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
                           Padding(
                             padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 10.0),
                             child: TextField(
-                              controller: vkFieldController,
-                              hintText: "vk.com/login или login",
-                              labelText: "Логин ВКонтакте",
-                              validator: onVKValidate,
-                              incorrectMessage:
-                                  "Введите, пожалуйста, свой настоящий логин.",
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 10.0),
-                            child: TextField(
                               controller: telegramFieldController,
                               hintText: "@login",
                               labelText: "Логин Telegram",
                               validator: onTelegramValidate,
-                              incorrectMessage:
-                                  "Введите, пожалуйста, свой настоящий логин.",
+                              incorrectMessage:                                  "Введите, пожалуйста, свой настоящий логин.",
                             ),
                           )
                         ],

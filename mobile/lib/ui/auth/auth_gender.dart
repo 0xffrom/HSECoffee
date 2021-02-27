@@ -46,6 +46,10 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
       return false;
     }
 
+    void errorSnackBar() {
+      callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
+    }
+
     void _onButtonClick() {
       if (_isValidInput()) {
         UserStorage.instance.user.gender =
@@ -55,12 +59,16 @@ class _AuthGenderScreen extends State<AuthGenderScreen> {
 
         dialogLoading.show();
 
-        Api.setUser(UserStorage.instance.user).then((value) => {
-              if (value.isSuccess())
-                RouterHelper.routeByUser(context, UserStorage.instance.user)
-              else
-                callSnackBar("Произошла ошибка! Попробуйте позже.")
-            });
+        Api.setUser(UserStorage.instance.user)
+            .then((value) => {
+                  if (value.isSuccess())
+                    RouterHelper.routeByUser(context, UserStorage.instance.user)
+                  else
+                    callSnackBar("Произошла ошибка! Попробуйте позже.")
+                })
+            .timeout(Duration(seconds: 15))
+            .catchError(
+                (Object object) => {dialogLoading.stop(), errorSnackBar()});
 
         dialogLoading.stop();
       }

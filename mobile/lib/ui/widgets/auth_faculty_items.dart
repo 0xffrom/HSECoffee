@@ -1,95 +1,66 @@
-import 'package:flutter/material.dart';
 import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/degree.dart';
+import 'package:smart_select/smart_select.dart';
 
 class DataRes {
-  static final List<DropdownMenuItem<Faculty>> faculties = [
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Банковский институт")),
-        value: Faculty.BANK),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Высшая школа юрисиспруденции и администрирования")),
-        value: Faculty.JURISPRUDENCE),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Высшая школа бизнеса")),
-        value: Faculty.BUSINESS),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text(
-                "Институт статистических исследований и экономики знаний")),
-        value: Faculty.STATISTIC),
-    DropdownMenuItem(
-      child: GestureDetector(child: Text("Лицей НИУ ВШЭ")),
-      value: Faculty.LYCEUM,
-    ),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("МИЭМ")), value: Faculty.ELECTRONIC),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Международный институт экономики и финансов")),
-        value: Faculty.MIEF),
-    DropdownMenuItem(
-        child:
-            GestureDetector(child: Text("Факультет биологии и биотехнологии")),
-        value: Faculty.BIOLOGY),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет гуманитарных наук")),
-        value: Faculty.HUMANITARIAN),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Факультет городского и регионального развития")),
-        value: Faculty.CITY),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Факультет географии и геоинформационных технологий")),
-        value: Faculty.GEOGRAPHY),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Факультет коммуникация, медиа и дизайна")),
-        value: Faculty.MEDIA),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет компьютерных наук")),
-        value: Faculty.COMPUTER),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет математики")),
-        value: Faculty.MATH),
-    DropdownMenuItem(
-        child: GestureDetector(
-            child: Text("Факультет мировой экономики и мировой политики")),
-        value: Faculty.WORLD_ECONOMY),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет права")),
-        value: Faculty.LAWYER),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет социальных наук")),
-        value: Faculty.SOCIAL),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет физики")),
-        value: Faculty.PHYSICS),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет химии")),
-        value: Faculty.CHEMICAL),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Факультет экономических наук")),
-        value: Faculty.ECONOMY),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Школа иностранных языков")),
-        value: Faculty.LANGUAGE),
+  static String getFacultyName(Faculty faculty) {
+    if (choicesFaculties.firstWhere((element) => element.value == faculty) ==
+        null) {
+      return "";
+    }
+
+    return choicesFaculties
+        .firstWhere((element) => element.value == faculty)
+        .title;
+  }
+
+  static final choicesDegrees = <S2Choice<Degree>>[
+    S2Choice<Degree>(value: Degree.BACHELOR, title: "Бакалавриат"),
+    S2Choice<Degree>(value: Degree.MAGISTRACY, title: "Магистратура"),
+    S2Choice<Degree>(value: Degree.POSTGRADUATE, title: "Аспирантура"),
+    S2Choice<Degree>(value: Degree.SPECIALTY, title: "Специалитет"),
   ];
 
-  static final List<DropdownMenuItem<Degree>> degrees = [
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Бакалавриат")),
-        value: Degree.BACHELOR),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Магистратура")),
-        value: Degree.MAGISTRACY),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Аспирантура")),
-        value: Degree.POSTGRADUATE),
-    DropdownMenuItem(
-        child: GestureDetector(child: Text("Специалитет")),
-        value: Degree.SPECIALTY)
+  static final choicesFaculties = <S2Choice<Faculty>>[
+    S2Choice<Faculty>(value: Faculty.BANK, title: "Банковский институт"),
+    S2Choice<Faculty>(
+        value: Faculty.JURISPRUDENCE,
+        title: "Высшая школа юрисиспруденции и администрирования"),
+    S2Choice<Faculty>(value: Faculty.BUSINESS, title: "Высшая школа бизнеса"),
+    S2Choice<Faculty>(
+        value: Faculty.STATISTIC,
+        title: "Институт статистических исследований и экономики знаний"),
+    S2Choice<Faculty>(value: Faculty.LYCEUM, title: "Лицей НИУ ВШЭ"),
+    S2Choice<Faculty>(value: Faculty.ELECTRONIC, title: "МИЭМ"),
+    S2Choice<Faculty>(
+        value: Faculty.MIEF,
+        title: "Международный институт экономики и финансов"),
+    S2Choice<Faculty>(
+        value: Faculty.BIOLOGY, title: "Факультет биологии и биотехнологии"),
+    S2Choice<Faculty>(
+        value: Faculty.HUMANITARIAN, title: "Факультет гуманитарных наук"),
+    S2Choice<Faculty>(
+        value: Faculty.CITY,
+        title: "Факультет городского и регионального развития"),
+    S2Choice<Faculty>(
+        value: Faculty.GEOGRAPHY,
+        title: "Факультет географии и геоинформационных технологий"),
+    S2Choice<Faculty>(
+        value: Faculty.MEDIA, title: "Факультет коммуникация, медиа и дизайна"),
+    S2Choice<Faculty>(
+        value: Faculty.COMPUTER, title: "Факультет компьютерных наук"),
+    S2Choice<Faculty>(value: Faculty.MATH, title: "Факультет математики"),
+    S2Choice<Faculty>(
+        value: Faculty.WORLD_ECONOMY,
+        title: "Факультет мировой экономики и мировой политики"),
+    S2Choice<Faculty>(value: Faculty.LAWYER, title: "Факультет права"),
+    S2Choice<Faculty>(
+        value: Faculty.SOCIAL, title: "Факультет социальных наук"),
+    S2Choice<Faculty>(value: Faculty.PHYSICS, title: "Факультет физики"),
+    S2Choice<Faculty>(value: Faculty.CHEMICAL, title: "Факультет химии"),
+    S2Choice<Faculty>(
+        value: Faculty.ECONOMY, title: "Факультет экономических наук"),
+    S2Choice<Faculty>(
+        value: Faculty.LANGUAGE, title: "Школа иностранных языков"),
   ];
 }

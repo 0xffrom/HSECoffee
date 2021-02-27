@@ -41,18 +41,22 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
   }
 
   Future _sendImage() {
-    return Api.setPhoto(UserStorage.instance.user, _image).then((value) => {
-          if (value.isSuccess())
-            {
-              Api.getUser().then((value) => {
-                    UserStorage.instance.user = value.getData(),
-                    setState(() {}),
-                    RouterHelper.routeByUser(context, value.getData())
-                  })
-            }
-          else
-            {callSnackBar("К сожалению, не удалось загрузить фотографию.")}
-        });
+    return Api.setPhoto(UserStorage.instance.user, _image)
+        .then((value) => {
+              if (value.isSuccess())
+                {
+                  Api.getUser()
+                      .then((value) => {
+                            UserStorage.instance.user = value.getData(),
+                            setState(() {}),
+                            RouterHelper.routeByUser(context, value.getData())
+                          })
+                      .timeout(Duration(seconds: 15))
+                }
+              else
+                {callSnackBar("К сожалению, не удалось загрузить фотографию.")}
+            })
+        .timeout(Duration(seconds: 25));
   }
 
   Future getImage(ImageSource source) async {
@@ -125,8 +129,8 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(80),
                                 child: CachedNetworkImage(
-                                  imageUrl: Api.getImageUrl() +
-                                      UserStorage.instance.user.photoUri,
+                                  imageUrl: Api.getImageUrlByUser(
+                                      UserStorage.instance.user),
                                   placeholder: (context, url) =>
                                       new CircularProgressIndicator(),
                                   errorWidget: (context, url, dynamic) =>

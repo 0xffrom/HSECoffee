@@ -81,6 +81,7 @@ class _AuthEmailScreen extends State<AuthEmailScreen> {
                           SnackBar(content: Text("Ошибка: ${value.message}")))
                     }
                 })
+            .timeout(Duration(seconds: 15))
             .catchError((Object object) => {
                   print(object),
                   --count,

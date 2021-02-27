@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hse_coffee/business_logic/api.dart';
@@ -114,7 +115,7 @@ class HeaderState extends State<Header> {
                           shape: BoxShape.circle,
                           image: new DecorationImage(
                               fit: BoxFit.fill,
-                              image: new NetworkImage(
+                              image: new CachedNetworkImageProvider(
                                   Api.getImageUrlByUser(currentUser))))),
                   new Container(
                       margin: EdgeInsets.only(top: 30, bottom: 15),

@@ -20,6 +20,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
         ?.toSet(),
     course: json['course'] as int,
     photoUri: json['photoUri'] as String,
+    aboutMe: json['aboutMe'] as String,
   );
 }
 
@@ -33,6 +34,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'contacts': instance.contacts?.map((e) => e?.toJson())?.toList(),
       'course': instance.course,
       'photoUri': instance.photoUri,
+      'aboutMe': instance.aboutMe
     };
 
 T _$enumDecode<T>(

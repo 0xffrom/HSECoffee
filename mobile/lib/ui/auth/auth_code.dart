@@ -79,6 +79,7 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
                     errorSnackBar(),
                   }
               })
+          .timeout(Duration(seconds: 15))
           .catchError((Object object) =>
               {count--, dialogLoading.stop(), errorSnackBar()});
     }
@@ -102,6 +103,7 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
                           "К сожалению, код неверный или произошла ошибка.")
                     }
                 })
+            .timeout(Duration(seconds: 15))
             .catchError(
                 (Object object) => {dialogLoading.stop(), errorSnackBar()});
       }
@@ -130,60 +132,59 @@ class _AuthCodeScreen extends State<AuthCodeScreen> {
         body: Builder(
             builder: (context) => SingleChildScrollView(
                 reverse: true,
-                    child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                      Header(title: "Код"),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 10.0),
-                        child: Form(
-                            key: textFieldKey,
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              cursorColor: Colors.blueAccent,
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  onPressed: _onRetry,
-                                  icon: Icon(Icons.refresh),
-                                ),
-                                hintText: 'Введите код письма',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(
-                                    width: 2,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  borderSide: BorderSide(
-                                    width: 2,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                                labelText: 'Код',
+                child:
+                    Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                  Header(title: "Код"),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 10.0),
+                    child: Form(
+                        key: textFieldKey,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.blueAccent,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              onPressed: _onRetry,
+                              icon: Icon(Icons.refresh),
+                            ),
+                            hintText: 'Введите код письма',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Colors.blueAccent,
                               ),
-                              validator: (input) => _isValidCodeForm(input)
-                                  ? null
-                                  : "Код состоит только из 6-ти цифр.",
-                              onChanged: (String value) {
-                                code = value;
-                              },
-                              onEditingComplete: _onPressed,
-                            )),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Text(
-                            "Введите код, который пришёл на Ваш почтовый ящик ${args.email}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              color: Color.fromRGBO(81, 81, 81, 1),
-                            )),
-                      ),
-                      ButtonContinue(onPressed: _onPressed)
-                    ]))));
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: Colors.red,
+                              ),
+                            ),
+                            labelText: 'Код',
+                          ),
+                          validator: (input) => _isValidCodeForm(input)
+                              ? null
+                              : "Код состоит только из 6-ти цифр.",
+                          onChanged: (String value) {
+                            code = value;
+                          },
+                          onEditingComplete: _onPressed,
+                        )),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Text(
+                        "Введите код, который пришёл на Ваш почтовый ящик ${args.email}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromRGBO(81, 81, 81, 1),
+                        )),
+                  ),
+                  ButtonContinue(onPressed: _onPressed)
+                ]))));
   }
 }
 

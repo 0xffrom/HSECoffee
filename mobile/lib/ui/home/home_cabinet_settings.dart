@@ -1,32 +1,33 @@
-// ignore: must_be_immutable
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/contact.dart';
-import 'package:hse_coffee/data/degree.dart';
-import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/gender.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/ui/auth/auth_faculty.dart';
-import 'package:hse_coffee/ui/auth/auth_gender.dart';
 import 'package:hse_coffee/ui/widgets/CapsuleWidget.dart';
-import 'package:hse_coffee/ui/widgets/auth_faculty_items.dart';
 import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
+import 'package:hse_coffee/ui/widgets/edu_fields.dart';
+import 'package:hse_coffee/ui/widgets/text_field_wrapper.dart';
+import 'package:hse_coffee/ui/widgets/toggle_button_gender.dart';
 
 class Settings extends StatelessWidget {
   final nameKey = GlobalKey<FormState>();
 
   Function floatingButtonPress;
   TextEditingController _firstNameFieldController;
+  TextEditingController _aboutFieldController;
   TextEditingController _lastNameFieldController;
   TextEditingController _vkFieldController;
   TextEditingController _tgFieldController;
-  DropDown<DropDownState<Faculty>> _facultyDropDown;
-  DropDown<DropDownState<Degree>> _degreeDropDown;
+  TextEditingController _instFieldController;
+
+  EducationFields _educationFields = EducationFields();
+
   SliderCourse _slider;
-  _ToggleButton _toggleButton;
+  ToggleButtonGender _toggleButton;
 
   final User _currentUser;
 
@@ -35,41 +36,13 @@ class Settings extends StatelessWidget {
     _slider = SliderCourse(
         state: SliderState(currentSliderValue: _currentUser.course.toDouble()));
 
-    _degreeDropDown = DropDown<DropDownState<Degree>>(
-        state: DropDownState<Degree>(
-            hint: ((DataRes.degrees
-                .firstWhere(
-                    (element) => element.value == _currentUser.degree)
-                .child as GestureDetector)
-                .child as Text)
-                .data,
-            value: _currentUser.degree,
-            items: DataRes.degrees));
+    _educationFields.state.degree = _currentUser.degree;
+    _educationFields.state.faculty = _currentUser.faculty;
 
-    _facultyDropDown = DropDown<DropDownState<Faculty>>(
-        state: DropDownState<Faculty>(
-            hint: ((DataRes.faculties
-                .firstWhere(
-                    (element) => element.value == _currentUser.faculty)
-                .child as GestureDetector)
-                .child as Text)
-                .data,
-            value: _currentUser.faculty,
-            items: DataRes.faculties));
-
-    if (_currentUser.contacts.map((e) => e.name).contains("tg")) {
-      _tgFieldController = TextEditingController(
-          text: _currentUser.contacts
-              .firstWhere((element) => element.name == "tg")
-              .value);
-    }
-
-    if (_currentUser.contacts.map((e) => e.name).contains("vk")) {
-      _vkFieldController = TextEditingController(
-          text: _currentUser.contacts
-              .firstWhere((element) => element.name == "vk")
-              .value);
-    }
+    _tgFieldController =
+        TextEditingController(text: _currentUser.getTelegram());
+    _vkFieldController = TextEditingController(text: _currentUser.getVk());
+    _instFieldController = TextEditingController(text: _currentUser.getInst());
 
     _lastNameFieldController =
         TextEditingController(text: _currentUser.lastName);
@@ -77,11 +50,13 @@ class Settings extends StatelessWidget {
     _firstNameFieldController =
         TextEditingController(text: _currentUser.firstName);
 
+    _aboutFieldController = TextEditingController(text: _currentUser.aboutMe);
+
     var male = _currentUser.gender == Gender.MALE;
     var female = _currentUser.gender == Gender.FEMALE;
 
-    _toggleButton =
-        _ToggleButton(buttonState: _ToggleButtonState(List.of({male, female})));
+    _toggleButton = ToggleButtonGender(
+        buttonState: ToggleButtonGenderState(List.of({male, female})));
   }
 
   @override
@@ -115,12 +90,12 @@ class Settings extends StatelessWidget {
         dialogLoading.show();
         Api.setUser(newUser)
             .then((value) => {
-          dialogLoading.stop(),
-          if (value.isSuccess())
-            UserStorage.instance.user = newUser
-          else
-            callErrorSnackBar()
-        })
+                  dialogLoading.stop(),
+                  if (value.isSuccess())
+                    UserStorage.instance.user = newUser
+                  else
+                    callErrorSnackBar()
+                })
             .catchError(
                 (object) => {callErrorSnackBar(), dialogLoading.stop()});
       }
@@ -129,19 +104,37 @@ class Settings extends StatelessWidget {
     floatingButtonPress = _onPressed;
 
     return Column(children: <Widget>[
-      Padding(
-          padding: EdgeInsets.all(7.5),
-          child: CapsuleWidget(
-            label: 'Мои данные'.toUpperCase(),
-            ribbonHeight: 12,
-          )),
       Form(
           key: nameKey,
           child: Column(
             children: [
               Padding(
+                  padding: EdgeInsets.all(7.5),
+                  child: CapsuleWidget(
+                    label: 'О себе'.toUpperCase(),
+                    ribbonHeight: 12,
+                  )),
+              Padding(
                 padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
-                child: TextField(
+                child: TextFieldWrapper(
+                  textInputType: TextInputType.multiline,
+                  controller: _aboutFieldController,
+                  hintText: "Укажите информацию о себе",
+                  labelText: "Мои хобби, интересы, увлечения",
+                  maxLines: 4,
+                  minLengthName: -1,
+                  maxLengthName: 100,
+                ),
+              ),
+              Padding(
+                  padding: EdgeInsets.all(7.5),
+                  child: CapsuleWidget(
+                    label: 'Мои данные'.toUpperCase(),
+                    ribbonHeight: 12,
+                  )),
+              Padding(
+                padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
+                child: TextFieldWrapper(
                   controller: _firstNameFieldController,
                   hintText: "Введите своё имя",
                   labelText: "Имя",
@@ -149,7 +142,7 @@ class Settings extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 0.0),
-                child: TextField(
+                child: TextFieldWrapper(
                     controller: _lastNameFieldController,
                     hintText: "Введите свою фамилию",
                     labelText: "Фамилия"),
@@ -165,18 +158,29 @@ class Settings extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
-                    child: TextField(
-                      controller: _vkFieldController,
-                      hintText: "Введите свой VK-логин",
-                      labelText: "VK",
-                    ),
+                    child: TextFieldWrapper(
+                        controller: _tgFieldController,
+                        hintText: "Введите свой Telegram-логин",
+                        iconPath: "images/icons/tg.png",
+                        labelText: "Telegram"),
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(30.0, 7.0, 30.0, 0.0),
-                    child: TextField(
-                        controller: _tgFieldController,
-                        hintText: "Введите свой Telegram-логин",
-                        labelText: "Telegram"),
+                    child: TextFieldWrapper(
+                        controller: _vkFieldController,
+                        ignoreValidate: true,
+                        hintText: "Введите свой VK-логин",
+                        labelText: "VK",
+                        iconPath: "images/icons/vk.png"),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(30.0, 7.0, 30.0, 0.0),
+                    child: TextFieldWrapper(
+                        controller: _instFieldController,
+                        ignoreValidate: true,
+                        hintText: "Введите свой Instagram",
+                        iconPath: "images/icons/inst.png",
+                        labelText: "Instagram"),
                   )
                 ],
               ),
@@ -188,14 +192,7 @@ class Settings extends StatelessWidget {
             label: 'Обучение'.toUpperCase(),
             ribbonHeight: 12,
           )),
-      Padding(
-        padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 0.0),
-        child: _facultyDropDown,
-      ),
-      Padding(
-        padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 0),
-        child: _degreeDropDown,
-      ),
+      _educationFields,
       Padding(
         padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 10.0),
         child: Row(
@@ -211,9 +208,12 @@ class Settings extends StatelessWidget {
 
     newUser.firstName = _firstNameFieldController.text;
     newUser.lastName = _lastNameFieldController.text;
+    newUser.aboutMe = _aboutFieldController.text;
+
     newUser.contacts = Set.of({
-      Contact("vk", _vkFieldController.text),
-      Contact("tg", _tgFieldController.text)
+      Contact.createVk(_vkFieldController.text),
+      Contact.createInstagram(_instFieldController.text),
+      Contact.createTelegram(_tgFieldController.text)
     });
 
     List<bool> isSelected = _toggleButton.buttonState.isSelected;
@@ -225,110 +225,9 @@ class Settings extends StatelessWidget {
       newUser.gender = Gender.NONE;
     }
 
-    newUser.degree = _degreeDropDown.state.value;
-    newUser.faculty = _facultyDropDown.state.value;
+    newUser.degree = _educationFields.state.degree;
+    newUser.faculty = _educationFields.state.faculty;
     newUser.course = _slider.state.currentSliderValue.toInt();
     return newUser;
-  }
-}
-
-class _ToggleButton extends StatefulWidget {
-  final _ToggleButtonState buttonState;
-  final Function onPressed;
-
-  _ToggleButton({Key key, this.onPressed, this.buttonState}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() {
-    return buttonState;
-  }
-}
-
-class _ToggleButtonState extends State {
-  var isSelected = <bool>[false, false];
-  static const String FirstButtonText = "Мужской";
-  static const String SecondButtonText = "Женский";
-
-  _ToggleButtonState(this.isSelected);
-
-  void onClicked(int index) {
-    if (isSelected[index]) return;
-
-    setState(() {
-      bool state = isSelected[index];
-      isSelected[index] = !state;
-      for (int i = 0; i < isSelected.length; i++) {
-        if (i != index) {
-          isSelected[i] = state;
-        }
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TButton(
-                FirstButtonText,
-                    () => onClicked(0),
-                isClicked: isSelected[0],
-              ),
-              TButton(
-                SecondButtonText,
-                    () => onClicked(1),
-                isClicked: isSelected[1],
-              ),
-            ]));
-  }
-}
-
-class TextField extends StatelessWidget {
-  static const int MinLengthName = 2;
-  static const int MaxLengthName = 15;
-
-  final String hintText;
-  final String labelText;
-  final TextEditingController controller;
-
-  TextField({Key key, this.hintText, this.labelText, this.controller})
-      : super(key: key);
-
-  bool _isValidName(String text) {
-    return text != null &&
-        text.length > MinLengthName &&
-        text.length < MaxLengthName;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      keyboardType: TextInputType.name,
-      controller: this.controller,
-      validator: (input) =>
-      _isValidName(input) ? null : "Пожалуйста, заполните корректно поле!",
-      cursorColor: Colors.blue,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(
-            width: 2,
-            color: Colors.blue,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          borderSide: BorderSide(
-            width: 2,
-            color: Colors.red,
-          ),
-        ),
-        labelText: labelText,
-      ),
-    );
   }
 }

@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.of(context)
               .pushReplacementNamed(widget.nextRoute)
         }
-      })
+      }).timeout(Duration(seconds: 5))
           .catchError((obj) => Navigator.of(context).pushReplacementNamed(widget.nextRoute));
     });
   }

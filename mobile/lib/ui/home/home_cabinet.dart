@@ -39,7 +39,6 @@ class _HomeCabinetScreen extends State<HomeCabinetScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         body: Builder(
             builder: (context) => SingleChildScrollView(
-                  reverse: false,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisSize: MainAxisSize.min,

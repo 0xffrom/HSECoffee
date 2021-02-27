@@ -17,9 +17,6 @@ class Api {
     "content-type": "application/json"
   };
 
-  static String getImageUrl(){
-    return _Ip;
-  }
 
   static String getImageUrlByUser(User user){
     return "http://188.120.233.197/" + user.photoUri;

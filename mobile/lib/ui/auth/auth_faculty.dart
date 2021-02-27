@@ -7,13 +7,13 @@ import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/degree.dart';
+import 'package:hse_coffee/ui/widgets/edu_fields.dart';
 import '../widgets/circular_drop_down.dart';
 import 'header.dart';
 
 import 'package:hse_coffee/ui/widgets/button_continue.dart';
 import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
 import '../../router_auth.dart';
-import '../widgets/auth_faculty_items.dart';
 
 class AuthFacultyScreen extends StatefulWidget {
   static const String routeName = "/ui/auth/faculty";
@@ -24,18 +24,6 @@ class AuthFacultyScreen extends StatefulWidget {
 
 class _AuthFacultyScreen extends State<AuthFacultyScreen> {
   final globalKey = GlobalKey<ScaffoldState>();
-
-  final _facultyDropDown = DropDown<DropDownState<Faculty>>(
-      state: DropDownState<Faculty>(
-          hint: "Моя образовательная программа",
-          value: Faculty.NONE,
-          items: DataRes.faculties));
-
-  final _degreeDropDown = DropDown<DropDownState<Degree>>(
-      state: DropDownState<Degree>(
-          hint: "Академическая степень",
-          value: Degree.NONE,
-          items: DataRes.degrees));
 
   final _slider = SliderCourse(state: SliderState(currentSliderValue: 1.0));
 
@@ -55,16 +43,25 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    EducationFields _educationFields = EducationFields();
+
     final dialogLoading = DialogLoading(context: this.context);
+    void callSnackBar(String text) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    }
+
+    void errorSnackBar() {
+      callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
+    }
 
     void _onButtonClick() {
-      Faculty currentFaculty = _facultyDropDown.state.value;
-      Degree currentDegree = _degreeDropDown.state.value;
+      Faculty currentFaculty = _educationFields.state.faculty;
+      Degree currentDegree = _educationFields.state.degree;
       double course = _slider.state.currentSliderValue;
 
-      if (currentFaculty == Faculty.NONE) {
+      if (currentFaculty == null || currentFaculty == Faculty.NONE) {
         callSnackBar("Пожалуйста, выберите свою образовательную программу!");
-      } else if (currentDegree == Degree.NONE) {
+      } else if (currentDegree == null || currentDegree == Degree.NONE) {
         callSnackBar("Пожалуйста, выберите акадимическую степень!");
       } else {
         UserStorage.instance.user.faculty = currentFaculty;
@@ -73,12 +70,16 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
 
         dialogLoading.show();
 
-        Api.setUser(UserStorage.instance.user).then((value) => {
-              if (value.isSuccess())
-                RouterHelper.routeByUser(context, UserStorage.instance.user)
-              else
-                callSnackBar("Произошла ошибка! Попробуйте позже.")
-            });
+        Api.setUser(UserStorage.instance.user)
+            .then((value) => {
+                  if (value.isSuccess())
+                    RouterHelper.routeByUser(context, UserStorage.instance.user)
+                  else
+                    callSnackBar("Произошла ошибка! Попробуйте позже.")
+                })
+            .timeout(Duration(seconds: 15))
+            .catchError(
+                (Object object) => {dialogLoading.stop(), errorSnackBar()});
 
         dialogLoading.stop();
         return;
@@ -94,12 +95,8 @@ class _AuthFacultyScreen extends State<AuthFacultyScreen> {
                     Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
                   Header(title: "Образовательная\nпрограмма"),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(45.0, 30.0, 45.0, 10.0),
-                    child: _facultyDropDown,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 0),
-                    child: _degreeDropDown,
+                    padding: const EdgeInsets.all(8.0),
+                    child: _educationFields,
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 10.0),
