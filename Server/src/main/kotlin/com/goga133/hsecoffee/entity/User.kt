@@ -53,6 +53,9 @@ data class User(
     @Enumerated(EnumType.STRING)
     var userStatus: UserStatus = UserStatus.UNKNOWN,
 
+    @Column(name = "about_me")
+    var aboutMe: String = "",
+
     @Column(name = "photo_uri")
     var photoUri: String = "uploads/default/${gender.name}.png"
 ) {

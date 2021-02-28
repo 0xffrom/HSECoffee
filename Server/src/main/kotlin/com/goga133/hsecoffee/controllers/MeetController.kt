@@ -52,7 +52,7 @@ class MeetController {
     fun getMeet(@PathVariable("token") token: String): ResponseEntity<String>? {
         val loginWrapper = authService?.logByToken(token)
 
-        if(loginWrapper?.isSuccessful() != true){
+        if (loginWrapper?.isSuccessful() != true) {
             return loginWrapper?.responseEntity
         }
 
@@ -86,7 +86,7 @@ class MeetController {
 
         val loginWrapper = authService?.logByToken(token)
 
-        if(loginWrapper?.isSuccessful() != true){
+        if (loginWrapper?.isSuccessful() != true) {
             return loginWrapper?.responseEntity
         }
 
@@ -107,23 +107,32 @@ class MeetController {
      *
      * DELETE запрос по адресу /api/meet/{token}, где token - access токен пользователя.
      *
-     * @return HTTP-ответ с телом из описания серверного ответа.
+     * @return HTTP-ответ с телом из [MeetStatus]
      * @see com.goga133.hsecoffee.entity.Meet
      */
     @RequestMapping(value = ["/api/meet/{token}"], method = [RequestMethod.DELETE])
     fun cancelSearch(@PathVariable("token") token: String): ResponseEntity<String>? {
         val loginWrapper = authService?.logByToken(token)
 
-        if(loginWrapper?.isSuccessful() != true){
+        if (loginWrapper?.isSuccessful() != true) {
             return loginWrapper?.responseEntity
         }
 
         val user = loginWrapper.user!!
 
-        return when (meetService?.cancelSearch(user).also {
-            logger.info("Отмена встречи для user = $user прозошла со статусом $it.") }) {
-            CancelStatus.SUCCESS -> ResponseEntity.ok("Успешно.")
-            else -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Невозможно отменить встречу.")
+        val cancelStatus = meetService?.cancelSearch(user);
+        logger.info("Отмена встречи для user = $user прозошла со статусом $cancelStatus.")
+
+        when (cancelStatus) {
+            CancelStatus.FAIL -> {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Невозможно отменить встречу.")
+            }
+            else -> {
+                meetService?.getMeet(user)?.meetStatus?.name?.let {
+                    return ResponseEntity.ok(it)
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Невозможно отменить встречу.")
+            }
         }
     }
 
@@ -140,7 +149,7 @@ class MeetController {
     fun getMeets(@PathVariable("token") token: String): ResponseEntity<String>? {
         val loginWrapper = authService?.logByToken(token)
 
-        if(loginWrapper?.isSuccessful() != true){
+        if (loginWrapper?.isSuccessful() != true) {
             return loginWrapper?.responseEntity
         }
 
