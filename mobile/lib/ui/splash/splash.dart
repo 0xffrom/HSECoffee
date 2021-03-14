@@ -28,39 +28,28 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 3), () {
       Auth.getData()
           .then((value) => {
-        if (value.containsKey(Auth.refreshTokenKey))
-          {
-            Api.getUser().then((value) => {
-              if (value.isSuccess())
-                {
-                  UserStorage.instance.user = value.getData(),
-                  RouterHelper.routeByUser(context, value.getData())
-                }
-              else
-                {
-                  Navigator.of(context)
-                      .pushReplacementNamed(widget.nextRoute)
-                }
-            })
-          }
-        else{
-          Navigator.of(context)
-              .pushReplacementNamed(widget.nextRoute)
-        }
-      }).timeout(Duration(seconds: 5))
-          .catchError((obj) => Navigator.of(context).pushReplacementNamed(widget.nextRoute));
+                if (value.containsKey(Auth.refreshTokenKey))
+                  {
+                    Api.getUser().then((value) => {
+                          if (value.isSuccess())
+                            {
+                              UserStorage.instance.user = value.getData(),
+                              RouterHelper.routeByUser(context, value.getData())
+                            }
+                          else
+                            {
+                              Navigator.of(context)
+                                  .pushReplacementNamed(widget.nextRoute)
+                            }
+                        })
+                  }
+                else
+                  {Navigator.of(context).pushReplacementNamed(widget.nextRoute)}
+              })
+          .timeout(Duration(seconds: 5))
+          .catchError((obj) =>
+              {Navigator.of(context).pushReplacementNamed(widget.nextRoute)});
     });
-  }
-
-  Widget buildCube(double _angle, double _height, double _width) {
-    return Transform.rotate(
-        angle: _angle,
-        child: Center(
-            child: Container(
-                decoration: new BoxDecoration(
-                    color: Color.fromRGBO(255, 255, 255, 0.15),
-                    borderRadius: BorderRadius.circular(40)),
-                child: SizedBox(height: _height, width: _width))));
   }
 
   // Формирование виджета
@@ -68,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: CustomPaint(
-            painter: BluePainter(),
+            painter: SplashPainter(),
             child: Column(children: <Widget>[
               Container(
                   width: double.infinity,

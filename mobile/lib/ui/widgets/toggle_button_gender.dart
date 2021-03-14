@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hse_coffee/data/gender.dart';
 import 'package:hse_coffee/ui/auth/auth_gender.dart';
 
 class ToggleButtonGender extends StatefulWidget {
@@ -20,6 +21,20 @@ class ToggleButtonGenderState extends State<ToggleButtonGender> {
   var isSelected = <bool>[false, false];
   static const String FirstButtonText = "Мужской";
   static const String SecondButtonText = "Женский";
+
+  List<Gender> getGenders(){
+    List<Gender> genders = List.of({}, growable: true);
+    if(isSelected.length >= 1){
+      if(isSelected[0]){
+        genders.add(Gender.MALE);
+      }
+      if(isSelected.length >= 2 && isSelected[1]){
+        genders.add(Gender.FEMALE);
+      }
+    }
+
+    return genders;
+  }
 
   ToggleButtonGenderState(this.isSelected);
 

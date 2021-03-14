@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 
-class BluePainter extends CustomPainter {
+class SplashPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final height = size.height;

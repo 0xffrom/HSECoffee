@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:hse_coffee/business_logic/auth.dart';
 import 'package:hse_coffee/business_logic/event_wrapper.dart';
 import 'package:hse_coffee/data/meet.dart';
+import 'package:hse_coffee/data/meet_status.dart';
+import 'package:hse_coffee/data/search_params.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -11,21 +13,24 @@ import 'package:dio/dio.dart' as dio;
 class Api {
   // http://10.0.2.2:8081/
   // http://188.120.233.197/
-  static const String _Ip = "http://10.0.2.2:8080/";
+  static const String _LocalIp = "http://188.120.233.197";
+
   static Random random = new Random();
-  static const Map<String, String> _JSON_HEADERS = {
-    "content-type": "application/json"
+
+
+  static const Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json',
   };
 
-
-  static String getImageUrlByUser(User user){
-    return "http://188.120.233.197/" + user.photoUri;
+  static String getImageUrlByUser(User user) {
+    return _LocalIp + "/" + user.photoUri + "?${Random().nextInt(9999999)}";
   }
 
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
 
-    final response = await http.post('$_Ip/api/code?email=$email');
+    final response = await http.post('$_LocalIp/api/code?email=$email');
 
     print("Код: ${response.statusCode}");
 
@@ -47,7 +52,7 @@ class Api {
     print(
         "/api/confirm. Email: $email; fingerprint: $fingerprint; code: $code");
 
-    final response = await http.post('$_Ip/api/confirm',
+    final response = await http.post('$_LocalIp/api/confirm',
         body: {"email": email, "fingerprint": fingerprint, "code": code});
 
     print("Код: ${response.statusCode}");
@@ -64,15 +69,89 @@ class Api {
         response.statusCode, null, "Связь с сервером не была установлена");
   }
 
+  static Future<EventWrapper<MeetStatus>> search(
+      SearchParams searchParams) async {
+    final accessToken = await Auth.getAccessToken();
+    print("POST: /api/search/. accessToken = [$accessToken]");
+
+    var jsonEnc = json.encode(searchParams.toJson());
+
+    print(jsonEnc);
+
+    final response = await http.post('$_LocalIp/api/search/$accessToken',
+        body: jsonEnc, headers: headers);
+
+
+    print("Код: ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      return EventWrapper(response.statusCode, _getMeetByResponse(response), "Удачно");
+    }
+
+    if ((response.statusCode == 403 || response.statusCode == 401) &&
+        (await _updateTokens()) == true) {
+      return search(searchParams);
+    }
+
+    if (response.body != null)
+      return EventWrapper(response.statusCode, null, response.body);
+
+    return EventWrapper(
+        response.statusCode, null, "Связь с сервером не была установлена");
+  }
+
+  static Future<EventWrapper<MeetStatus>> cancelSearch() async {
+    final accessToken = await Auth.getAccessToken();
+    print("DELETE: /api/meet. accessToken = [$accessToken]");
+
+    final response = await http.delete(
+        '$_LocalIp/api/meet/$accessToken',
+        headers: headers);
+
+    print("Код: ${response.statusCode}");
+
+
+    if (response.statusCode == 200) {
+      return EventWrapper(response.statusCode, _getMeetByResponse(response), "Удачно");
+    }
+
+    if ((response.statusCode == 403 || response.statusCode == 401) &&
+        (await _updateTokens()) == true) {
+      return cancelSearch();
+    }
+
+    if (response.body != null)
+      return EventWrapper(response.statusCode, null, response.body);
+
+    return EventWrapper(
+        response.statusCode, null, "Связь с сервером не была установлена");
+  }
+
+  static MeetStatus _getMeetByResponse(http.Response response) {
+    var meetStatus;
+
+    try {
+      meetStatus = MeetStatus.values.firstWhere((element) =>
+      element.toString().toLowerCase().replaceAll("meetstatus.", "") ==
+          response.body.toLowerCase());
+    } catch (StateError) {
+      print("Ошибка при получении meetStatus из ${response.body}");
+      meetStatus = MeetStatus.NONE;
+    }
+
+    return meetStatus;
+  }
+
   static Future<EventWrapper<bool>> setUser(User user) async {
     final accessToken = await Auth.getAccessToken();
-    print("PUT: /api/user. accessToken = [$accessToken]");
+    print("PUT: /api/user/settings/. accessToken = [$accessToken]");
 
     var jsonEnc = json.encode(user.toJson());
 
     print(jsonEnc);
 
-    final response = await http.put('$_Ip/api/user/settings/$accessToken', body: jsonEnc, headers: _JSON_HEADERS);
+    final response = await http.put('$_LocalIp/api/user/settings/$accessToken',
+        body: jsonEnc, headers: headers);
 
     print("Код: ${response.statusCode}");
 
@@ -90,7 +169,6 @@ class Api {
 
     return EventWrapper(
         response.statusCode, null, "Связь с сервером не была установлена");
-
   }
 
   static Future<EventWrapper<bool>> setPhoto(User user, File file) async {
@@ -101,15 +179,14 @@ class Api {
 
     print(jsonEnc);
 
-    dio.FormData formData = new dio.FormData.fromMap({
-      "image": await dio.MultipartFile.fromFile(file.path)
-    });
+    dio.FormData formData = new dio.FormData.fromMap(
+        {"image": await dio.MultipartFile.fromFile(file.path)});
 
-    final response = await dio.Dio().post("$_Ip/api/user/image/$accessToken", data: formData);
+    final response = await dio.Dio()
+        .post("$_LocalIp/api/user/image/$accessToken", data: formData);
 
     print("Код: ${response.statusCode}");
 
-    // TODO: Токен обновить
     if (response.statusCode == 200) {
       return EventWrapper(response.statusCode, true, "Удачно");
     }
@@ -124,19 +201,18 @@ class Api {
 
     return EventWrapper(
         response.statusCode, null, "Связь с сервером не была установлена");
-
   }
 
   static Future<EventWrapper<User>> getUser() async {
     final accessToken = await Auth.getAccessToken();
     print("GET: /api/user. accessToken = [$accessToken]");
 
-    final response = await http.get('$_Ip/api/user/settings/$accessToken');
+    final response = await http.get('$_LocalIp/api/user/settings/$accessToken');
 
     print("Код: ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      var user =  User.fromJson(jsonDecode(response.body));
+      var user = User.fromJson(jsonDecode(response.body));
 
       print("GET 200: ${user.toString()}");
       return EventWrapper(response.statusCode, user, "Удачно");
@@ -154,17 +230,45 @@ class Api {
         response.statusCode, null, "Связь с сервером не была установлена");
   }
 
+  static Future<EventWrapper<Meet>> getMeet() async {
+    final accessToken = await Auth.getAccessToken();
+    print("GET: /api/meet. accessToken = [$accessToken]");
+
+    final response = await http.get('$_LocalIp/api/meet/$accessToken');
+
+    print("Код: ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      Meet meet = Meet.fromJson(json.decode(response.body));
+
+      print("GET 200: ${meet.toJson()}");
+      return EventWrapper(response.statusCode, meet, "Удачно");
+    }
+
+    if ((response.statusCode == 403 || response.statusCode == 401) &&
+        (await _updateTokens()) == true) {
+      return getMeet();
+    }
+
+    if (response.body != null)
+      return EventWrapper(response.statusCode, null, response.body);
+
+    return EventWrapper(
+        response.statusCode, null, "Связь с сервером не была установлена");
+  }
+
   static Future<EventWrapper<List<Meet>>> getMeets() async {
     final accessToken = await Auth.getAccessToken();
     print("GET: /api/meets. accessToken = [$accessToken]");
 
-    final response = await http.get('$_Ip/api/meets/$accessToken');
+    final response = await http.get('$_LocalIp/api/meets/$accessToken');
 
     print("Код: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       Iterable l = json.decode(response.body);
-      List<Meet> meets = List<Meet>.from(l.map((model)=> Meet.fromJson(model)));
+      List<Meet> meets =
+          List<Meet>.from(l.map((model) => Meet.fromJson(model)));
 
       print("GET 200: ${meets.toString()}");
       return EventWrapper(response.statusCode, meets, "Удачно");
@@ -182,8 +286,6 @@ class Api {
         response.statusCode, null, "Связь с сервером не была установлена");
   }
 
-
-
   static Future<bool> _updateTokens() async {
     var email = await Auth.getEmail();
     var refreshToken = await Auth.getRefreshToken();
@@ -194,7 +296,7 @@ class Api {
         "email = [$email], "
         "refreshToken = [$refreshToken]");
 
-    final response = await http.post("$_Ip/api/refresh?", body: {
+    final response = await http.post("$_LocalIp/api/refresh?", body: {
       "fingerprint": fingerprint,
       "email": email,
       "refreshToken": refreshToken

@@ -31,7 +31,7 @@ class CapsuleWidget extends StatelessWidget {
         Container(
           decoration: BoxDecoration(color: fillColor, borderRadius: BorderRadius.circular(ribbonRadius)),
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(6.0),
             child: Text(
               label,
               style: TextStyle(color: textColor, fontWeight: FontWeight.w500),

@@ -3,16 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hse_coffee/business_logic/api.dart';
-import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/ui/widgets/auth_faculty_items.dart';
 import 'package:hse_coffee/ui/widgets/button_continue.dart';
 
 class HomePersonScreen extends StatefulWidget {
+  final bool withBack;
+
   static const String routeName = "/home/person";
   final User user;
 
-  HomePersonScreen(this.user);
+  HomePersonScreen(this.user, {this.withBack:true});
 
   @override
   _HomePersonScreen createState() => _HomePersonScreen(user);
@@ -34,20 +35,27 @@ class _HomePersonScreen extends State<HomePersonScreen> {
         body: Builder(
             builder: (context) => SingleChildScrollView(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl:
-                            Api.getImageUrlByUser(UserStorage.instance.user),
-                        placeholder: (context, url) =>
-                            new CircularProgressIndicator(),
-                        errorWidget: (context, url, dynamic) =>
-                            new Icon(Icons.error),
+                      Container(
+                        width: double.infinity,
+                        child: CachedNetworkImage(
+                          alignment: Alignment.bottomLeft,
+                          fit: BoxFit.cover,
+                          imageUrl: Api.getImageUrlByUser(user),
+                          errorWidget: (context, url, dynamic) =>
+                              new Icon(Icons.error),
+                        ),
                       ),
-                      user.aboutMe.isEmpty ? Container() : Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 3),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 10, right: 12, left: 12, bottom: 0),
                         child: Text(
                           user.getFullName(),
-                          style: TextStyle(fontSize: 28, fontFamily: "Nunito"),
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontFamily: "Nunito",
+                              fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -56,26 +64,33 @@ class _HomePersonScreen extends State<HomePersonScreen> {
                         child: Text(
                           DataRes.getFacultyName(user.faculty) +
                               ", ${user.course} курс",
-                          style: TextStyle(fontSize: 18, fontFamily: "Nunito"),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: "Nunito",
+                              fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      user.aboutMe == null
+                      user.aboutMe.isEmpty
                           ? Container()
                           : Padding(
-                              padding: const EdgeInsets.all(4.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
-                                "О себе: ${user.aboutMe}",
+                                "\"${user.aboutMe.replaceAll("\n\n", "\n")}\"",
                                 style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: "Nunito",
-                                    fontStyle: FontStyle.italic),
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                  fontFamily: "Nunito",
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ),
+                      const Divider(height: 24, thickness: 2),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             DataCard("images/icons/tg.png", user.getTelegram()),
@@ -84,10 +99,12 @@ class _HomePersonScreen extends State<HomePersonScreen> {
                           ],
                         ),
                       ),
-                      Padding(
+                      widget.withBack ? Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 16, vertical: 32),
-                          child: ButtonContinue(textButton: "Вернуться назад", onPressed: () => Navigator.pop(context)))
+                          child: ButtonContinue(
+                              textButton: "Вернуться назад",
+                              onPressed: () => Navigator.pop(context))) : Container()
                     ],
                   ),
                 )));

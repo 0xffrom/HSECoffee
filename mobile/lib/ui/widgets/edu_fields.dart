@@ -41,7 +41,7 @@ class _EducationFieldsState extends State<EducationFields> {
           return const Divider(height: 1);
         },
       ),
-
+      const Divider(indent: 20),
       SmartSelect<Degree>.single(
         title: 'Степень образования',
         value: degree,

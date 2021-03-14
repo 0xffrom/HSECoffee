@@ -37,25 +37,36 @@ class _HomeMeetsScreen extends State<HomeMeetsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Builder(
-            builder: (context) => SingleChildScrollView(
-                  child: Column(mainAxisSize: MainAxisSize.max, children: [
-                    Header(title: "История встреч"),
-                    if (_meets == null)
-                      Center(child: CircularProgressIndicator())
-                    else
-                      GridView.count(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        padding: const EdgeInsets.all(20.0),
-                        crossAxisSpacing: 10.0,
-                        crossAxisCount: 2,
-                        children: List.generate(_meets.length, (index) {
-                          return Center(child: MeetCard(_meets[index]));
-                        }),
-                      )
-                  ]),
-                )));
+      builder: (context) => Column(mainAxisSize: MainAxisSize.max, children: [
+        Header(title: "История встреч"),
+        if (_meets == null)
+          Center(child: CircularProgressIndicator())
+        else if (_meets.isNotEmpty)
+          SingleChildScrollView(
+              child: GridView.count(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            padding: const EdgeInsets.all(20.0),
+            crossAxisSpacing: 10.0,
+            crossAxisCount: 2,
+            children: List.generate(_meets.length, (index) {
+              return Center(child: MeetCard(_meets[index]));
+            }),
+          ))
+        else
+          Expanded(
+            child: Center(
+              child: Text(
+                "У Вас ещё не было встреч.\n"
+                " Самое время начать поиск!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12.0, fontFamily: "Nunito"),
+              ),
+            ),
+          ),
+      ]),
+    ));
   }
 }
 
@@ -70,7 +81,7 @@ class MeetCard extends StatelessWidget {
         UserStorage().user.email == meet.user1.email ? meet.user2 : meet.user1;
     var date = meet.createdDate.toLocal();
 
-    void onTap(){
+    void onTap() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HomePersonScreen(user)),
@@ -108,11 +119,12 @@ class MeetCard extends StatelessWidget {
                   Container(
                     height: 120,
                     child: CachedNetworkImage(
-                        imageUrl: Api.getImageUrlByUser(user), fit: BoxFit.cover),
+                        imageUrl: Api.getImageUrlByUser(user),
+                        fit: BoxFit.cover),
                   ),
                   Padding(
-                      padding:
-                          EdgeInsets.only(top: 2, bottom: 1, right: 12, left: 12),
+                      padding: EdgeInsets.only(
+                          top: 2, bottom: 1, right: 12, left: 12),
                       child: Center(
                           child: Text(
                         user.firstName + " " + user.lastName,

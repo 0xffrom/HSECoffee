@@ -7,7 +7,7 @@ import 'package:hse_coffee/data/contact.dart';
 import 'package:hse_coffee/data/gender.dart';
 import 'package:hse_coffee/data/user.dart';
 import 'package:hse_coffee/ui/auth/auth_faculty.dart';
-import 'package:hse_coffee/ui/widgets/CapsuleWidget.dart';
+import 'package:hse_coffee/ui/widgets/capsule_widget.dart';
 import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
 import 'package:hse_coffee/ui/widgets/edu_fields.dart';
 import 'package:hse_coffee/ui/widgets/text_field_wrapper.dart';
@@ -89,13 +89,14 @@ class Settings extends StatelessWidget {
 
         dialogLoading.show();
         Api.setUser(newUser)
-            .then((value) => {
-                  dialogLoading.stop(),
-                  if (value.isSuccess())
-                    UserStorage.instance.user = newUser
-                  else
-                    callErrorSnackBar()
-                })
+            .then((value) =>
+        {
+          dialogLoading.stop(),
+          if (value.isSuccess())
+            UserStorage.instance.user = newUser
+          else
+            callErrorSnackBar()
+        })
             .catchError(
                 (object) => {callErrorSnackBar(), dialogLoading.stop()});
       }
@@ -108,12 +109,10 @@ class Settings extends StatelessWidget {
           key: nameKey,
           child: Column(
             children: [
-              Padding(
-                  padding: EdgeInsets.all(7.5),
-                  child: CapsuleWidget(
-                    label: 'О себе'.toUpperCase(),
-                    ribbonHeight: 12,
-                  )),
+              CapsuleWidget(
+                label: 'О себе'.toUpperCase(),
+                ribbonHeight: 12,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
                 child: TextFieldWrapper(
@@ -126,12 +125,11 @@ class Settings extends StatelessWidget {
                   maxLengthName: 100,
                 ),
               ),
-              Padding(
-                  padding: EdgeInsets.all(7.5),
-                  child: CapsuleWidget(
-                    label: 'Мои данные'.toUpperCase(),
-                    ribbonHeight: 12,
-                  )),
+              const Divider(indent: 20),
+              CapsuleWidget(
+                label: 'Мои данные'.toUpperCase(),
+                ribbonHeight: 12,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
                 child: TextFieldWrapper(
@@ -148,12 +146,11 @@ class Settings extends StatelessWidget {
                     labelText: "Фамилия"),
               ),
               Padding(padding: EdgeInsets.all(7.5), child: _toggleButton),
-              Padding(
-                  padding: EdgeInsets.all(7.5),
-                  child: CapsuleWidget(
-                    label: 'Мои контакты'.toUpperCase(),
-                    ribbonHeight: 12,
-                  )),
+              const Divider(indent: 20),
+              CapsuleWidget(
+                label: 'Мои контакты'.toUpperCase(),
+                ribbonHeight: 12,
+              ),
               Column(
                 children: [
                   Padding(
@@ -186,12 +183,11 @@ class Settings extends StatelessWidget {
               ),
             ],
           )),
-      Padding(
-          padding: EdgeInsets.all(7.5),
-          child: CapsuleWidget(
-            label: 'Обучение'.toUpperCase(),
-            ribbonHeight: 12,
-          )),
+      const Divider(indent: 20),
+      CapsuleWidget(
+        label: 'Обучение'.toUpperCase(),
+        ribbonHeight: 12,
+      ),
       _educationFields,
       Padding(
         padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 10.0),
