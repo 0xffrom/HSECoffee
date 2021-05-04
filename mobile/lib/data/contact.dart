@@ -9,19 +9,20 @@ class Contact {
 
   Contact(this.name, this.value);
 
-  factory Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
+  factory Contact.fromJson(Map<String, dynamic> json) =>
+      _$ContactFromJson(json);
 
   Map<String, dynamic> toJson() => _$ContactToJson(this);
 
-  static Contact createVk(String login){
+  static Contact createVk(String login) {
     return Contact("vk", login);
   }
 
-  static Contact createTelegram(String login){
+  static Contact createTelegram(String login) {
     return Contact("tg", login);
   }
 
-  static Contact createInstagram(String login){
+  static Contact createInstagram(String login) {
     return Contact("inst", login);
   }
 }

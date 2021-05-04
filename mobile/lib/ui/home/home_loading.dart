@@ -13,11 +13,11 @@ class HomeLoadingScreen extends StatefulWidget {
 
   static const String routeName = "/home/loading";
 
-  // TODO: false
   HomeLoadingScreen({this.withCancel: false, this.navigatorFunc});
 
   @override
-  _HomeLoadingScreen createState() => _HomeLoadingScreen(withCancel, navigatorFunc);
+  _HomeLoadingScreen createState() =>
+      _HomeLoadingScreen(withCancel, navigatorFunc);
 }
 
 class _HomeLoadingScreen extends State<HomeLoadingScreen> {
@@ -40,20 +40,20 @@ class _HomeLoadingScreen extends State<HomeLoadingScreen> {
     super.initState();
   }
 
-  _cancelMeet(){
-    if(withCancel){
+  _cancelMeet() {
+    if (withCancel) {
       var dialogLoading = DialogLoading(context: context);
       dialogLoading.show();
       Api.cancelSearch()
           .then((value) => {
-        dialogLoading.stop(),
-        if (value.isSuccess())
-          {navigatorFunc(value.getData())}
-        else
-          {
-            callErrorSnackBar(context),
-          }
-      })
+                dialogLoading.stop(),
+                if (value.isSuccess())
+                  {navigatorFunc(value.getData())}
+                else
+                  {
+                    callErrorSnackBar(context),
+                  }
+              })
           .timeout(Duration(seconds: 10))
           .catchError(
               (obj) => {dialogLoading.stop(), callErrorSnackBar(context)});
@@ -63,12 +63,14 @@ class _HomeLoadingScreen extends State<HomeLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: withCancel ? FloatingActionButton(
-          onPressed: _cancelMeet,
-          child: Icon(Icons.cancel),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.blueAccent,
-        ) : null,
+        floatingActionButton: withCancel
+            ? FloatingActionButton(
+                onPressed: _cancelMeet,
+                child: Icon(Icons.cancel),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.blueAccent,
+              )
+            : null,
         backgroundColor: Color.fromRGBO(67, 100, 248, 0.98),
         body: CustomPaint(
             painter: Painter(),

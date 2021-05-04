@@ -89,14 +89,13 @@ class Settings extends StatelessWidget {
 
         dialogLoading.show();
         Api.setUser(newUser)
-            .then((value) =>
-        {
-          dialogLoading.stop(),
-          if (value.isSuccess())
-            UserStorage.instance.user = newUser
-          else
-            callErrorSnackBar()
-        })
+            .then((value) => {
+                  dialogLoading.stop(),
+                  if (value.isSuccess())
+                    UserStorage.instance.user = newUser
+                  else
+                    callErrorSnackBar()
+                })
             .catchError(
                 (object) => {callErrorSnackBar(), dialogLoading.stop()});
       }

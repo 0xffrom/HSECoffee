@@ -9,15 +9,16 @@ import 'package:hse_coffee/ui/auth/auth_name.dart';
 import 'package:hse_coffee/ui/auth/auth_photo.dart';
 import 'package:hse_coffee/ui/home/home.dart';
 import 'package:hse_coffee/ui/splash/splash.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(new MyApp());
+    runApp(new HseCoffeeApp());
   });
 }
 
-class MyApp extends StatelessWidget {
+class HseCoffeeApp extends StatelessWidget {
   final routes = <String, WidgetBuilder>{
     AuthFacultyScreen.routeName: (BuildContext context) => AuthFacultyScreen(),
     AuthNameScreen.routeName: (BuildContext context) => AuthNameScreen(),
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
     AuthEmailScreen.routeName: (BuildContext context) => AuthEmailScreen(),
     AuthGenderScreen.routeName: (BuildContext context) => AuthGenderScreen(),
     AuthPhotoScreen.routeName: (BuildContext context) => AuthPhotoScreen(),
-    AuthContactsScreen.routeName: (BuildContext context) => AuthContactsScreen(),
-    HomeScreen.routeName: (BuildContext context) => HomeScreen(title: 'HSECoffee')
+    AuthContactsScreen.routeName: (BuildContext context) =>
+        AuthContactsScreen(),
+    HomeScreen.routeName: (BuildContext context) =>
+        HomeScreen(title: 'HSECoffee')
   };
 
   @override

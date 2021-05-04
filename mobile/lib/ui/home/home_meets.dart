@@ -117,7 +117,7 @@ class MeetCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Container(
-                    height: 120,
+                    height: 110,
                     child: CachedNetworkImage(
                         imageUrl: Api.getImageUrlByUser(user),
                         fit: BoxFit.cover),

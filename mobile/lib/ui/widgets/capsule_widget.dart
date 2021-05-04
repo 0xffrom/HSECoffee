@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +28,9 @@ class CapsuleWidget extends StatelessWidget {
           ),
         ),
         Container(
-          decoration: BoxDecoration(color: fillColor, borderRadius: BorderRadius.circular(ribbonRadius)),
+          decoration: BoxDecoration(
+              color: fillColor,
+              borderRadius: BorderRadius.circular(ribbonRadius)),
           child: Padding(
             padding: const EdgeInsets.all(6.0),
             child: Text(

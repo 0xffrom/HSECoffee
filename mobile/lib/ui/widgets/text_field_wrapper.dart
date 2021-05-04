@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,14 +14,15 @@ class TextFieldWrapper extends StatelessWidget {
 
   TextFieldWrapper(
       {Key key,
-        this.hintText,
-        this.labelText,
-        this.controller,
-        this.minLengthName: 2,
-        this.maxLengthName: 15,
-        this.textInputType: TextInputType.name,
-        this.maxLines: 1,
-        this.iconPath, this.ignoreValidate: false})
+      this.hintText,
+      this.labelText,
+      this.controller,
+      this.minLengthName: 2,
+      this.maxLengthName: 15,
+      this.textInputType: TextInputType.name,
+      this.maxLines: 1,
+      this.iconPath,
+      this.ignoreValidate: false})
       : super(key: key);
 
   bool _isValidName(String text) {
@@ -37,12 +37,15 @@ class TextFieldWrapper extends StatelessWidget {
       maxLines: maxLines,
       keyboardType: textInputType,
       controller: this.controller,
-      validator: (input) => ignoreValidate ? null :
-      _isValidName(input) ? null : "Пожалуйста, заполните корректно поле!",
+      validator: (input) => ignoreValidate
+          ? null
+          : _isValidName(input)
+              ? null
+              : "Пожалуйста, заполните корректно поле!",
       cursorColor: Colors.blue,
       decoration: InputDecoration(
         prefixIcon:
-        iconPath != null ? Image.asset(iconPath, scale: 2.25) : null,
+            iconPath != null ? Image.asset(iconPath, scale: 2.25) : null,
         hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),

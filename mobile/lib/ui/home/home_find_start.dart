@@ -125,7 +125,7 @@ class _HomeFindScreen extends State<HomeFindScreen> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
         ),
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        isScrollControlled:true,
+        isScrollControlled: true,
         builder: (BuildContext bc) {
           return Container(
             child: new Wrap(

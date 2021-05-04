@@ -11,26 +11,27 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 
 class Api {
-  // http://10.0.2.2:8081/
-  // http://188.120.233.197/
-  static const String _LocalIp = "http://188.120.233.197";
+  static const String _Ip = "http://188.120.233.197";
 
-  static Random random = new Random();
+  static int _number = 0;
 
+  static updateImage() {
+    _number = Random().nextInt(99999);
+  }
 
-  static const Map<String,String> headers = {
-    'Content-type' : 'application/json',
+  static const Map<String, String> headers = {
+    'Content-type': 'application/json',
     'Accept': 'application/json',
   };
 
   static String getImageUrlByUser(User user) {
-    return _LocalIp + "/" + user.photoUri + "?${Random().nextInt(9999999)}";
+    return _Ip + "/" + user.photoUri + "?$_number";
   }
 
   static Future<EventWrapper<bool>> sendCode(String email) async {
     print("/api/code?email=$email");
 
-    final response = await http.post('$_LocalIp/api/code?email=$email');
+    final response = await http.post('$_Ip/api/code?email=$email');
 
     print("Код: ${response.statusCode}");
 
@@ -52,7 +53,7 @@ class Api {
     print(
         "/api/confirm. Email: $email; fingerprint: $fingerprint; code: $code");
 
-    final response = await http.post('$_LocalIp/api/confirm',
+    final response = await http.post('$_Ip/api/confirm',
         body: {"email": email, "fingerprint": fingerprint, "code": code});
 
     print("Код: ${response.statusCode}");
@@ -78,14 +79,14 @@ class Api {
 
     print(jsonEnc);
 
-    final response = await http.post('$_LocalIp/api/search/$accessToken',
+    final response = await http.post('$_Ip/api/search/$accessToken',
         body: jsonEnc, headers: headers);
-
 
     print("Код: ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      return EventWrapper(response.statusCode, _getMeetByResponse(response), "Удачно");
+      return EventWrapper(
+          response.statusCode, _getMeetByResponse(response), "Удачно");
     }
 
     if ((response.statusCode == 403 || response.statusCode == 401) &&
@@ -104,15 +105,14 @@ class Api {
     final accessToken = await Auth.getAccessToken();
     print("DELETE: /api/meet. accessToken = [$accessToken]");
 
-    final response = await http.delete(
-        '$_LocalIp/api/meet/$accessToken',
-        headers: headers);
+    final response =
+        await http.delete('$_Ip/api/meet/$accessToken', headers: headers);
 
     print("Код: ${response.statusCode}");
 
-
     if (response.statusCode == 200) {
-      return EventWrapper(response.statusCode, _getMeetByResponse(response), "Удачно");
+      return EventWrapper(
+          response.statusCode, _getMeetByResponse(response), "Удачно");
     }
 
     if ((response.statusCode == 403 || response.statusCode == 401) &&
@@ -132,7 +132,7 @@ class Api {
 
     try {
       meetStatus = MeetStatus.values.firstWhere((element) =>
-      element.toString().toLowerCase().replaceAll("meetstatus.", "") ==
+          element.toString().toLowerCase().replaceAll("meetstatus.", "") ==
           response.body.toLowerCase());
     } catch (StateError) {
       print("Ошибка при получении meetStatus из ${response.body}");
@@ -150,7 +150,7 @@ class Api {
 
     print(jsonEnc);
 
-    final response = await http.put('$_LocalIp/api/user/settings/$accessToken',
+    final response = await http.put('$_Ip/api/user/settings/$accessToken',
         body: jsonEnc, headers: headers);
 
     print("Код: ${response.statusCode}");
@@ -183,7 +183,7 @@ class Api {
         {"image": await dio.MultipartFile.fromFile(file.path)});
 
     final response = await dio.Dio()
-        .post("$_LocalIp/api/user/image/$accessToken", data: formData);
+        .post("$_Ip/api/user/image/$accessToken", data: formData);
 
     print("Код: ${response.statusCode}");
 
@@ -207,7 +207,7 @@ class Api {
     final accessToken = await Auth.getAccessToken();
     print("GET: /api/user. accessToken = [$accessToken]");
 
-    final response = await http.get('$_LocalIp/api/user/settings/$accessToken');
+    final response = await http.get('$_Ip/api/user/settings/$accessToken');
 
     print("Код: ${response.statusCode}");
 
@@ -234,7 +234,7 @@ class Api {
     final accessToken = await Auth.getAccessToken();
     print("GET: /api/meet. accessToken = [$accessToken]");
 
-    final response = await http.get('$_LocalIp/api/meet/$accessToken');
+    final response = await http.get('$_Ip/api/meet/$accessToken');
 
     print("Код: ${response.statusCode}");
 
@@ -261,7 +261,7 @@ class Api {
     final accessToken = await Auth.getAccessToken();
     print("GET: /api/meets. accessToken = [$accessToken]");
 
-    final response = await http.get('$_LocalIp/api/meets/$accessToken');
+    final response = await http.get('$_Ip/api/meets/$accessToken');
 
     print("Код: ${response.statusCode}");
 
@@ -296,7 +296,7 @@ class Api {
         "email = [$email], "
         "refreshToken = [$refreshToken]");
 
-    final response = await http.post("$_LocalIp/api/refresh?", body: {
+    final response = await http.post("$_Ip/api/refresh?", body: {
       "fingerprint": fingerprint,
       "email": email,
       "refreshToken": refreshToken

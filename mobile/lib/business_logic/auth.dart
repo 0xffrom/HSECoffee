@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:device_info/device_info.dart';
@@ -32,7 +31,6 @@ class Auth {
   static Future<String> getFingerprint() async {
     var deviceInfo = DeviceInfoPlugin();
     if (Platform.isIOS) {
-      // import 'dart:io'
       var iosDeviceInfo = await deviceInfo.iosInfo;
       return iosDeviceInfo.identifierForVendor; // unique ID on iOS
     } else {
@@ -45,11 +43,11 @@ class Auth {
     return (await Auth.getData())[Auth.accessTokenKey];
   }
 
-  static  Future<String> getEmail() async{
+  static Future<String> getEmail() async {
     return (await Auth.getData())[Auth.emailKey];
   }
 
-  static  Future<String> getRefreshToken() async{
+  static Future<String> getRefreshToken() async {
     return (await Auth.getData())[Auth.refreshTokenKey];
   }
 }

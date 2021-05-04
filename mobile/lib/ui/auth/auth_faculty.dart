@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,7 +6,6 @@ import 'package:hse_coffee/business_logic/user_storage.dart';
 import 'package:hse_coffee/data/faculty.dart';
 import 'package:hse_coffee/data/degree.dart';
 import 'package:hse_coffee/ui/widgets/edu_fields.dart';
-import '../widgets/circular_drop_down.dart';
 import 'header.dart';
 
 import 'package:hse_coffee/ui/widgets/button_continue.dart';
@@ -118,37 +115,6 @@ class DropDown<T extends State<StatefulWidget>> extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return state;
-  }
-}
-
-class DropDownState<T> extends State<DropDown> {
-  T value;
-  String hint;
-  List<DropdownMenuItem<T>> items;
-
-  DropDownState(
-      {@required this.value, @required this.hint, @required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        CircularDropDownMenu(
-          dropDownMenuItem: items,
-          onChanged: (value) {
-            setState(() {
-              this.value = value;
-              this.hint = ((items
-                          .firstWhere((element) => element.value == value)
-                          .child as GestureDetector)
-                      .child as Text)
-                  .data;
-            });
-          },
-          hintText: hint,
-        ),
-      ],
-    );
   }
 }
 
