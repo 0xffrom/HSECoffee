@@ -29,22 +29,6 @@ class ImageStorageService : ImageStorageRepository {
      */
     private val logger: Logger = LoggerFactory.getLogger(ImageStorageService::class.java)
 
-    companion object {
-        /**
-         * Корневая папка для хранения изображений.
-         */
-        private val rootLocation: Path = Paths.get("uploads")
-
-        /**
-         * Метод для создания корневой папки.
-         */
-        fun init() {
-            if (!Files.exists(rootLocation)) {
-                Files.createDirectory(rootLocation)
-            }
-        }
-    }
-
     /**
      * Метод для проверки корректности изображения.
      * Изображение должно быть формата image типа png, jpg или jpeg.
@@ -91,6 +75,22 @@ class ImageStorageService : ImageStorageRepository {
             userService?.changeFolderAndSave(user)
         } catch (io: IOException) {
             logger.error("Произошла ошибка при работе с файлами.", io)
+        }
+    }
+
+    companion object {
+        /**
+         * Корневая папка для хранения изображений.
+         */
+        private val rootLocation: Path = Paths.get("uploads")
+
+        /**
+         * Метод для создания корневой папки.
+         */
+        fun init() {
+            if (!Files.exists(rootLocation)) {
+                Files.createDirectory(rootLocation)
+            }
         }
     }
 }

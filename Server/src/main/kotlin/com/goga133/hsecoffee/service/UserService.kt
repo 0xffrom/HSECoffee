@@ -92,6 +92,9 @@ class UserService(
 
     }
 
+    /**
+     * Установить настройки пользователю
+     */
     fun setSettings(oldUser: User, newUser: User): Boolean {
         try {
             // Копируем текущего пользователя в пользователя БД:

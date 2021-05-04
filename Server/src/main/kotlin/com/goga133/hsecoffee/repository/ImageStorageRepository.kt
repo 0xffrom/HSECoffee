@@ -11,10 +11,10 @@ interface ImageStorageRepository {
     /**
      * Метод для проверки корректности файла.
      */
-    fun correctFile(file: MultipartFile) : Boolean
+    fun correctFile(file: MultipartFile): Boolean
 
     /**
      * Метод для сохранения файла для юзера.
      */
-    fun store(file: MultipartFile, user : User)
+    fun store(file: MultipartFile, user: User)
 }

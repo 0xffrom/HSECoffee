@@ -3,6 +3,7 @@ package com.goga133.hsecoffee.controllers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.goga133.hsecoffee.data.status.CancelStatus
 import com.goga133.hsecoffee.data.status.MeetStatus
+import com.goga133.hsecoffee.entity.Meet
 import com.goga133.hsecoffee.entity.SearchParams
 import com.goga133.hsecoffee.service.AuthService
 import com.goga133.hsecoffee.service.MeetService

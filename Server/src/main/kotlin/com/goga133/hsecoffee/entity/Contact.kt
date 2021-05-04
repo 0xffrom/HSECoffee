@@ -2,6 +2,9 @@ package com.goga133.hsecoffee.entity
 
 import javax.persistence.*
 
+/**
+ * Data-class. Контакт.
+ */
 @Entity
 data class Contact(
     @Id

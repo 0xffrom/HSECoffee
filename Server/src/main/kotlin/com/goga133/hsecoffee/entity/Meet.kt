@@ -7,7 +7,7 @@ import java.util.*
 import javax.persistence.*
 
 /**
- * Data-class. Встреча. Длительность активности - 3 дня.
+ * Data-class. Встреча.
  */
 @Entity
 data class Meet(

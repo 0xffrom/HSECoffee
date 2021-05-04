@@ -31,7 +31,6 @@ dependencies {
     runtimeOnly("mysql:mysql-connector-java")
     runtimeOnly("com.h2database:h2:1.4.200")
 
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
@@ -61,7 +60,7 @@ tasks.withType<KotlinCompile> {
 
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "14"
+        jvmTarget = "11"
     }
 }
 

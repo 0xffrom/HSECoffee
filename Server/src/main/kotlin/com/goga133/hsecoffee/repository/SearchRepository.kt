@@ -13,5 +13,5 @@ import org.springframework.stereotype.Repository
 @EnableJpaRepositories
 @Repository("searchRepository")
 interface SearchRepository : CrudRepository<Search, Long> {
-    fun findSearchByFinder(finder : User) : Search?
+    fun findSearchByFinder(finder: User): Search?
 }

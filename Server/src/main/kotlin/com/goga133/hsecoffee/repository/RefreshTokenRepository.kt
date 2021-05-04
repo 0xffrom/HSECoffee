@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository
  */
 @EnableJpaRepositories
 @Repository("refreshTokenRepository")
-interface RefreshTokenRepository: CrudRepository<RefreshToken, Long> {
-    fun findRefreshTokenByUser(user : User) : RefreshToken?
+interface RefreshTokenRepository : CrudRepository<RefreshToken, Long> {
+    fun findRefreshTokenByUser(user: User): RefreshToken?
 }
