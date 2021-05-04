@@ -7,7 +7,8 @@ import 'package:smart_select/smart_select.dart';
 import 'auth_faculty_items.dart';
 
 class EducationFields extends StatefulWidget {
-  final state =  _EducationFieldsState();
+  final state = _EducationFieldsState();
+
   @override
   _EducationFieldsState createState() => state;
 }
@@ -15,7 +16,6 @@ class EducationFields extends StatefulWidget {
 class _EducationFieldsState extends State<EducationFields> {
   Faculty faculty;
   Degree degree;
-
 
   @override
   Widget build(BuildContext context) {

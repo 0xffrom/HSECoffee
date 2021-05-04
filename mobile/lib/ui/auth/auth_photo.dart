@@ -88,7 +88,7 @@ class _AuthPhotoScreen extends State<AuthPhotoScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              title: Text("Выбрать из галерии"),
+              title: Text("Выбрать из галереи"),
               onTap: () {
                 getImage(ImageSource.gallery);
               },

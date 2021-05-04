@@ -33,6 +33,7 @@ class HeaderState extends State<Header> {
                       {
                         UserStorage.instance.user = value.getData(),
                         currentUser = value.getData(),
+                        Api.updateImage(),
                         setState(() {}),
                       }
                   })
@@ -74,7 +75,7 @@ class HeaderState extends State<Header> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              title: Text("Выбрать из галерии"),
+              title: Text("Выбрать из галереи"),
               onTap: () {
                 getImage(ImageSource.gallery);
               },
@@ -117,7 +118,7 @@ class HeaderState extends State<Header> {
                           image: new DecorationImage(
                               fit: BoxFit.fill,
                               image: new CachedNetworkImageProvider(
-                                  Api.getImageUrlByUser(currentUser),
+                                Api.getImageUrlByUser(currentUser),
                               )))),
                   new Container(
                       margin: EdgeInsets.only(top: 30, bottom: 15),

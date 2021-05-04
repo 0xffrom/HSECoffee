@@ -19,19 +19,22 @@ class RouterHelper {
       Navigator.of(context).pushReplacementNamed(AuthNameScreen.routeName);
     }
     // Если не выбран пол
-    else if(user.gender == null || user.gender == Gender.NONE){
+    else if (user.gender == null || user.gender == Gender.NONE) {
       Navigator.of(context).pushReplacementNamed(AuthGenderScreen.routeName);
     }
     // Если не выбран факультет
-    else if(user.faculty == null || user.faculty == Faculty.NONE || user.course == null || user.course == 0){
+    else if (user.faculty == null ||
+        user.faculty == Faculty.NONE ||
+        user.course == null ||
+        user.course == 0) {
       Navigator.of(context).pushReplacementNamed(AuthFacultyScreen.routeName);
     }
     // Если не указаны контактные данные
-    else if(user.contacts.isEmpty){
+    else if (user.contacts.isEmpty) {
       Navigator.of(context).pushReplacementNamed(AuthContactsScreen.routeName);
     }
     // Если нет фотографии
-    else if(!user.photoUri.contains(user.email)){
+    else if (!user.photoUri.contains(user.email)) {
       Navigator.of(context).pushReplacementNamed(AuthPhotoScreen.routeName);
     }
     // Иначе

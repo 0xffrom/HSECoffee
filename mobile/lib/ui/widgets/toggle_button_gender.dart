@@ -22,13 +22,13 @@ class ToggleButtonGenderState extends State<ToggleButtonGender> {
   static const String FirstButtonText = "Мужской";
   static const String SecondButtonText = "Женский";
 
-  List<Gender> getGenders(){
+  List<Gender> getGenders() {
     List<Gender> genders = List.of({}, growable: true);
-    if(isSelected.length >= 1){
-      if(isSelected[0]){
+    if (isSelected.length >= 1) {
+      if (isSelected[0]) {
         genders.add(Gender.MALE);
       }
-      if(isSelected.length >= 2 && isSelected[1]){
+      if (isSelected.length >= 2 && isSelected[1]) {
         genders.add(Gender.FEMALE);
       }
     }
@@ -50,7 +50,7 @@ class ToggleButtonGenderState extends State<ToggleButtonGender> {
         }
       }
 
-      if(allOff){
+      if (allOff) {
         isSelected[index] = !isSelected[index];
         return;
       }
@@ -76,7 +76,7 @@ class ToggleButtonGenderState extends State<ToggleButtonGender> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: TButton(
               FirstButtonText,
               () => onClicked(0),
@@ -84,7 +84,7 @@ class ToggleButtonGenderState extends State<ToggleButtonGender> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: TButton(
               SecondButtonText,
               () => onClicked(1),

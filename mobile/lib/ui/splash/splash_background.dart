@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-
 class SplashPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -28,7 +27,8 @@ class SplashPainter extends CustomPainter {
         center: Offset(width * 0.1, height), radius: height * 0.2));
 
     path.addOval(Rect.fromCircle(
-        center: Offset(width - width * 0.1, height * 0.8), radius: height * 0.3));
+        center: Offset(width - width * 0.1, height * 0.8),
+        radius: height * 0.3));
 
     paint.color = Color.fromRGBO(255, 255, 255, 0.2);
     canvas.drawPath(path, paint);
@@ -39,14 +39,13 @@ class SplashPainter extends CustomPainter {
     parabola.addOval(Rect.fromCircle(
         center: Offset(width * 0.4, -height * 0.3), radius: height * 0.75));
 
-
     paint.color = Colors.white;
     canvas.drawPath(parabola, paint);
     parabola.close();
   }
 
-  void drawRandomOvals(Canvas canvas, Paint paint, int n, double width,
-      double height) {
+  void drawRandomOvals(
+      Canvas canvas, Paint paint, int n, double width, double height) {
     paint.color = Colors.blueAccent;
 
     for (int i = 0; i < n; i++) {

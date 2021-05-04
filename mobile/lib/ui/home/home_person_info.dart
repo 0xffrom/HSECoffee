@@ -13,7 +13,7 @@ class HomePersonScreen extends StatefulWidget {
   static const String routeName = "/home/person";
   final User user;
 
-  HomePersonScreen(this.user, {this.withBack:true});
+  HomePersonScreen(this.user, {this.withBack: true});
 
   @override
   _HomePersonScreen createState() => _HomePersonScreen(user);
@@ -99,12 +99,14 @@ class _HomePersonScreen extends State<HomePersonScreen> {
                           ],
                         ),
                       ),
-                      widget.withBack ? Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 32),
-                          child: ButtonContinue(
-                              textButton: "Вернуться назад",
-                              onPressed: () => Navigator.pop(context))) : Container()
+                      widget.withBack
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 32),
+                              child: ButtonContinue(
+                                  textButton: "Вернуться назад",
+                                  onPressed: () => Navigator.pop(context)))
+                          : Container()
                     ],
                   ),
                 )));

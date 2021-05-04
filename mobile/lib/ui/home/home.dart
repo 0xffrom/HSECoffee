@@ -29,12 +29,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _HomeScreenState() {
     Timer(Duration(seconds: 3), () {
-      _updByMeet();
+      _updByMeet(null);
     });
 
-    // LONG POOL
-    Timer.periodic(Duration(seconds: 10), (timer) {
-      _updByMeet();
+    wait();
+  }
+
+  void wait() {
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      _updByMeet(timer);
     });
   }
 
@@ -46,11 +49,24 @@ class _HomeScreenState extends State<HomeScreen> {
     callSnackBar('Ошибка! Попробуйте повторить запрос позже.');
   }
 
-  void _updByMeet() {
+  void _updByMeet(Timer timer) {
     Api.getMeet()
         .then((value) => {
               if (value.isSuccess())
-                {_navigateByMeet(value.getData())}
+                {
+                  _navigateByMeet(value.getData()),
+                  if (value.getData().meetStatus == MeetStatus.ACTIVE)
+                    {
+                      timer.cancel(),
+                      Timer(
+                          Duration(
+                              milliseconds:
+                                  value.getData().expiresDate.microsecond -
+                                      DateTime.now().millisecond), () {
+                        wait();
+                      })
+                    }
+                }
             })
         .timeout(Duration(seconds: 15))
         .catchError((obj) => print(obj.toString()));

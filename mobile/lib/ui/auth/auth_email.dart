@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hse_coffee/business_logic/api.dart';
 import 'package:hse_coffee/ui/widgets/button_continue.dart';
 import 'package:hse_coffee/ui/widgets/dialog_loading.dart';
-import '../../router_auth.dart';
 import 'auth_code.dart';
 import 'header.dart';
 

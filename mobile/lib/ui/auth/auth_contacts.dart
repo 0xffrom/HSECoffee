@@ -38,7 +38,7 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
     super.dispose();
   }
 
-  String tgCleaner(String tg) {
+  String tgClean(String tg) {
     return tg.trim().replaceAll("@", "");
   }
 
@@ -112,7 +112,8 @@ class _AuthContactsScreen extends State<AuthContactsScreen> {
                               hintText: "@login",
                               labelText: "Логин Telegram",
                               validator: onTelegramValidate,
-                              incorrectMessage:                                  "Введите, пожалуйста, свой настоящий логин.",
+                              incorrectMessage:
+                                  "Введите, пожалуйста, свой настоящий логин.",
                             ),
                           )
                         ],
