@@ -10,7 +10,7 @@ plugins {
 
 
 group = "com.goga133"
-version = "0.0.3-SNAPSHOT"
+version = "1.0.1-BETA"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -25,14 +25,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("junit:junit:4.12")
     compileOnly( "org.springframework.boot:spring-boot-configuration-processor")
-    runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
     runtimeOnly("mysql:mysql-connector-java")
     runtimeOnly("com.h2database:h2:1.4.200")
-
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")

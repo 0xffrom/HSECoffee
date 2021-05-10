@@ -1,6 +1,7 @@
 package com.goga133.hsecoffee.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.goga133.hsecoffee.entity.Contact
 import com.goga133.hsecoffee.entity.User
 import com.goga133.hsecoffee.service.AuthService
 import com.goga133.hsecoffee.service.ImageStorageService

@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
+/**
+ * Сервис для работы с авторизацией пользователей.
+ */
 @Service
 class AuthService {
     /**
      * Логгер.
      */
     private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
-
 
     /**
      * Сервис для работы с JWT.
@@ -29,6 +31,9 @@ class AuthService {
     private val userService: UserService? = null
 
 
+    /**
+     * Провести авторизацию по токену.
+     */
     fun logByToken(token: String): LoginWrapper {
         // Если валидация прошла неуспешно - возвращаем код ошибки от валидатора:
         val validator = jwtService?.validateToken(token).apply {

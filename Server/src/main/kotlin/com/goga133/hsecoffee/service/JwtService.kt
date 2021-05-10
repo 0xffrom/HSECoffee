@@ -34,13 +34,6 @@ class JwtService(
     @Autowired
     val refreshTokenService: RefreshTokenService? = null
 
-    companion object {
-        /**
-         * Подпись для токена.
-         */
-        private const val ISSUER = "HSE Coffee"
-    }
-
     /**
      * Метод для создания JWT токена.
      * Алгоритм: [SignatureAlgorithm.HS512]
@@ -118,5 +111,12 @@ class JwtService(
                 "refreshToken" to refreshToken
             )
         )
+    }
+
+    companion object {
+        /**
+         * Подпись для токена.
+         */
+        private const val ISSUER = "HSE Coffee"
     }
 }

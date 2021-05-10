@@ -29,34 +29,18 @@ class ImageStorageService : ImageStorageRepository {
      */
     private val logger: Logger = LoggerFactory.getLogger(ImageStorageService::class.java)
 
-    companion object{
-        /**
-         * Корневая папка для хранения изображений.
-         */
-        private val rootLocation: Path = Paths.get("uploads")
-
-        /**
-         * Метод для создания корневой папки.
-         */
-        fun init() {
-            if (!Files.exists(rootLocation)) {
-                Files.createDirectory(rootLocation)
-            }
-        }
-    }
-
     /**
      * Метод для проверки корректности изображения.
      * Изображение должно быть формата image типа png, jpg или jpeg.
      */
     override fun correctFile(file: MultipartFile): Boolean {
-        if (file.isEmpty) {
+        if (file.isEmpty || file.originalFilename.isNullOrEmpty()) {
             return false
         }
 
-        val contentType: String = file.contentType ?: return false
+        logger.debug("Название полученного файла: ${file.originalFilename}")
 
-        if (!isSupportedContentType(contentType)) {
+        if (!isSupportedContentType(file.originalFilename!!)) {
             logger.debug("Тип файла не является фотографией.")
             return false
         }
@@ -69,9 +53,9 @@ class ImageStorageService : ImageStorageRepository {
      * Метод для провеки корректности типа файла.
      */
     private fun isSupportedContentType(contentType: String): Boolean {
-        return contentType == "image/png"
-                || contentType == "image/jpg"
-                || contentType == "image/jpeg"
+        return contentType.endsWith("png") ||
+                contentType.endsWith("jpg") ||
+                contentType.endsWith("jpeg")
     }
 
     /**
@@ -81,17 +65,32 @@ class ImageStorageService : ImageStorageRepository {
     override fun store(file: MultipartFile, user: User) {
         try {
             // Удаляем если существует:
-            Files.deleteIfExists(rootLocation.resolve(user.email.toString() + ".png"))
+            Files.deleteIfExists(rootLocation.resolve(user.email + ".png"))
 
             // Помещаем в память:
-            Files.copy(file.inputStream, rootLocation.resolve(user.email.toString() + ".png"))
+            Files.copy(file.inputStream, rootLocation.resolve(user.email + ".png"))
 
             logger.debug("Фотография для пользователя $user была успешно помещена на сервер.")
             // Меняем у пользователя:
             userService?.changeFolderAndSave(user)
-        }
-        catch (io : IOException){
+        } catch (io: IOException) {
             logger.error("Произошла ошибка при работе с файлами.", io)
+        }
+    }
+
+    companion object {
+        /**
+         * Корневая папка для хранения изображений.
+         */
+        private val rootLocation: Path = Paths.get("uploads")
+
+        /**
+         * Метод для создания корневой папки.
+         */
+        fun init() {
+            if (!Files.exists(rootLocation)) {
+                Files.createDirectory(rootLocation)
+            }
         }
     }
 }

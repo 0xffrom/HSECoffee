@@ -65,16 +65,21 @@ class MeetService {
             return Meet()
         }
 
-        // Мы ищим среди всех встреч
-        val meet = meetRepository?.findTopByUser1OrUser2(user, user)
+        // Мы ищем среди всех встреч
+        val meet = meetRepository?.findAllByUser1OrUser2(user, user)?.maxByOrNull { it.expiresDate }
 
         if (searchRepository?.findSearchByFinder(user) != null) {
             return Meet(user, MeetStatus.SEARCH)
         } else if (meet != null) {
-            return meet.apply {
-                updateMeetStatus(this)
+            updateMeetStatus(meet)
+
+            if (meet.meetStatus == MeetStatus.FINISHED) {
+                return Meet()
             }
+
+            return meet
         }
+
         return Meet()
     }
 
@@ -118,7 +123,7 @@ class MeetService {
             return CancelStatus.SUCCESS
         }
 
-        return CancelStatus.FAIL
+        return CancelStatus.NOT_ALLOWED
     }
 
     /**
@@ -141,9 +146,13 @@ class MeetService {
             return MeetStatus.ERROR
         }
 
-        if (meetRepository.findTopByUser1OrUser2(user, user)
-                ?.apply { updateMeetStatus(this) }?.meetStatus == MeetStatus.ACTIVE
-        )
+        val meet = meetRepository.findAllByUser1OrUser2(user, user)?.maxByOrNull { it.expiresDate }.apply {
+            this?.let {
+                updateMeetStatus(it)
+            }
+        }
+
+        if (meet?.meetStatus == MeetStatus.ACTIVE)
             return MeetStatus.ACTIVE
 
         // Если его нет в доске поиска:
@@ -151,23 +160,7 @@ class MeetService {
             val searches = searchRepository.findAll()
 
             val finder = searches.firstOrNull {
-                // Если обоим пользователям всё равно, кого искать:
-                if (searchParams.faculties.size == 0 && it.searchParams.faculties.size == 0)
-                    return@firstOrNull true
-                // Если первому всё равно, смотрим на второго: содержится ли в его предпочтениях факультет первого.
-                else if (searchParams.faculties.size == 0 && (it?.searchParams?.faculties?.contains(user.faculty) == true))
-                    return@firstOrNull true
-                // Тоже самое, только наоборот.
-                else if (it.searchParams.faculties.size == 0 && searchParams.faculties.contains(it.finder.faculty))
-                    return@firstOrNull true
-                // Смотрим, содержатся ли в предпочтениях факультет собеседника:
-                else if (searchParams.faculties.contains(it.finder.faculty) && it?.searchParams?.faculties?.contains(
-                        user.faculty
-                    ) == true
-                )
-                    return@firstOrNull true
-
-                return@firstOrNull false
+                CheckerSearch(user, searchParams, it.finder, it.searchParams).check()
             }
 
             // Если поиск неудачен, то добавляем в зал ожидания.
@@ -195,7 +188,7 @@ class MeetService {
      * @see Meet
      */
     private fun updateMeetStatus(meet: Meet) {
-        if (meetRepository == null || meetRepository.existsMeetById(meet.id)) {
+        if (meetRepository == null || !meetRepository.existsMeetById(meet.id)) {
             return
         }
 
@@ -206,5 +199,60 @@ class MeetService {
         }
 
         meetRepository.save(meet)
+    }
+
+    /**
+     * Класс для проверки поисковых интересов двух пользователей.
+     * @param user1 - первый пользователь.
+     * @param params1 - поисковые параметры первого пользователя.
+     * @param user2 - второй пользователь.
+     * @param params2 - поисковые параметры второго пользователя.
+     */
+    private inner class CheckerSearch(
+        val user1: User,
+        val params1: SearchParams,
+        val user2: User,
+        val params2: SearchParams
+    ) {
+        /**
+         * Метод для проверки годности поисковых запросов двух пользователей.
+         */
+        fun check(): Boolean {
+            return checkFaculties() && checkGenders() && checkDegrees() && checkCourses()
+        }
+
+        /**
+         * Метод для проверки факультетов
+         */
+        private fun checkFaculties(): Boolean {
+            return params1.faculties.contains(user2.faculty) &&
+                    params2.faculties.contains(user1.faculty)
+        }
+
+        /**
+         * Метод для проверки полов.
+         */
+        private fun checkGenders(): Boolean {
+            return params1.genders.contains(user2.gender) &&
+                    params2.genders.contains(user1.gender)
+        }
+
+        /**
+         * Метод для проверки степени обучения.
+         */
+        private fun checkDegrees(): Boolean {
+            return params1.degrees.contains(user2.degree) &&
+                    params2.degrees.contains(user1.degree)
+        }
+
+        /**
+         * Метод для проверки курсов.
+         */
+        private fun checkCourses(): Boolean {
+            return params1.minCourse <= user2.course &&
+                    params1.maxCourse >= user2.course &&
+                    params2.minCourse <= user1.course &&
+                    params2.maxCourse >= user1.course
+        }
     }
 }

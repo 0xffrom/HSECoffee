@@ -31,14 +31,6 @@ class EmailService(
     @Value("\${mail.lifetime.ms}") private var lifeTime: Int,
     @Value("\${mail.domains}") private val domains: String
 ) {
-    companion object {
-        /**
-         * Минимальная длина логика у EMAIL адреса. Логином считается первая часть, разделённая @.
-         * Например: abcd@edu.hse.ru => логин abcd.
-         */
-        const val MIN_LENGTH_LOGIN = 3
-    }
-
     /**
      * Логгер.
      */
@@ -153,14 +145,23 @@ class EmailService(
      * @param code - целочисленный код.
      */
     private fun sendCode(receiver: String, code: Int) {
-        val message = SimpleMailMessage()
+        val message = SimpleMailMessage().apply {
+            setSubject(subject)
+            setText(text.replace("{code}", code.toString()))
+            setFrom(from)
+            setTo(receiver)
+        }
 
-        message.setSubject(subject)
-        message.setText(text.replace("{code}", code.toString()))
-        message.setFrom(from)
-        message.setTo(receiver)
         javaMailSender.send(message)
 
         logger.debug("На почту $receiver был отправлен следующий код подтверждения: $code")
+    }
+
+    companion object {
+        /**
+         * Минимальная длина логика у EMAIL адреса. Логином считается первая часть, разделённая @.
+         * Например: abcd@edu.hse.ru => логин abcd.
+         */
+        const val MIN_LENGTH_LOGIN = 3
     }
 }

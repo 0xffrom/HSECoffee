@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository
 @EnableJpaRepositories
 @Repository("meetRepository")
 interface MeetRepository : CrudRepository<Meet, Long> {
-    fun findTopByUser1OrUser2(user1: User, user2 : User) : Meet?
+    fun findAllByUser1OrUser2(user1: User, user2: User): List<Meet>?
 
-    fun existsMeetById(id : Long) : Boolean
+    fun existsMeetById(id: Long): Boolean
 }
